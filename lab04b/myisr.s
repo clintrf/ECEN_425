@@ -8,8 +8,87 @@
 ;7 Execute the iret instruction. This restores in one atomic operation the values for IP, CS, and the flags, which were automatically -
 ;	; - saved on the stack by the processor when the interrupt occurred. This effectively restores execution to the point where the interrupt occurred.
 
-ISR_RESET:
+RESET:
+	call c_reset_handler
+	pop word[bp+20]
 
-ISR_KEY:
+KEY:
 
-ISR_TICK:
+	; save reg
+	push ax
+	push bx
+	push cx
+	push dx
+	
+	push si
+	push di
+	push bp
+	push es 
+	push ds
+	
+	; enable interrupts for higher priority IRQs ? 
+	sti
+	
+	; run inte
+	call c_key_handler
+	
+	; disable interrupts ?
+	cli
+	
+	; send eoi to pic
+	mov al, 0x20
+	out 0x20, al
+	
+	;restore reg
+	pop ds
+	pop es
+	pop bp
+	pop di
+	pop si
+	pop dx
+	pop cx
+	pop bx
+	pop ax
+	
+	; execute iret
+	iret 
+
+TICK:
+	; save reg
+	push ax
+	push bx
+	push cx
+	push dx
+	
+	push si
+	push di
+	push bp
+	push es 
+	push ds
+	
+	; enable interrupts for higher priority IRQs ? 
+	sti
+	
+	; run interrupt handler ? I think this is the c file
+	call c_tick_handler
+	
+	; disable interrupts ?
+	cli
+	
+	; send eoi to pic
+	mov al, 0x20
+	out 0x20, al
+	
+	;restore reg
+	pop ds
+	pop es
+	pop bp
+	pop di	
+	pop si
+	pop dx
+	pop cx
+	pop bx
+	pop ax
+	
+	; execute iret
+	iret 
