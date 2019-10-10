@@ -7,6 +7,9 @@
 #define HIGH 1
 #define LOW 0
 
+#define SAVE 1
+#define NSAVE 0 
+
 
 /******************** Global Variables ********************/
 unsigned int YKCtxSwCount;            // must be incremented each time a context switch occurs, defined as - 
@@ -18,13 +21,15 @@ unsigned int run_flag;
 
 
 /******************** Functions in yakc.c ********************/
-void YKInitialize(void);              // Initializes all required kernel data structures
-void YKIdleTask(void);                // Kernel's idle task
-void YKNewTask(void (* task)(void),\  // Creates a new task
+void YKInitialize(void);                    // Initializes all required kernel data structures
+void YKIdleTask(void);                      // Kernel's idle task
+void YKNewTask(void (* task)(void),\        // Creates a new task
 void *taskStack, \
 unsigned char priority);       
-void YKRun(void);                     // Starts actual execution of user code
-void YKScheduler(void);               // Determines the highest priority ready task
+void YKRun(void);                           // Starts actual execution of user code
+//void YKScheduler(void);                   // original Scheduler
+void YKScheduler(unsigned int save_flag);   // Pass Scheduler a flag to know if it should save
+
 
 
 /******************** Functions in yaks.s ********************/
@@ -32,7 +37,7 @@ void YKScheduler(void);               // Determines the highest priority ready t
                                         // - Split our dispature into a save dispatcher -
                                         // - and a non save dispatcher
 void YKDispatcherSave();                // Dispatcher that saves to mem/stack?
-void YKDispatcherNonSave();             // Dispatcher that  doesn't saves to mem/stack?
+void YKDispatcherNSave();             // Dispatcher that  doesn't saves to mem/stack?
 
 
 void YKEnterMutex(void);              // Disables interrupts
@@ -44,10 +49,7 @@ void YKExitMutex(void);               // Enables interrupts
 //void YKDelayTask(unsigned count){}
 //void YKEnterISR(void){}
 //void YKExitISR(void){}
-
-
 //void YKTickHandler(void){}
-
 //YKSEM* YKSemCreate(int initialValue)
 //void YKSemPend(YKSEM *semaphore)
 //void YKSemPost(YKSEM *semaphore)
