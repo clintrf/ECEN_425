@@ -4,11 +4,17 @@
 #define YAKH_H
 
 
+#define HIGH 1
+#define LOW 0
+
+
 /******************** Global Variables ********************/
 unsigned int YKCtxSwCount;            // must be incremented each time a context switch occurs, defined as - 
                                       //  - the dispatching of a task other than the task that ran most recently.
 unsigned int YKIdleCount;             // Must be incremented by the idle task in its while(1) loop.
 //unsigned int YKTickNum;             // Must be incremented each time the kernel's tick handler runs. For dif lab
+
+unsigned int run_flag;
 
 
 /******************** Functions in yakc.c ********************/
@@ -22,7 +28,13 @@ void YKScheduler(void);               // Determines the highest priority ready t
 
 
 /******************** Functions in yaks.s ********************/
-void YKDispatcher(void);              // Begins or resumes execution of the next task
+//void YKDispatcher(void);              // Begins or resumes execution of the next task -
+                                        // - Split our dispature into a save dispatcher -
+                                        // - and a non save dispatcher
+void YKDispatcherSave();                // Dispatcher that saves to mem/stack?
+void YKDispatcherNonSave();             // Dispatcher that  doesn't saves to mem/stack?
+
+
 void YKEnterMutex(void);              // Disables interrupts
 void YKExitMutex(void);               // Enables interrupts
 
