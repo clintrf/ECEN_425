@@ -9,4 +9,10 @@ YKExitMutex:                    ; Enables Interrupts
 	sti	                          ; set interrupt flag 
 	ret
 
-YKDispatcher:                   ; Standard dispatcher
+
+;YKDispatcher:   		; Original Dispatcher?
+
+YKDispatcherSave:   		; Dispatcher that saves to mem/stack
+
+YKDispatcherNonSave:		; Dispatcher that  doesn't saves to mem/stack?
+
