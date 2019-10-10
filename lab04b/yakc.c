@@ -27,14 +27,16 @@ void YKIdleTask(void){      // Kernel's idle task
   - (including the jmp instruction). */
 }
 
-void YKNewTask(void (* task)(void), \         // Creates a new task
-void *taskStack, \
-unsigned char priority){    
-
-  //
+void YKNewTask( void (* task)(void), \         // Creates a new task
+                void *taskStack, \
+                unsigned char priority){    
+  // Gets next open spot in TCB
+  // inits TCB
+  // stops interupts
+  // makes the new entry
+  // starts interupts
+  // calles YKScheduler(SAVE) to save it.
   
-  
-  YKScheduler(SAVE);            // run the top proccess 
 }
 
 void YKRun(void){                 // Starts actual execution of user code
