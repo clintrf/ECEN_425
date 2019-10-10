@@ -8,7 +8,7 @@
 unsigned int YKCtxSwCount;            // must be incremented each time a context switch occurs, defined as - 
                                       //  - the dispatching of a task other than the task that ran most recently.
 unsigned int YKIdleCount;             // Must be incremented by the idle task in its while(1) loop.
-//unsigned int YKTickNum;             // Must be incremented each time the kernel's tick handler runs.
+//unsigned int YKTickNum;             // Must be incremented each time the kernel's tick handler runs. For dif lab
 
 
 /******************** Functions in yakc.c ********************/
