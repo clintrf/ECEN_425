@@ -22,7 +22,7 @@ lab4b_app.s
 
 clean:
 		rm lab4b.bin lab4b.lst lab4bfinal.s \
-    myinth.s myinth.i \
+		myinth.s myinth.i \
 		yakc.s yakc.i \
-    yakcs.s yaks.i \
-    lab4b_app.s lab4b_app.i 
+		yaks.s yaks.i \
+		lab4b_app.s lab4b_app.i 
