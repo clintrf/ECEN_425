@@ -16,13 +16,18 @@ void YKInitialize(void){    // Initializes all required kernel data structures
   YKIdleCount = 0;          // Set to 0
   //YKTickNum = 0;            // Set to 0
   run_flag = 0;           // No proccesses are running at initialization
+  current_priority = 0;
   
   YKEntermutex();           // Turn on interupts at initialization
   
-  for(int i = 0; i < MAXTASKS; i++){
-    YKTCBArray[i].next = &(YKTCBArray[i+1]);
-  }
+  /* code to construct singly linked available TCB list from initial array */ 
+  YKAvailTCBList = &(YKTCBArray[0]);
+  int i;
+  for (i = 0; i < MAXTASKS; i++)
+	  YKTCBArray[i].next = &(YKTCBArray[i+1]);
   YKTCBArray[MAXTASKS].next = NULL;
+  
+  
   // Do we need to allocate memory for the task stack to pass in?
   // What is that first parameter?
   void* stackptr = malloc(STACK_SIZE);
@@ -57,19 +62,46 @@ void TCBInit(TCB* newTCB, void* stackptr, int state, int priority, int delay, TC
 }
 
 void YKNewTask( void (*task)(void), void *taskStack, unsigned char priority){    // Creates a new task
-  // Gets next open spot in TCB
-  int i = 0;
-  while(YKTCBArray[i].next != NULL){
-    i++;
-  }
+      
+  TCBptr tmp, tmp2;
+  
+  /* code to grab an unused TCB from the available list */
+  tmp = YKAvailTCBList;
+  YKAvailTCBList = tmp->next;
+  
   TCB newTCB;
   TCBInit(&newTCB, taskStack, priority, DEFAULT_DELAY, NULL, YKTCBArray[i]); // Inits TCB
   
+  tmp2 = &newTCB;
+  
   YKEnterMutex();             //Disable interupts
-  
-  // makes the new entry
-  
+  /* code to insert an entry in doubly linked ready list sorted by
+   priority numbers (lowest number first).  tmp points to TCB
+   to be inserted */ 
+  if (YKRdyList == NULL){	/* is this first insertion? */
+    YKRdyList = tmp;
+    tmp->next = NULL;
+    tmp->prev = NULL;
+  }
+  else{			/* not first insertion */
+    tmp2 = YKRdyList;	/* insert in sorted ready list */
+    while (tmp2->priority < tmp->priority)
+      tmp2 = tmp2->next;	/* assumes idle task is at end */
+    if (tmp2->prev == NULL)	/* insert in list before tmp2 */
+      YKRdyList = tmp;
+    else
+      tmp2->prev->next = tmp;
+    tmp->prev = tmp2->prev;
+    tmp->next = tmp2;
+    tmp2->prev = tmp;
+  }
+
   YKExitMutex();              // starts interrupts
+  
+  YKAvailTCBList = tmp2->next;  // sets YKAvailTCBList to next open spot
+  
+  current_priority = tmp2->priority;
+  
   YKScheduler(SAVE);          // Save current block of mem
   
 }
@@ -81,11 +113,17 @@ void YKRun(void){                 // Starts actual execution of user code
 
 void YKScheduler(unsigned int save_flag){     // Determines the highest priority ready task
   if(run_flag){                               // NOT redundant! Tell the kernel to begin for first time
-    if(save_flag){
-      YKDispatcherSave();
+    if (current_priority == YKRdyList[0]){
+      return;
     }
     else{
-      YKDispatcherNSave();
+      if(save_flag){
+        YKDispatcherSave();
+      }
+      else{
+        YKDispatcherNSave();
+      }
+    }
   }
 }
 
