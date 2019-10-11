@@ -15,9 +15,10 @@ void YKInitialize(void){    // Initializes all required kernel data structures
   YKCtxSwCount = 0;         // Set to 0
   YKIdleCount = 0;          // Set to 0
   //YKTickNum = 0;            // Set to 0
-  run_flag = 0;              // No proccesses are running at initialization
+  run_flag = 0;           // No proccesses are running at initialization
   
   YKEntermutex();           // Turn on interupts at initialization
+  
   for(int i = 0; i < MAXTASKS; i++){
     YKTCBArray[i].next = &(YKTCBArray[i+1]);
   }
@@ -63,10 +64,13 @@ void YKNewTask( void (*task)(void), void *taskStack, unsigned char priority){   
   }
   TCB newTCB;
   TCBInit(&newTCB, taskStack, priority, DEFAULT_DELAY, NULL, YKTCBArray[i]); // Inits TCB
-  // stops interrupts
+  
+  YKEnterMutex();             //Disable interupts
+  
   // makes the new entry
-  // starts interrupts
-  // calles YKScheduler(SAVE) to save it.
+  
+  YKExitMutex();              // starts interrupts
+  YKScheduler(SAVE);          // Save current block of mem
   
 }
 
