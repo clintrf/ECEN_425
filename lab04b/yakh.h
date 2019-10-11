@@ -38,6 +38,8 @@ unsigned int YKIdleCount;             // Must be incremented by the idle task in
 
 unsigned int run_flag;
 
+unsigned int current_priority;
+
 
 /******************** Functions in yakc.c ********************/
 void YKInitialize(void);                    // Initializes all required kernel data structures
