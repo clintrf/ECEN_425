@@ -108,20 +108,20 @@ void YKNewTask( void (*task)(void), void *taskStack, unsigned char priority){   
 
 void YKRun(void){                 // Starts actual execution of user code
   run_flag = HIGH;                // Start the Scheduler for the very first time
-  YKScheduler(NSAVE);             // run the top proccess 
+  YKScheduler(NSAVE, task);             // run the top proccess 
 }
 
-void YKScheduler(unsigned int save_flag){     // Determines the highest priority ready task
+void YKScheduler(unsigned int save_flag, void (*task)(void)){     // Determines the highest priority ready task
   if(run_flag){                               // NOT redundant! Tell the kernel to begin for first time
     if (current_priority == YKRdyList[0]){
       return;
     }
     else{
       if(save_flag){
-        YKDispatcherSave();
+        YKDispatcherSave(task, YKRdyList[0].stackptr);
       }
       else{
-        YKDispatcherNSave();
+        YKDispatcherNSave(task, YKRdyList[0].stackptr);
       }
     }
   }
