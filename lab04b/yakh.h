@@ -9,7 +9,26 @@
 
 #define SAVE 1
 #define NSAVE 0 
+#define NULL 0
 
+#define MAXTASKS 5		/* count of user tasks */
+
+// TCB Struct
+typedef struct taskblock *TCBptr;
+typedef struct taskblock
+{				/* the TCB struct definition */
+    void *stackptr;		/* pointer to current top of stack */
+    int state;			/* current state */
+    int priority;		/* current priority */
+    int delay;			/* #ticks yet to wait */
+    TCBptr next;		/* forward ptr for dbl linked list */
+    TCBptr prev;		/* backward ptr for dbl linked list */
+}  TCB;
+
+TCBptr YKRdyList;
+TCBptr YKSuspList;
+TCBptr YKAvailTCBList;		/* a list of available TCBs */
+TCB    YKTCBArray[MAXTASKS+1];	/* array to allocate all needed TCBs
 
 /******************** Global Variables ********************/
 unsigned int YKCtxSwCount;            // must be incremented each time a context switch occurs, defined as - 
@@ -23,9 +42,9 @@ unsigned int run_flag;
 /******************** Functions in yakc.c ********************/
 void YKInitialize(void);                    // Initializes all required kernel data structures
 void YKIdleTask(void);                      // Kernel's idle task
-void YKNewTask(void (* task)(void),\        // Creates a new task
-void *taskStack, \
-unsigned char priority);       
+void YKNewTask(void (* task)(void),\  
+    void *taskStack, \
+    unsigned char priority);                // Creates a new task
 void YKRun(void);                           // Starts actual execution of user code
 //void YKScheduler(void);                   // original Scheduler
 void YKScheduler(unsigned int save_flag);   // Pass Scheduler a flag to know if it should save
