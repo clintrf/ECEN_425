@@ -27,7 +27,6 @@ void YKInitialize(void){    // Initializes all required kernel data structures
   void* stackptr = malloc(STACK_SIZE);
   YKNewTask(YKIdleTask, stackptr, LOWEST_PRIORITY);
   //call YKIdleTask         // From YAK Kernel instruction book
-  YKIdleTask();
   //^ could call YKIdleTask as YKNewTask()
   
 }
