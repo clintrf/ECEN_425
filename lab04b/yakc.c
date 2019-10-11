@@ -12,6 +12,7 @@ void YKInitialize(void){    // Initializes all required kernel data structures
   run_flag = 0;              // No proccesses are running at initialization
   
   YKEntermutex();           // Turn on interupts at initialization
+  
   for(int i = 0; i < MAXTASKS; i++){
     YKTCBArray[i].next = &(YKTCBArray[i+1]);
   }
@@ -19,6 +20,7 @@ void YKInitialize(void){    // Initializes all required kernel data structures
   // Do we need to allocate memory for the task stack to pass in?
   // What is that first parameter?
   //YKNewTask();
+  
   //call YKIdleTask         // From YAK Kernel instruction book
   //^ could call YKIdleTask as YKNewTask()
   
@@ -56,10 +58,13 @@ void YKNewTask( void (* task)(void), void *taskStack, unsigned char priority){  
   }
   TCB newTCB;
   TCBInit(&newTCB, taskStack, priority, 0, NULL, YKTCBArray[i]); // Inits TCB
-  // stops interrupts
+  
+  YKEnterMutex();             //Disable interupts
+  
   // makes the new entry
-  // starts interrupts
-  // calles YKScheduler(SAVE) to save it.
+  
+  YKExitMutex();              // starts interrupts
+  YKScheduler(SAVE);          // Save current block of mem
   
 }
 
