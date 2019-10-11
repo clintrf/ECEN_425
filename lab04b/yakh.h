@@ -9,14 +9,28 @@
 
 #define SAVE 1
 #define NSAVE 0 
-#define NULL 0
 
+#define NULL 0
 #define MAXTASKS 5		/* count of user tasks */
+
+
+/******************** Global Variables ********************/
+unsigned int YKCtxSwCount;            // must be incremented each time a context switch occurs, defined as - 
+                                      //  - the dispatching of a task other than the task that ran most recently.
+unsigned int YKIdleCount;             // Must be incremented by the idle task in its while(1) loop.
+//unsigned int YKTickNum;             // Must be incremented each time the kernel's tick handler runs. For dif lab
+
+unsigned int run_flag;
+
+unsigned int current_priority;
+
+
+/******************** Global Structs ********************/
 
 // TCB Struct
 typedef struct taskblock *TCBptr;
 typedef struct taskblock
-{				/* the TCB struct definition */
+{				        /* the TCB struct definition */
     void *stackptr;		/* pointer to current top of stack */
     int state;			/* current state */
     int priority;		/* current priority */
@@ -30,23 +44,10 @@ TCBptr YKSuspList;
 TCBptr YKAvailTCBList;		/* a list of available TCBs */
 TCB    YKTCBArray[MAXTASKS+1];	/* array to allocate all needed TCBs
 
-/******************** Global Variables ********************/
-unsigned int YKCtxSwCount;            // must be incremented each time a context switch occurs, defined as - 
-                                      //  - the dispatching of a task other than the task that ran most recently.
-unsigned int YKIdleCount;             // Must be incremented by the idle task in its while(1) loop.
-//unsigned int YKTickNum;             // Must be incremented each time the kernel's tick handler runs. For dif lab
-
-unsigned int run_flag;
-
-unsigned int current_priority;
-
-
 /******************** Functions in yakc.c ********************/
 void YKInitialize(void);                    // Initializes all required kernel data structures
 void YKIdleTask(void);                      // Kernel's idle task
-void YKNewTask(void (* task)(void),\  
-    void *taskStack, \
-    unsigned char priority);                // Creates a new task
+void YKNewTask(void (* task)(void), void *taskStack, unsigned char priority);                // Creates a new task
 void YKRun(void);                           // Starts actual execution of user code
 //void YKScheduler(void);                   // original Scheduler
 void YKScheduler(unsigned int save_flag);   // Pass Scheduler a flag to know if it should save
@@ -57,7 +58,7 @@ void YKScheduler(unsigned int save_flag);   // Pass Scheduler a flag to know if 
 //void YKDispatcher(void);              // Begins or resumes execution of the next task -
                                         // - Split our dispature into a save dispatcher -
                                         // - and a non save dispatcher
-void YKDispatcherSave();                // Dispatcher that saves to mem/stack?
+void YKDispatcherSave(int ** save_sp, int ** save_ss, int *restore_sp, int * restore_ss;                // Dispatcher that saves to mem/stack?
 void YKDispatcherNSave();             // Dispatcher that  doesn't saves to mem/stack?
 
 
