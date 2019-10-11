@@ -4,6 +4,12 @@
 #define TASK_RUNNING 1
 #define TASK_READY 2
 #define TASK_BLOCKED 3
+#define STACK_SIZE 128
+
+#define LOWEST_PRIORITY 100
+#define HIGHEST_PRIORITY 0
+
+#define DEFAULT_DELAY 0
 
 void YKInitialize(void){    // Initializes all required kernel data structures
   YKCtxSwCount = 0;         // Set to 0
@@ -18,8 +24,10 @@ void YKInitialize(void){    // Initializes all required kernel data structures
   YKTCBArray[MAXTASKS].next = NULL;
   // Do we need to allocate memory for the task stack to pass in?
   // What is that first parameter?
-  //YKNewTask();
+  void* stackptr = malloc(STACK_SIZE);
+  YKNewTask(YKIdleTask, stackptr, LOWEST_PRIORITY);
   //call YKIdleTask         // From YAK Kernel instruction book
+  YKIdleTask();
   //^ could call YKIdleTask as YKNewTask()
   
 }
@@ -48,14 +56,14 @@ void TCBInit(TCB* newTCB, void* stackptr, int state, int priority, int delay, TC
   prev->next = newTCB;
 }
 
-void YKNewTask( void (* task)(void), void *taskStack, unsigned char priority){    // Creates a new task
+void YKNewTask( void (*task)(void), void *taskStack, unsigned char priority){    // Creates a new task
   // Gets next open spot in TCB
   int i = 0;
   while(YKTCBArray[i].next != NULL){
     i++;
   }
   TCB newTCB;
-  TCBInit(&newTCB, taskStack, priority, 0, NULL, YKTCBArray[i]); // Inits TCB
+  TCBInit(&newTCB, taskStack, priority, DEFAULT_DELAY, NULL, YKTCBArray[i]); // Inits TCB
   // stops interrupts
   // makes the new entry
   // starts interrupts
