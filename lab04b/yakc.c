@@ -103,7 +103,7 @@ void YKNewTask( void (*task)(void), void *taskStack, unsigned char priority){   
   tmp->stackptr = taskStack; // from function call
   tmp->ss = 0;
   tmp->stackptr		= tmp->stackptr - 11;
-  *(tmp->stackptr+11)	= 0x200 ;flag interupt
+  *(tmp->stackptr+11)	= 0x200 //flag interupt
   *(tmp->stackptr+10)	= 0;		// CS
   *(tmp->stackptr+9)	= (int)task;		// IP
   *(tmp->stackptr+8)	= 0;		// AX
@@ -136,10 +136,10 @@ void YKScheduler(unsigned int save_flag){     // Determines the highest priority
       YKCtxSwCount = YKCtxSwCount + 1;	// Switching context one more time
       TKCurrentlyRunning = highest_priority_task;      
       if(save_flag){
-        YKDispatcherSave(save_flag,&(currentlyRunning->stackptr),&(currentlyRunning->ss, highest_priotity_task->stackptr, highest_priority_task->ss);
+        YKDispatcherSave(save_flag,&(currentlyRunning->stackptr),&(currentlyRunning->ss, highest_priority_task->stackptr, highest_priority_task->ss);
       }
       else{
-        YKDispatcherNSave(save_flag,(int **) 1,(int ** ) 1, highest_priotity_task->stackptr, highest_priority_task->ss);
+        YKDispatcherNSave(save_flag,(int **) 1,(int ** ) 1, highest_priority_task->stackptr, highest_priority_task->ss);
       }
     }
   }
