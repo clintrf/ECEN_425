@@ -72,8 +72,8 @@ void YKScheduler(unsigned int save_flag);   // Pass Scheduler a flag to know if 
 //void YKDispatcher(void);              // Begins or resumes execution of the next task -
                                         // - Split our dispature into a save dispatcher -
                                         // - and a non save dispatcher
-void YKDispatcherSave(int ** save_sp, int ** save_ss, int *restore_sp, int * restore_ss);                // Dispatcher that saves to mem/stack?
-void YKDispatcherNSave(int ** save_sp, int ** save_ss, int *restore_sp, int * restore_ss);             // Dispatcher that  doesn't saves to mem/stack?
+void YKDispatcherSave(int saveFlag, int ** save_sp, int ** save_ss, int *restore_sp, int * restore_ss);                // Dispatcher that saves to mem/stack?
+void YKDispatcherNSave(int saveFlag,int ** save_sp, int ** save_ss, int *restore_sp, int * restore_ss);             // Dispatcher that  doesn't saves to mem/stack?
 
 
 void YKEnterMutex(void);              // Disables interrupts
