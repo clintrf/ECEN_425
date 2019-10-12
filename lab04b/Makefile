@@ -8,16 +8,17 @@ myinth.s:	myinth.c
 		cpp myinth.c myinth.i
 		c86 -g myinth.i myinth.s
     
-yakc.s: 
-		cpp yakc.c yakc.i
-		c86 -g yakc.i yakc.s
 
 lab4b_app.s
 		cpp lab4b_app.c lab4b_app.i
 		c86 -g lab4b_app.i lab4b_app.s
+		
+yakc.s: 
+		cpp yakc.c yakc.i
+		c86 -g yakc.i yakc.s
 
 clean:
-		rm lab4b.lst lab4bfinal.s \
+		rm lab4b.bin lab4b.lst lab4bfinal.s \
 		myinth.s myinth.i \
 		yakc.s yakc.i \
 		lab4b_app.s lab4b_app.i 
