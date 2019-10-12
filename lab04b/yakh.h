@@ -26,16 +26,16 @@
 
 
 /******************** Global Variables ********************/
-unsigned int YKCtxSwCount;            // must be incremented each time a context switch occurs, defined as - 
+extern unsigned int YKCtxSwCount;            // must be incremented each time a context switch occurs, defined as - 
                                       //  - the dispatching of a task other than the task that ran most recently.
-unsigned int YKIdleCount;             // Must be incremented by the idle task in its while(1) loop.
+extern unsigned int YKIdleCount;             // Must be incremented by the idle task in its while(1) loop.
 //unsigned int YKTickNum;             // Must be incremented each time the kernel's tick handler runs. For dif lab
 
-unsigned int run_flag;
+extern unsigned int run_flag;
 
-unsigned int current_priority;
+extern unsigned int current_priority;
 
-int idleStack[IDLE_STACK_SIZE];
+extern int idleStack[IDLE_STACK_SIZE];
 
 /******************** Global Structs ********************/
 
@@ -43,7 +43,9 @@ int idleStack[IDLE_STACK_SIZE];
 typedef struct taskblock *TCBptr;
 typedef struct taskblock
 {				        /* the TCB struct definition */
-    void *stackptr;		/* pointer to current top of stack */
+    //void *stackptr;		/* pointer to current top of stack */
+    int *stackptr;
+    int *ss;
     int state;			/* current state */
     int priority;		/* current priority */
     int delay;			/* #ticks yet to wait */
@@ -51,10 +53,10 @@ typedef struct taskblock
     TCBptr prev;		/* backward ptr for dbl linked list */
 }  TCB;
 
-TCBptr YKRdyList;
-TCBptr YKSuspList;
-TCBptr YKAvailTCBList;		/* a list of available TCBs */
-TCB    YKTCBArray[MAXTASKS+1];	/* array to allocate all needed TCBs
+extern TCBptr YKRdyList;
+extern TCBptr YKSuspList;
+extern TCBptr YKAvailTCBList;		/* a list of available TCBs */
+extern TCB    YKTCBArray[MAXTASKS+1];	/* array to allocate all needed TCBs
 
 /******************** Functions in yakc.c ********************/
 void YKInitialize(void);                    // Initializes all required kernel data structures
@@ -70,8 +72,8 @@ void YKScheduler(unsigned int save_flag);   // Pass Scheduler a flag to know if 
 //void YKDispatcher(void);              // Begins or resumes execution of the next task -
                                         // - Split our dispature into a save dispatcher -
                                         // - and a non save dispatcher
-void YKDispatcherSave(int ** save_sp, int ** save_ss, int *restore_sp, int * restore_ss;                // Dispatcher that saves to mem/stack?
-void YKDispatcherNSave();             // Dispatcher that  doesn't saves to mem/stack?
+void YKDispatcherSave(int ** save_sp, int ** save_ss, int *restore_sp, int * restore_ss);                // Dispatcher that saves to mem/stack?
+void YKDispatcherNSave(int ** save_sp, int ** save_ss, int *restore_sp, int * restore_ss);             // Dispatcher that  doesn't saves to mem/stack?
 
 
 void YKEnterMutex(void);              // Disables interrupts
