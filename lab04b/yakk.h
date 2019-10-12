@@ -60,6 +60,9 @@ extern TCB    YKTCBArray[MAXTASKS+1];	/* array to allocate all needed TCBs
 
 /******************** Functions in yakc.c ********************/
 void YKInitialize(void);                    // Initializes all required kernel data structures
+void YKEnterMutex(void);              // Disables interrupts
+void YKExitMutex(void);               // Enables interrupts
+
 void YKIdleTask(void);                      // Kernel's idle task
 void YKNewTask(void (* task)(void), void *taskStack, unsigned char priority);                // Creates a new task
 void YKRun(void);                           // Starts actual execution of user code
@@ -75,9 +78,6 @@ void YKScheduler(unsigned int save_flag);   // Pass Scheduler a flag to know if 
 void YKDispatcherSave(int saveFlag, int ** save_sp, int ** save_ss, int *restore_sp, int * restore_ss);                // Dispatcher that saves to mem/stack?
 void YKDispatcherNSave(int saveFlag,int ** save_sp, int ** save_ss, int *restore_sp, int * restore_ss);             // Dispatcher that  doesn't saves to mem/stack?
 
-
-void YKEnterMutex(void);              // Disables interrupts
-void YKExitMutex(void);               // Enables interrupts
 
 
 
