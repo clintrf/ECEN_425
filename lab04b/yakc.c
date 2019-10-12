@@ -135,10 +135,10 @@ void YKScheduler(unsigned int save_flag){     // Determines the highest priority
       YKCtxSwCount = YKCtxSwCount + 1;	// Switching context one more time
       TKCurrentlyRunning = highest_priority_task;      
       if(save_flag){
-        YKDispatcherSave(&(currentlyRunning->stackptr),&(currentlyRunning->ss, highest_priotity_task->stackptr, highest_priority_task->ss);
+        YKDispatcherSave(save_flag,&(currentlyRunning->stackptr),&(currentlyRunning->ss, highest_priotity_task->stackptr, highest_priority_task->ss);
       }
       else{
-        YKDispatcherNSave((int **) 1,(int ** ) 1, highest_priotity_task->stackptr, highest_priority_task->ss);
+        YKDispatcherNSave(save_flag,(int **) 1,(int ** ) 1, highest_priotity_task->stackptr, highest_priority_task->ss);
       }
     }
   }
