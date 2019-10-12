@@ -14,6 +14,17 @@
 #define MAXTASKS 5		/* count of user tasks */
 
 
+#define TASK_RUNNING 1
+#define TASK_READY 2
+#define TASK_BLOCKED 3
+#define IDLE_STACK_SIZE 256
+
+#define LOWEST_PRIORITY 100
+#define HIGHEST_PRIORITY 0
+
+#define DEFAULT_DELAY 0
+
+
 /******************** Global Variables ********************/
 unsigned int YKCtxSwCount;            // must be incremented each time a context switch occurs, defined as - 
                                       //  - the dispatching of a task other than the task that ran most recently.
@@ -24,6 +35,7 @@ unsigned int run_flag;
 
 unsigned int current_priority;
 
+int idleStack[IDLE_STACK_SIZE];
 
 /******************** Global Structs ********************/
 
