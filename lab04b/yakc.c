@@ -3,12 +3,30 @@
 
 
 
+
+
+/******************** Global Variables ********************/
+unsigned int YKCtxSwCount;            // must be incremented each time a context switch occurs, defined as - 
+                                      //  - the dispatching of a task other than the task that ran most recently.
+unsigned int YKIdleCount;             // Must be incremented by the idle task in its while(1) loop.
+//unsigned int YKTickNum;             // Must be incremented each time the kernel's tick handler runs. For dif lab
+
+unsigned int run_flag;
+
+TCBptr TKCurrentlyRunning;
+int idleStack[IDLE_STACK_SIZE];
+
+TCBptr YKRdyList;
+TCBptr YKSuspList;
+TCBptr YKAvailTCBList;		/* a list of available TCBs */
+TCB    YKTCBArray[MAXTASKS+1];	/* array to allocate all needed TCBs
+
 void YKInitialize(void){    // Initializes all required kernel data structures
   YKCtxSwCount = 0;         // Set to 0
   YKIdleCount = 0;          // Set to 0
   //YKTickNum = 0;            // Set to 0
   run_flag = 0;           // No proccesses are running at initialization
-  current_priority = 0;
+  TKCurrentlyRunning = 0;
   
   YKEntermutex();           // Turn on interupts at initialization
   
@@ -17,11 +35,6 @@ void YKInitialize(void){    // Initializes all required kernel data structures
   for (int i = 0; i < MAXTASKS; i++)
 	  YKTCBArray[i].next = &(YKTCBArray[i+1]);
   YKTCBArray[MAXTASKS].next = NULL;
-  
-  
-  // Do we need to allocate memory for the task stack to pass in?
-  // What is that first parameter?
-  void* stackptr = malloc(STACK_SIZE);
 	
   YKNewTask(YKIdleTask, (void*)&idleStack, LOWEST_PRIORITY);
   //call YKIdleTask         // From YAK Kernel instruction book
@@ -40,18 +53,6 @@ void YKIdleTask(void){      // Kernel's idle task
   - instructions per iteration. After writing your idle task, disassemble it -
   - to make sure its while(1) loop is at least 4 instructions per iteration -
   - (including the jmp instruction). */
-}
-
-void TCBInit(TCB* newTCB, void* stackptr, int state, int priority, int delay, TCBptr next, TCBptr prev){
-  // Initialize all the new TCB values
-  newTCB->stackptr = stackptr;
-  newTCB->state = state;
-  newTCB->priority = priority;
-  newTCB->delay = delay;
-  newTCB->next = next;
-  newTCB->prev = prev;
-  // Set the previous TCB's next to be the new TCB
-  prev->next = newTCB;
 }
 
 void YKNewTask( void (*task)(void), void *taskStack, unsigned char priority){    // Creates a new task
@@ -124,16 +125,16 @@ void YKRun(void){                 // Starts actual execution of user code
 
 void YKScheduler(unsigned int save_flag){     // Determines the highest priority ready task
   TCBptr highest_priority_task = YKRdyList;
-  TCBptr currentlyExecuting = YKCurrentlyExecuting;  
+  TCBptr currentlyRunning = TKCurrentlyRunning;  
   if(run_flag){                               // NOT redundant! Tell the kernel to begin for first time
-    if (current_priority == highest_priority_task){
+    if (currentlyRunning == highest_priority_task){
       return;
     }
     else{
       YKCtxSwCount = YKCtxSwCount + 1;	// Switching context one more time
-      YKCurrentlyExecuting = highest_priority_task;      
+      TKCurrentlyRunning = highest_priority_task;      
       if(save_flag){
-        YKDispatcherSave(&(current_priority->stackptr),&(current_priority->ss, highest_priotity_task->stackptr, highest_priority_task->ss);
+        YKDispatcherSave(&(currentlyRunning->stackptr),&(currentlyRunning->ss, highest_priotity_task->stackptr, highest_priority_task->ss);
       }
       else{
         YKDispatcherNSave((int **) 1,(int ** ) 1, highest_priotity_task->stackptr, highest_priority_task->ss);
