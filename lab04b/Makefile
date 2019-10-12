@@ -9,7 +9,7 @@ myinth.s:	myinth.c
 		c86 -g myinth.i myinth.s
     
 
-lab4b_app.s
+lab4b_app.s:
 		cpp lab4b_app.c lab4b_app.i
 		c86 -g lab4b_app.i lab4b_app.s
 		
