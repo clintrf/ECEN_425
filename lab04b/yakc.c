@@ -19,7 +19,7 @@ int idleStack[IDLE_STACK_SIZE];
 TCBptr YKRdyList;
 TCBptr YKSuspList;
 TCBptr YKAvailTCBList;		/* a list of available TCBs */
-TCB    YKTCBArray[MAXTASKS+1];	/* array to allocate all needed TCBs
+TCB    YKTCBArray[MAXTASKS+1];	/* array to allocate all needed TCBs*/
 
 void YKInitialize(void){    // Initializes all required kernel data structures
   YKCtxSwCount = 0;         // Set to 0
