@@ -32,7 +32,8 @@ void YKInitialize(void){    // Initializes all required kernel data structures
   
   /* code to construct singly linked available TCB list from initial array */ 
   YKAvailTCBList = &(YKTCBArray[0]);
-  for (int i = 0; i < MAXTASKS; i++)
+  int i
+  for (i = 0; i < MAXTASKS; i++)
 	  YKTCBArray[i].next = &(YKTCBArray[i+1]);
   YKTCBArray[MAXTASKS].next = NULL;
 	
@@ -44,7 +45,7 @@ void YKInitialize(void){    // Initializes all required kernel data structures
 
 void YKIdleTask(void){      // Kernel's idle task
   while(1){                 // From YAK Kernal instuction book
-    YKIdleCount++;          // 
+    YKIdleCount=YKIdleCount+1;          // 
     YKExitMutex();
   }                        
   /*Therefore, to prevent overflow, your while(1) loop in YKIdleTask should -
