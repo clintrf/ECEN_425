@@ -32,7 +32,7 @@ void YKInitialize(void){    // Initializes all required kernel data structures
   
   /* code to construct singly linked available TCB list from initial array */ 
   YKAvailTCBList = &(YKTCBArray[0]);
-  int i
+  int i;
   for (i = 0; i < MAXTASKS; i++)
 	  YKTCBArray[i].next = &(YKTCBArray[i+1]);
   YKTCBArray[MAXTASKS].next = NULL;
