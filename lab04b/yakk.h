@@ -1,7 +1,7 @@
 // yak.h file for the yak.c file
 
-#ifndef YAKH_H
-#define YAKH_H
+#ifndef YAKK_H
+#define YAKK_H
 
 
 #define HIGH 1
