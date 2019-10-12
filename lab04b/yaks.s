@@ -13,21 +13,15 @@ YKExitMutex:                    ; Enables Interrupts
 ;YKDispatcher:   		; Original Dispatcher?
 	
 YKDispatcherNSave:		; Dispatcher that  doesn't saves to mem/stack?
-	mov BX, [YKRdyList]
-	mov SP, word [BX]
+	cli
+	; Here is where we will deal with our parameters
+	push bp
+	mov bp, sp
 
-	;restore context
-	pop ES
-	pop DS
-	pop DI
-	pop SI
-	pop BP
-	pop DX
-	pop CX
-	pop BX
-	pop AX
+	mov ax, word [bp+4]			; getting the bool
+	test ax, ax					; if (ax == 0)
 
-	iret
+	jz	restoring_context		; If zero, we do NOT store context
 	
 YKDispatcherSave:   		; Dispatcher that saves to mem/stack
 	cli
