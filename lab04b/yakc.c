@@ -22,17 +22,18 @@ TCBptr YKAvailTCBList;		/* a list of available TCBs */
 TCB    YKTCBArray[MAXTASKS+1];	/* array to allocate all needed TCBs*/
 
 void YKInitialize(void){    // Initializes all required kernel data structures
+  int i;
   YKCtxSwCount = 0;         // Set to 0
   YKIdleCount = 0;          // Set to 0
   //YKTickNum = 0;            // Set to 0
   run_flag = 0;           // No proccesses are running at initialization
   TKCurrentlyRunning = 0;
   
-  YKEntermutex();           // Turn on interupts at initialization
+  	YKEntermutex();           // Turn on interupts at initialization
   
   /* code to construct singly linked available TCB list from initial array */ 
   YKAvailTCBList = &(YKTCBArray[0]);
-  int i;
+  
   for (i = 0; i < MAXTASKS; i++)
 	  YKTCBArray[i].next = &(YKTCBArray[i+1]);
   YKTCBArray[MAXTASKS].next = NULL;
