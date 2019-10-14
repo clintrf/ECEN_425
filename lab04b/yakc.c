@@ -127,10 +127,11 @@ void YKScheduler(int save_flag){     // Determines the highest priority ready ta
   TKCurrentlyRunning = highest_priority_task;   
  
   if(!save_flag){
-    YKDispatcher(NSAVE,(int **) 1,(int ** ) 1, highest_priority_task->stackptr, highest_priority_task->ss);
+    YKDispatcherNSave(highest_priority_task->stackptr, highest_priority_task->ss);
   }
   else{
-    YKDispatcher(SAVE,&(currentlyRunning->stackptr),&(currentlyRunning->ss), highest_priority_task->stackptr, highest_priority_task->ss);
+    YKDispatcherSAVE(&(currentlyRunning->stackptr),&(currentlyRunning->ss), 
+		     highest_priority_task->stackptr, highest_priority_task->ss);
 
   }
 }
