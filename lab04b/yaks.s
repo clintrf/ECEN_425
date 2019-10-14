@@ -10,20 +10,18 @@ YKExitMutex:                    ; Enables Interrupts
 	ret
 
 
-;YKDispatcher:   		; Original Dispatcher?
-
-YKDispatcherSave:   		; Dispatcher that saves to mem/stack
+YKDispatcher:   		; Dispatcher that saves to mem/stack
 	cli
 	push bp
 	mov bp, sp
-
-	mov ax, word [bp+4]			; getting the bool
-	test ax, ax					; if (ax == 0)
 	
-	jz	restoring_context		; If zero, we do NOT store contex
+						
+	mov ax, word [bp+4]			; getting first arg(the save flag)
+	test ax, ax				; if (flag == 0)
+	jz	restore				; If zero, skip the save
 	
 	
-storing_context:
+store:
 	mov AX, [bp+2]	; The return address.
 	pop bp
 	add sp, 2
@@ -46,31 +44,23 @@ storing_context:
 	mov bp, sp
 	add bp, 20
 
-	; Now we just need to store SS and SP in the proper TCB. (these are parameters)
-	; 2nd argument, int * save_sp = [bp+6]
-	mov si, word [bp+6]
+	mov si, word [bp+6] 			; getting second arg (sp)
 	mov word [si], sp
-;	mov word [bp+6], SP
-	; 3rd argument, int * save_ss = [bp+8]
-	mov si, word [bp+8]
-	mov word [si], ss
-;	mov word [bp+8], SS
-
-
-	mov ss, word[bp+12]
-	mov sp, word[bp+10]
-	jmp real_restoring_context
 	
-restoring_context:
-;	sp is still pointing at the return address.
+	mov si, word [bp+8]			; getting third arg (ss)
+	mov word [si], ss
 
-	; Now we just need to restore SS and SP from the proper TCB. (parameters)
-	; 5th argument, int * restore_ss = [bp+12]
-	; 4th argument, int * restore_sp = [bp+10]
-	mov ss, word[bp+12]
-	mov sp, word[bp+10]
+	mov sp, word[bp+10]			; getting forth arg
+	mov ss, word[bp+12]			; getting fifth arg	
+	
+	jmp final_restore			; Jump to final restore
+	
+restore:
+	mov sp, word[bp+10]			; getting forth arg
+	mov ss, word[bp+12]			; getting fifth arg	
+	
 
-real_restoring_context:
+final_restore:
 	pop ES
 	pop DS
 	pop DI
@@ -80,5 +70,5 @@ real_restoring_context:
 	pop CX
 	pop BX
 	pop AX
-	iret			; restores CS, IP, and flags. Starts execution at ENDING_IP
+	iret			
 	
