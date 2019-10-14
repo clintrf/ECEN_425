@@ -21,9 +21,9 @@ YKDispatcherNSave:		; Dispatcher that  doesn't saves to mem/stack?
 	mov ax, word [bp+4]			; getting the bool
 	test ax, ax					; if (ax == 0)
 
-	jz	restoring_context		; If zero, we do NOT store context
+	jz	restoring_contextN		; If zero, we do NOT store context
 	
-	storing_context:
+	storing_contextN:
 	mov AX, [bp+2]	; The return address.
 	pop bp
 	add sp, 2
@@ -62,9 +62,9 @@ YKDispatcherNSave:		; Dispatcher that  doesn't saves to mem/stack?
 
 	mov ss, word[bp+12]
 	mov sp, word[bp+10]
-	jmp real_restoring_context
+	jmp real_restoring_contextN
 	
-restoring_context:
+restoring_contextN:
 ;	sp is still pointing at the return address.
 
 	; Now we just need to restore SS and SP from the proper TCB. (parameters)
@@ -73,7 +73,7 @@ restoring_context:
 	mov ss, word[bp+12]
 	mov sp, word[bp+10]
 
-real_restoring_context:
+real_restoring_contextN:
 	pop ES
 	pop DS
 	pop DI
