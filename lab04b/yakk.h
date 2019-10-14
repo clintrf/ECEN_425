@@ -11,7 +11,7 @@
 #define NSAVE 0 
 
 #define NULL 0
-#define MAXTASKS 3		/* count of user tasks */
+#define MAXTASKS 4		/* count of user tasks */
 
 
 #define TASK_RUNNING 1
@@ -31,11 +31,6 @@ extern unsigned int YKCtxSwCount;            // must be incremented each time a 
 extern unsigned int YKIdleCount;             // Must be incremented by the idle task in its while(1) loop.
 //unsigned int YKTickNum;             // Must be incremented each time the kernel's tick handler runs. For dif lab
 
-extern unsigned int run_flag;
-
-extern unsigned int current_priority;
-
-extern int idleStack[IDLE_STACK_SIZE];
 
 /******************** Global Structs ********************/
 
