@@ -11,7 +11,7 @@
 #define NSAVE 0 
 
 #define NULL 0
-#define MAXTASKS 5		/* count of user tasks */
+#define MAXTASKS 4		/* count of user tasks */
 
 
 #define TASK_RUNNING 1
