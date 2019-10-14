@@ -131,20 +131,20 @@ void YKRun(void){                 // Starts actual execution of user code
 void YKScheduler(unsigned int save_flag){     // Determines the highest priority ready task
   TCBptr highest_priority_task = YKRdyList;
   TCBptr currentlyRunning = TKCurrentlyRunning;  
-  if(run_flag){                               // NOT redundant! Tell the kernel to begin for first time
-    if (currentlyRunning == highest_priority_task){
-      return;
-    }
-    else{
-      YKCtxSwCount = YKCtxSwCount + 1;	// Switching context one more time
-      TKCurrentlyRunning = highest_priority_task;      
-      if(save_flag){
-        YKDispatcherSave(save_flag,&(currentlyRunning->stackptr),&(currentlyRunning->ss), highest_priority_task->stackptr, highest_priority_task->ss);
-      }
-      else{
-        YKDispatcherNSave(save_flag,(int **) 1,(int ** ) 1, highest_priority_task->stackptr, highest_priority_task->ss);
-      }
-    }
+  if(!run_flag){                               // NOT redundant! Tell the kernel to begin for first time
+    return;	  
+  }
+  if (currentlyRunning == highest_priority_task){
+    return;
+  }
+  YKCtxSwCount = YKCtxSwCount + 1;	// Switching context one more time
+  TKCurrentlyRunning = highest_priority_task;      
+ 
+  if(save_flag){
+    YKDispatcherSave(1,&(currentlyRunning->stackptr),&(currentlyRunning->ss), highest_priority_task->stackptr, highest_priority_task->ss);
+  }
+  else{
+    YKDispatcherNSave(0,(int **) 1,(int ** ) 1, highest_priority_task->stackptr, highest_priority_task->ss);
   }
 }
 
