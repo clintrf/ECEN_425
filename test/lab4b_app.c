@@ -74,6 +74,8 @@ void CTask(void)
     {
 	printString("Executing in task C.\n");
         for(count = 0; count < 5000; count++);
+	return;
+	return;
     }
 }
 
