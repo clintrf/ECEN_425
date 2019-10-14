@@ -97,5 +97,5 @@ void YKDispatcherNSave(int saveFlag,int ** save_sp, int ** save_ss, int *restore
 //void YKEventSet(YKEVENT *event, unsigned eventMask)
 
 
-#endif // YAKH_H
+#endif // YAKK_H
 //void YKEventReset(YKEVENT *event, unsigned eventMask)
