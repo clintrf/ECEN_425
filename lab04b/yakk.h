@@ -65,7 +65,8 @@ void YKScheduler(int save_flag);   // Pass Scheduler a flag to know if it should
 /******************** Functions in yaks.s ********************/
 void YKEnterMutex(void);              // Disables interrupts
 void YKExitMutex(void);               // Enables interrupts
-void YKDispatcher(int saveFlag, int ** save_sp, int ** save_ss, int *restore_sp, int * restore_ss);          
+void YKDispatcherNSave(int *restore_sp, int * restore_ss); 
+void YKDispatcherSave(int ** save_sp, int ** save_ss, int *restore_sp, int * restore_ss); 
 
 
 
