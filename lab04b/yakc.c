@@ -2,20 +2,12 @@
 #include "yakk.h"
 
 
-
-
-
 /******************** Global Variables ********************/
 unsigned int YKCtxSwCount;            // must be incremented each time a context switch occurs, defined as - 
                                       //  - the dispatching of a task other than the task that ran most recently.
 unsigned int YKIdleCount;             // Must be incremented by the idle task in its while(1) loop.
-//unsigned int YKTickNum;             // Must be incremented each time the kernel's tick handler runs. For dif lab
-
-unsigned int YKISRCallDepth;
-
 char run_flag = 0;
 
-TCBptr TKCurrentlyRunning;
 int idleStack[IDLE_STACK_SIZE];
 
 TCBptr YKRdyList;
@@ -23,14 +15,16 @@ TCBptr YKSuspList;
 TCBptr YKAvailTCBList;		/* a list of available TCBs */
 TCB    YKTCBArray[MAXTASKS+1];	/* array to allocate all needed TCBs*/
 
+TCBptr TKCurrentlyRunning;
+
+
+/******************** Function Def ********************/
+
 void YKInitialize(void){    // Initializes all required kernel data structures
   int i;
   YKCtxSwCount = 0;         // Set to 0
   YKIdleCount = 0;          // Set to 0
-  //YKTickNum = 0;            // Set to 0
-  //run_flag = 0;           // No proccesses are running at initialization
-  YKISRCallDepth = 0;
-  TKCurrentlyRunning = 0;
+  TKCurrentlyRunning = 0;   // Set to 0
   
   YKEnterMutex();           // Turn on interupts at initialization
   
@@ -41,9 +35,7 @@ void YKInitialize(void){    // Initializes all required kernel data structures
 	  YKTCBArray[i].next = &(YKTCBArray[i+1]);
   YKTCBArray[MAXTASKS].next = NULL;
 	
-  printString("before new task...\n");
-	
-  YKNewTask(YKIdleTask, (void*)&idleStack[IDLE_STACK_SIZE], 100);
+  YKNewTask(YKIdleTask, (void*)&idleStack[IDLE_STACK_SIZE], LOWEST_PRIORITY);
   //call YKIdleTask         // From YAK Kernel instruction book
   //^ could call YKIdleTask as YKNewTask()
   
@@ -55,12 +47,6 @@ void YKIdleTask(void){      // Kernel's idle task
     YKIdleCount=YKIdleCount+1;          // 
     YKExitMutex();
   }                        
-  /*Therefore, to prevent overflow, your while(1) loop in YKIdleTask should -
-  - take at least 4 instructions per iteration to prevent overflow of YKIdlecount -
-  - at the default tick rate. Ideally, you want YKIdleTask to take exactly 4 -
-  - instructions per iteration. After writing your idle task, disassemble it -
-  - to make sure its while(1) loop is at least 4 instructions per iteration -
-  - (including the jmp instruction). */
 }
 
 void YKNewTask( void (*task)(void), void *taskStack, unsigned char priority){    // Creates a new task
@@ -71,17 +57,14 @@ void YKNewTask( void (*task)(void), void *taskStack, unsigned char priority){   
   tmp = YKAvailTCBList;
   YKAvailTCBList = tmp->next;
   
-  //TCB newTCB;
-  //TCBInit(&newTCB, taskStack, priority, DEFAULT_DELAY, NULL, YKTCBArray[i]); // Inits TCB
-	
-  tmp->delay = DEFAULT_DELAY;
+  // Set the struct var definitions
   tmp->priority = priority;
-  //tmp2 = &newTCB;
+  tmp->delay = DEFAULT_DELAY;
+  
   
   YKEnterMutex();             //Disable interupts
-  /* code to insert an entry in doubly linked ready list sorted by
-   priority numbers (lowest number first).  tmp points to TCB
-   to be inserted */ 
+
+  // Code taken from the example code
   if (YKRdyList == NULL){	/* is this first insertion? */
     YKRdyList = tmp;
     tmp->next = NULL;
@@ -91,11 +74,6 @@ void YKNewTask( void (*task)(void), void *taskStack, unsigned char priority){   
     tmp2 = YKRdyList;	/* insert in sorted ready list */
     while (tmp2->priority < tmp->priority){
       tmp2 = tmp2->next;	/* assumes idle task is at end */
-//       printString("looking for Idle \n");
-// 	 printInt((int) &(tmp2->priority));
-// 	 printString(" ");
-// 	 printInt((int) &(tmp->priority));
-// 	 printString("\n");
     }
     if (tmp2->prev == NULL)	/* insert in list before tmp2 */
       YKRdyList = tmp;
@@ -106,23 +84,17 @@ void YKNewTask( void (*task)(void), void *taskStack, unsigned char priority){   
     tmp2->prev = tmp;
   }
 
-  YKExitMutex();              // starts interrupts
-  
-  //YKAvailTCBList = tmp2->next;  // sets YKAvailTCBList to next open spot
-  
-  //current_priority = tmp2->priority;
+  YKExitMutex();              		// starts interrupts
 	
-  tmp->stackptr = taskStack; // from function call
-	
-  printString("Address for new task's SP is "); 
-  printInt((int) &(tmp->stackptr));
-  printString("\n");
-	
+  // Saving the stack pointer
+  tmp->stackptr = taskStack; 		// from function call
   tmp->ss = 0;
+	
+  // storeing the context into stack
   tmp->stackptr		= tmp->stackptr - 11;
-  *(tmp->stackptr+11)	= 0x200; //flag interupt
+  *(tmp->stackptr+11)	= 0x200; 	//flag interupt
   *(tmp->stackptr+10)	= 0;		// CS
-  *(tmp->stackptr+9)	= (int)task;		// IP
+  *(tmp->stackptr+9)	= (int)task;	// IP
   *(tmp->stackptr+8)	= 0;		// AX
   *(tmp->stackptr+7)	= 0;		// BX
   *(tmp->stackptr+6)	= 0;		// CX
@@ -133,36 +105,32 @@ void YKNewTask( void (*task)(void), void *taskStack, unsigned char priority){   
   *(tmp->stackptr+1)	= 0;		// DS
   *(tmp->stackptr+0)	= 0;		// ES	
 	
-  printString("before Scheduler...\n");
-	
-  YKScheduler(1);          // Save current block of mem
+  YKScheduler(SAVE);          // Save current block of mem
   
 }
 
 void YKRun(void){                 // Starts actual execution of user code
-  run_flag = 1;                // Start the Scheduler for the very first time
-  YKScheduler(0);             // run the top proccess 
+  run_flag = HIGH;                // Start the Scheduler for the very first time
+  YKScheduler(NSAVE);             // run the top proccess 
 }
 
 void YKScheduler(int save_flag){     // Determines the highest priority ready task
   TCBptr highest_priority_task = YKRdyList;
   TCBptr currentlyRunning = TKCurrentlyRunning;  
-  if(!run_flag){                               // NOT redundant! Tell the kernel to begin for first time
+	
+  if(!run_flag || (TKCurrentlyRunning == highest_priority_task)){                               // NOT redundant! Tell the kernel to begin for first time
     return;	  
   }
-  if (TKCurrentlyRunning == highest_priority_task){
-    return;
-  }
-  YKCtxSwCount = YKCtxSwCount + 1;	// Switching context one more time
+  
+  // update YKCtxSwCount
+  YKCtxSwCount = YKCtxSwCount + 1;
   TKCurrentlyRunning = highest_priority_task;   
-	
-  printString("before dipatcher...\n");
  
   if(!save_flag){
-    YKDispatcherSave(0,(int **) 1,(int ** ) 1, highest_priority_task->stackptr, highest_priority_task->ss);
+    YKDispatcher(NSAVE,(int **) 1,(int ** ) 1, highest_priority_task->stackptr, highest_priority_task->ss);
   }
   else{
-    YKDispatcherSave(save_flag,&(currentlyRunning->stackptr),&(currentlyRunning->ss), highest_priority_task->stackptr, highest_priority_task->ss);
+    YKDispatcher(SAVE,&(currentlyRunning->stackptr),&(currentlyRunning->ss), highest_priority_task->stackptr, highest_priority_task->ss);
 
   }
 }
