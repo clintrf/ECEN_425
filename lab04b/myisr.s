@@ -9,49 +9,38 @@
 ;	; - saved on the stack by the processor when the interrupt occurred. This effectively restores execution to the point where the interrupt occurred.
 
 
-isr_reset:
-	; save context
-	; enable interrupts for higher priority IRQ
-	; run interrupt handler
-
-	; disable interrupts
-	; sent EOI to PIC
-	; restore context
-
-	; But we don't have to do any of that, because we ARE the highest-priority interrupt
-	; And it will end the program. So no saving context, no enabling interrupts, 
-	; and no restoring context.
+RESET:
 	call c_reset_handler
-	iret	; This should not even happen.
+	pop word[bp+20]
 
+KEY:
 
-
-isr_keypress:
-		; Save context
+	; save reg
 	push ax
 	push bx
 	push cx
 	push dx
+	
 	push si
 	push di
 	push bp
-	push es
+	push es 
 	push ds
-
-		; Enable interrupts for higher-priority 
+	
+	; enable interrupts for higher priority IRQs ? 
 	sti
-
-		; Run interrupt handler
+	
+	; run inte
 	call c_key_handler
-
-		; disable interrupts
+	
+	; disable interrupts ?
 	cli
-
-		;send EOI to PIC
-	mov	al, 0x20	; Load nonspecific EOI value (0x20) into register al
-	out	0x20, al	; Write EOI to PIC (port 0x20)
-
-		; Restore context
+	
+	; send eoi to pic
+	mov al, 0x20
+	out 0x20, al
+	
+	;restore reg
 	pop ds
 	pop es
 	pop bp
@@ -61,47 +50,46 @@ isr_keypress:
 	pop cx
 	pop bx
 	pop ax
+	
+	; execute iret
+	iret 
 
-		; Execute IRET
-	iret
-
-
-
-isr_tick:
-		; Save context
+TICK:
+	; save reg
 	push ax
 	push bx
 	push cx
 	push dx
+	
 	push si
 	push di
 	push bp
-	push es
+	push es 
 	push ds
-
-		; Enable interrupts for higher-priority 
+	
+	; enable interrupts for higher priority IRQs ? 
 	sti
-
-		; Run interrupt handler
+	
+	; run interrupt handler ? I think this is the c file
 	call c_tick_handler
-
-		; disable interrupts
+	
+	; disable interrupts ?
 	cli
-
-		;send EOI to PIC
-	mov	al, 0x20	; Load nonspecific EOI value (0x20) into register al
-	out	0x20, al	; Write EOI to PIC (port 0x20)
-
-		; Restore context
+	
+	; send eoi to pic
+	mov al, 0x20
+	out 0x20, al
+	
+	;restore reg
 	pop ds
 	pop es
 	pop bp
-	pop di
+	pop di	
 	pop si
 	pop dx
 	pop cx
 	pop bx
 	pop ax
-
-		; Execute IRET
-	iret
+	
+	; execute iret
+	iret 
