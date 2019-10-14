@@ -11,7 +11,9 @@ unsigned int YKCtxSwCount;            // must be incremented each time a context
 unsigned int YKIdleCount;             // Must be incremented by the idle task in its while(1) loop.
 //unsigned int YKTickNum;             // Must be incremented each time the kernel's tick handler runs. For dif lab
 
-unsigned int run_flag;
+unsigned int YKISRCallDepth;
+
+char run_flag = 0;
 
 TCBptr TKCurrentlyRunning;
 int idleStack[IDLE_STACK_SIZE];
@@ -26,10 +28,11 @@ void YKInitialize(void){    // Initializes all required kernel data structures
   YKCtxSwCount = 0;         // Set to 0
   YKIdleCount = 0;          // Set to 0
   //YKTickNum = 0;            // Set to 0
-  run_flag = 0;           // No proccesses are running at initialization
+  //run_flag = 0;           // No proccesses are running at initialization
+  YKISRCallDepth = 0;
   TKCurrentlyRunning = 0;
   
-  	YKEnterMutex();           // Turn on interupts at initialization
+  YKEnterMutex();           // Turn on interupts at initialization
   
   /* code to construct singly linked available TCB list from initial array */ 
   YKAvailTCBList = &(YKTCBArray[0]);
@@ -132,22 +135,22 @@ void YKNewTask( void (*task)(void), void *taskStack, unsigned char priority){   
 	
   printString("before Scheduler...\n");
 	
-  YKScheduler(SAVE);          // Save current block of mem
+  YKScheduler(1);          // Save current block of mem
   
 }
 
 void YKRun(void){                 // Starts actual execution of user code
-  run_flag = HIGH;                // Start the Scheduler for the very first time
-  YKScheduler(NSAVE);             // run the top proccess 
+  run_flag = 1;                // Start the Scheduler for the very first time
+  YKScheduler(0);             // run the top proccess 
 }
 
-void YKScheduler(unsigned int save_flag){     // Determines the highest priority ready task
+void YKScheduler(int save_flag){     // Determines the highest priority ready task
   TCBptr highest_priority_task = YKRdyList;
   TCBptr currentlyRunning = TKCurrentlyRunning;  
   if(!run_flag){                               // NOT redundant! Tell the kernel to begin for first time
     return;	  
   }
-  if (currentlyRunning == highest_priority_task){
+  if (TKCurrentlyRunning == highest_priority_task){
     return;
   }
   YKCtxSwCount = YKCtxSwCount + 1;	// Switching context one more time
@@ -155,11 +158,12 @@ void YKScheduler(unsigned int save_flag){     // Determines the highest priority
 	
   printString("before dipatcher...\n");
  
-  if(save_flag){
-    YKDispatcherSave(1,&(currentlyRunning->stackptr),&(currentlyRunning->ss), highest_priority_task->stackptr, highest_priority_task->ss);
+  if(!save_flag){
+    YKDispatcherSave(0,(int **) 1,(int ** ) 1, highest_priority_task->stackptr, highest_priority_task->ss);
   }
   else{
-    YKDispatcherSave(0,(int **) 1,(int ** ) 1, highest_priority_task->stackptr, highest_priority_task->ss);
+    YKDispatcherSave(save_flag,&(currentlyRunning->stackptr),&(currentlyRunning->ss), highest_priority_task->stackptr, highest_priority_task->ss);
+
   }
 }
 
