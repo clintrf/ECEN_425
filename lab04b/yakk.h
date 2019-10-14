@@ -11,7 +11,7 @@
 #define NSAVE 0 
 
 #define NULL 0
-#define MAXTASKS 4		/* count of user tasks */
+#define MAXTASKS 3		/* count of user tasks */
 
 
 #define TASK_RUNNING 1
@@ -29,7 +29,6 @@
 extern unsigned int YKCtxSwCount;            // must be incremented each time a context switch occurs, defined as - 
                                       //  - the dispatching of a task other than the task that ran most recently.
 extern unsigned int YKIdleCount;             // Must be incremented by the idle task in its while(1) loop.
-//unsigned int YKTickNum;             // Must be incremented each time the kernel's tick handler runs. For dif lab
 
 
 /******************** Global Structs ********************/
@@ -55,24 +54,18 @@ extern TCB    YKTCBArray[MAXTASKS+1];	/* array to allocate all needed TCBs
 
 /******************** Functions in yakc.c ********************/
 void YKInitialize(void);                    // Initializes all required kernel data structures
-void YKEnterMutex(void);              // Disables interrupts
-void YKExitMutex(void);               // Enables interrupts
-
 void YKIdleTask(void);                      // Kernel's idle task
 void YKNewTask(void (* task)(void), void *taskStack, unsigned char priority);                // Creates a new task
 void YKRun(void);                           // Starts actual execution of user code
 //void YKScheduler(void);                   // original Scheduler
-void YKScheduler( int save_flag);   // Pass Scheduler a flag to know if it should save
+void YKScheduler(int save_flag);   // Pass Scheduler a flag to know if it should save
 
 
 
 /******************** Functions in yaks.s ********************/
-//void YKDispatcher(void);              // Begins or resumes execution of the next task -
-                                        // - Split our dispature into a save dispatcher -
-                                        // - and a non save dispatcher
-void YKDispatcherSave(int saveFlag, int ** save_sp, int ** save_ss, int *restore_sp, int * restore_ss);                // Dispatcher that saves to mem/stack?
-void YKDispatcherNSave(int saveFlag,int ** save_sp, int ** save_ss, int *restore_sp, int * restore_ss);             // Dispatcher that  doesn't saves to mem/stack?
-
+void YKEnterMutex(void);              // Disables interrupts
+void YKExitMutex(void);               // Enables interrupts
+void YKDispatcher(int saveFlag, int ** save_sp, int ** save_ss, int *restore_sp, int * restore_ss);          
 
 
 
@@ -92,5 +85,5 @@ void YKDispatcherNSave(int saveFlag,int ** save_sp, int ** save_ss, int *restore
 //void YKEventSet(YKEVENT *event, unsigned eventMask)
 
 
-#endif // YAKK_H
-//void YKEventReset(YKEVENT *event, unsigned eventMask)
+#endif
+
