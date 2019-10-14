@@ -29,7 +29,7 @@ void YKInitialize(void){    // Initializes all required kernel data structures
   run_flag = 0;           // No proccesses are running at initialization
   TKCurrentlyRunning = 0;
   
-  	YKEntermutex();           // Turn on interupts at initialization
+  	YKEnterMutex();           // Turn on interupts at initialization
   
   /* code to construct singly linked available TCB list from initial array */ 
   YKAvailTCBList = &(YKTCBArray[0]);
