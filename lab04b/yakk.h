@@ -62,7 +62,7 @@ void YKIdleTask(void);                      // Kernel's idle task
 void YKNewTask(void (* task)(void), void *taskStack, unsigned char priority);                // Creates a new task
 void YKRun(void);                           // Starts actual execution of user code
 //void YKScheduler(void);                   // original Scheduler
-void YKScheduler(unsigned int save_flag);   // Pass Scheduler a flag to know if it should save
+void YKScheduler( int save_flag);   // Pass Scheduler a flag to know if it should save
 
 
 
