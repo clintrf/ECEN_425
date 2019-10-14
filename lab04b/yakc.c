@@ -118,7 +118,9 @@ void YKNewTask( void (*task)(void), void *taskStack, unsigned char priority){   
   *(tmp->stackptr+2)	= 0;		// DI
   *(tmp->stackptr+1)	= 0;		// DS
   *(tmp->stackptr+0)	= 0;		// ES	
-  
+	
+  printString("before Scheduler...\n");
+	
   YKScheduler(SAVE);          // Save current block of mem
   
 }
@@ -138,7 +140,9 @@ void YKScheduler(unsigned int save_flag){     // Determines the highest priority
     return;
   }
   YKCtxSwCount = YKCtxSwCount + 1;	// Switching context one more time
-  TKCurrentlyRunning = highest_priority_task;      
+  TKCurrentlyRunning = highest_priority_task;   
+	
+  printString("before dipatcher...\n");
  
   if(save_flag){
     YKDispatcherSave(1,&(currentlyRunning->stackptr),&(currentlyRunning->ss), highest_priority_task->stackptr, highest_priority_task->ss);
