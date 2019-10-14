@@ -40,7 +40,7 @@ void YKInitialize(void){    // Initializes all required kernel data structures
 	
   printString("before new task...\n");
 	
-  YKNewTask(YKIdleTask, (void*)&idleStack[IDLE_STACK_SIZE], LOWEST_PRIORITY);
+  YKNewTask(YKIdleTask, (void*)&idleStack[IDLE_STACK_SIZE], 100);
   //call YKIdleTask         // From YAK Kernel instruction book
   //^ could call YKIdleTask as YKNewTask()
   
@@ -89,7 +89,7 @@ void YKNewTask( void (*task)(void), void *taskStack, unsigned char priority){   
     while (tmp2->priority < tmp->priority){
       tmp2 = tmp2->next;	/* assumes idle task is at end */
       printString("looking for Idle \n");
-	    printInt((int) &(tmp2->priority));
+	    printInt((int) (tmp2->priority));
 	    printString(" ");
 	    printInt((int) &(tmp->priority));
 	    printString("/n");
