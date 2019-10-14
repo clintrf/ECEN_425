@@ -36,7 +36,5 @@ void c_key_handler(){
 
 void delay(){
 	int i=0;
-	for(i = 0; i < DELAY; i++){
-		;// delay for DELAY cycles
-	}
+	for(i = 0; i < DELAY; i++){}
 }
