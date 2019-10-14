@@ -21,7 +21,7 @@ isr_reset:
 	; But we don't have to do any of that, because we ARE the highest-priority interrupt
 	; And it will end the program. So no saving context, no enabling interrupts, 
 	; and no restoring context.
-	call c_isr_reset
+	call c_reset_handler
 	iret	; This should not even happen.
 
 
@@ -42,7 +42,7 @@ isr_keypress:
 	sti
 
 		; Run interrupt handler
-	call c_isr_keypress
+	call c_key_handler
 
 		; disable interrupts
 	cli
@@ -83,7 +83,7 @@ isr_tick:
 	sti
 
 		; Run interrupt handler
-	call c_isr_tick
+	call c_tick_handler
 
 		; disable interrupts
 	cli
