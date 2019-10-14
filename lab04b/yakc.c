@@ -88,7 +88,8 @@ void YKNewTask( void (*task)(void), void *taskStack, unsigned char priority){   
     tmp2 = YKRdyList;	/* insert in sorted ready list */
     while (tmp2->priority < tmp->priority){
       tmp2 = tmp2->next;	/* assumes idle task is at end */
-      printString("looking for Idle \n"); 
+      printString("looking for Idle \n");
+      printf("%d , %d " , {tmp2->priority, tmp->priority})
     }
     if (tmp2->prev == NULL)	/* insert in list before tmp2 */
       YKRdyList = tmp;
