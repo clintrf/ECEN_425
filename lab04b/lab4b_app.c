@@ -21,7 +21,6 @@ void CTask(void);
 
 void main(void)
 {
-    printString("init YAK \n");
     YKInitialize();
     
     printString("Creating task A...\n");
