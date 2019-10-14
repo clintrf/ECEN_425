@@ -67,6 +67,7 @@ void CTask(void)
     while (1)
     {
 	printString("Executing in task C.\n");
-        for(count = 0; count < 5000; count++);
+        for(count = 0; count < 1000; count++);
+	return;
     }
 }
