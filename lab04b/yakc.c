@@ -38,9 +38,12 @@ void YKInitialize(void){    // Initializes all required kernel data structures
 	  YKTCBArray[i].next = &(YKTCBArray[i+1]);
   YKTCBArray[MAXTASKS].next = NULL;
 	
-  YKNewTask(YKIdleTask, (void*)&idleStack, LOWEST_PRIORITY);
+  printString("before new task...\n");
+	
+  YKNewTask(YKIdleTask, (void*)&idleStack[IDLE_STACK_SIZE], LOWEST_PRIORITY);
   //call YKIdleTask         // From YAK Kernel instruction book
   //^ could call YKIdleTask as YKNewTask()
+  
   
 }
 
