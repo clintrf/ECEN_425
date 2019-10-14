@@ -1,3 +1,5 @@
+# Make file for Lab 4b
+
 lab4b.bin:	lab4bfinal.s
 		nasm lab4bfinal.s -o lab4b.bin -l lab4b.lst
 
@@ -17,5 +19,7 @@ yakc.s:		yakc.c yakk.h
 		c86 -g yakc.i yakc.s
 
 clean:
-		rm lab4b.bin lab4b.lst lab4bfinal.s myinth.s myinth.i \
-		yakc.s yakc.i lab4b_app.s lab4b_app.i
+		rm lab4b.bin lab4b.lst lab4bfinal.s \
+		myinth.s myinth.i \
+		yakc.s yakc.i \
+		lab4b_app.s lab4b_app.i
