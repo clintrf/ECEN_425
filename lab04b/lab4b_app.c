@@ -70,6 +70,6 @@ void CTask(void)
       for(count = 0; count < 5000; count++){
         ; 
       }
-      //return;
+      return;
     }
 }
