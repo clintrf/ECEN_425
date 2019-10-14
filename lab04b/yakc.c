@@ -86,8 +86,10 @@ void YKNewTask( void (*task)(void), void *taskStack, unsigned char priority){   
   }
   else{			/* not first insertion */
     tmp2 = YKRdyList;	/* insert in sorted ready list */
-    while (tmp2->priority < tmp->priority)
+    while (tmp2->priority < tmp->priority){
       tmp2 = tmp2->next;	/* assumes idle task is at end */
+      printString("looking for Idle \n"); 
+    }
     if (tmp2->prev == NULL)	/* insert in list before tmp2 */
       YKRdyList = tmp;
     else
@@ -104,6 +106,11 @@ void YKNewTask( void (*task)(void), void *taskStack, unsigned char priority){   
   //current_priority = tmp2->priority;
 	
   tmp->stackptr = taskStack; // from function call
+	
+  printString("Address for new task's SP is "); 
+  printInt((int) &(tmp->stackptr));
+  printString("\n");
+	
   tmp->ss = 0;
   tmp->stackptr		= tmp->stackptr - 11;
   *(tmp->stackptr+11)	= 0x200; //flag interupt
