@@ -53,14 +53,12 @@ store:
 	mov sp, word[bp+10]			; getting forth arg
 	mov ss, word[bp+12]			; getting fifth arg	
 	
-	jmp final_restore			; Jump to final restore
 	
+
 restore:
 	mov sp, word[bp+10]			; getting forth arg
 	mov ss, word[bp+12]			; getting fifth arg	
 	
-
-final_restore:
 	pop ES
 	pop DS
 	pop DI
