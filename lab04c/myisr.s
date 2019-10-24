@@ -10,7 +10,9 @@
 
 
 RESET:
+	call YKEnterISR
 	call c_reset_handler
+	call YKExitISR ; TODO: not sure if this should be called before or after the next instruction
 	pop word[bp+20]
 
 KEY:
@@ -27,6 +29,9 @@ KEY:
 	push es 
 	push ds
 	
+	; Inform OS that ISR has begun execution
+	call YKEnterISR
+
 	; enable interrupts for higher priority IRQs ? 
 	sti
 	
@@ -40,6 +45,9 @@ KEY:
 	mov al, 0x20
 	out 0x20, al
 	
+	; Inform OS that ISR has finished execution
+	call YKExitISR
+
 	;restore reg
 	pop ds
 	pop es
@@ -67,6 +75,9 @@ TICK:
 	push es 
 	push ds
 	
+	; Inform OS that ISR has started execution
+	call YKEnterISR
+
 	; enable interrupts for higher priority IRQs ? 
 	sti
 	
@@ -80,6 +91,9 @@ TICK:
 	mov al, 0x20
 	out 0x20, al
 	
+	; Inform OS that ISR has finished execution
+	call YKExitISR
+
 	;restore reg
 	pop ds
 	pop es
