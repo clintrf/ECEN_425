@@ -165,7 +165,7 @@ void YKDelayTask(unsigned count){
   YKDelayList = ready;
   ready->prev = NULL;
   if(ready->next != NULL){ // if not empty
-    ready-next->prev=ready
+    ready->next->prev=ready;
   }
   ready->delay = count;
 	
@@ -199,7 +199,7 @@ void YKTickHandler(void){
   tempDelay = YKDelayList;
 	//While the delay is not finished, counter--; 
   while(tempDelay != NULL){
-    tempNext = tempDelay->next
+    tempNext = tempDelay->next;
     tempDelay->delay--;
     if(tempDelay->delay == 0){
       // Find ready task in delay list
@@ -228,7 +228,7 @@ void YKTickHandler(void){
       tempDelay->next = tempReady;
       tempReady->prev = tempDelay;
     }
-    tempDelayed = tempNext;
+    tempDelay = tempNext;
   }
   YKExitMutex();
 }
