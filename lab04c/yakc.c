@@ -183,11 +183,11 @@ void YKDelayTask(unsigned count){
 }
 
 void YKEnterISR(void){
-  YKISRDepth++;
+  YKISRDepth = YKISRDepth + 1;
 }
 
 void YKExitISR(void){
-  YKISRDepth--;
+  YKISRDepth = YKISRDepth - 1;
 	if(YKISRDepth == 0) {
 	printString("Exit nonsave\n\r");
     YKScheduler(NSAVE);
@@ -205,12 +205,12 @@ void YKTickHandler(void){
   TCBptr tempDelay, tempReady, tempNext;
 
   YKEnterMutex();
-  YKTickNum++; 
+  YKTickNum = YKTickNum + 1; 
   tempDelay = YKDelayList;
 	//While the delay is not finished, counter--; 
   while(tempDelay != NULL){
     tempNext = tempDelay->next;
-    tempDelay->delay--;
+    tempDelay->delay = tempDelay->delay - 1;
     if(tempDelay->delay == 0){
       // Find ready task in delay list
       if(tempDelay->prev == NULL){
