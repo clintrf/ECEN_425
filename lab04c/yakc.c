@@ -6,6 +6,8 @@
 unsigned int YKCtxSwCount;            // must be incremented each time a context switch occurs, defined as - 
                                       //  - the dispatching of a task other than the task that ran most recently.
 unsigned int YKIdleCount;             // Must be incremented by the idle task in its while(1) loop.
+unsigned int YKISRDepth;
+unsigned int YKTickNum;
 char run_flag = 0;
 
 int idleStack[IDLE_STACK_SIZE];
@@ -145,12 +147,14 @@ this function calls the scheduler.
 This function is called only by tasks, and never by interrupt handlers or ISRs.
 */
 void YKDelayTask(unsigned count){
+  TCBptr ready;
+
   if(count == 0)
     return;
   YKEnterMutex();
 	
 	//Get next TCB from readylist
-  TCBptr ready = YKRdyList;
+  ready = YKRdyList;
 	//Remove from readylist
   YKRdyList = ready->next;
 	//Put at top of delay list (which is a doubly-linked list)
@@ -179,9 +183,10 @@ void YKExitISR(void){
 tick.
 */
 void YKTickHandler(void){
+  TCBptr tempDelay;
   YKEnterMutex();
-  YKTickNum++;
-  TCBptr tempDelay = YKDelayList;
+  YKTickNum++; 
+  tempDelay = YKDelayList;
 	//While the delay is not finished, counter--; 
   while(tempDelay->next != NULL){
     tempDelay->delay--;
