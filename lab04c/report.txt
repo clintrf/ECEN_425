@@ -1,0 +1,18 @@
+//Problems encountered:
+//-I got hung up on having to initialize the variable at the top of the function and not in the middle.
+//--There is documentation on this issue but I glazed over that particular part.
+
+//-It also took me a good deal of time to figure out how to save and restore context. I understood pop and 
+//--push but I didn’t understand how to save and restore context without giving the dispatcher both a  
+//--pointer to the ss and the sp? The creation of the example struct only had the sp (stackPointer) which
+//--lead me to believe I needed to have implemented it with only the sp.
+
+//-Didn't understand some of the documentation applied to what we were specificly codeing. 
+//--It wasn't till after I figured it out that I realized how the documentation actually 
+//--worked and by then it was to late.
+
+//Hours spent on lab:
+//-To get it to the point where it could compile for the first time took around 10 hours (not including my partners time) 
+//-Debugging after that took another 5 to 6 hours. 
+
+//=Total Time spent 16+ hours
