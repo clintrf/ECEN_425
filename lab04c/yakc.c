@@ -192,35 +192,43 @@ void YKExitISR(void){
 tick.
 */
 void YKTickHandler(void){
-  TCBptr tempDelay;
+  TCBptr tempDelay, tempReady, tempNext;
+
   YKEnterMutex();
   YKTickNum++; 
   tempDelay = YKDelayList;
 	//While the delay is not finished, counter--; 
-  while(tempDelay->next != NULL){
+  while(tempDelay != NULL){
+    tempNext = tempDelay->next
     tempDelay->delay--;
     if(tempDelay->delay == 0){
-      // Put it in the ready list
-      TCBptr tempReady = YKRdyList;
-      while(tempReady->next != NULL){
-        if(tempReady->priority < tempDelay->priority){
-          // Clean up delay list
-          tempDelay->prev->next = tempDelay->next;
-          tempDelay->next->prev = tempDelay->prev;
-
-          // Clean up ready list
-          tempReady->prev->next = tempDelay;
-          tempDelay->prev = tempReady->prev;
-          tempDelay->next = tempReady;
-          tempReady->prev = tempDelay;
-          break;
-        }
+      // Find ready task in delay list
+      if(tempDelay->prev == NULL){
+        YKDelayList = tempDelay->next;
       }
+      else{
+        tempDelay->prev->next = tempDelay->next;
+      }
+      if(tempDelay->next != NULL){
+        tempDelay->next->prev = tempDelay->prev;
+      }
+      // incert delayed task in ready list 
+      tempReady = YKRdyList;
+      while(tempReady->priority < tempDelay->priority){ // Find the next lower priority tempReady
+        tempReady = tempReady->next;
+      }
+      if(tempReady->prev == NULL){ // insert tempDelay before the lower priority tempReady
+        YKRdyList = tempDelay;
+      }
+      else{ // otherwise insert normally
+        tempReady->prev->next = tempDelay;
+      }
+      // Clean up ready list
+      tempDelay->prev = tempReady->prev;
+      tempDelay->next = tempReady;
+      tempReady->prev = tempDelay;
     }
-    else{
-      // Keep looping through
-      tempDelay = tempDelay->next;
-    }
+    tempDelayed = tempNext;
   }
   YKExitMutex();
 }
