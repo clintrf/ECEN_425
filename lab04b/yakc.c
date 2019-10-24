@@ -135,6 +135,53 @@ void YKScheduler(int save_flag){     // Determines the highest priority ready ta
 
   }
 }
+/*
+YKDelayTask. Prototype: void YKDelayTask(unsigned count)
+- This function delays a task for the specified number of clock ticks. 
+- After taking care of all required bookkeeping to mark the change of state for the currently running task, 
+this function calls the scheduler. 
+- After the specified number of ticks, the kernel will mark the task ready. 
+- If the function is called with a count argument of 0 then it should not delay and should simply return. 
+This function is called only by tasks, and never by interrupt handlers or ISRs.
+*/
+void YKDelayTask(unsigned count){
+  if(count == 0)
+    return;
+  //YKEnterMutex();
+	
+	//Get next TCB
+	//Remove from readylist
+	//Put at top of delay list (which is a doubly-linked list)
+
+	//YKScheduler( save_dispatcher);
+	//YKExitMutex();
+
+}
+
+void YKEnterISR(void){
+  YKISRDepth++;
+}
+
+void YKExitISR(void){
+  YKISRDepth--;
+	if(YKISRDepth == 0) {
+    YKScheduler(NSAVE);
+  }
+}
+
+/*
+- This function must be called from the tick ISR each time it runs. 
+- YKTickHandler is responsible for the bookkeeping required to support the timely reawakening of delayed tasks. 
+(If the specified number of clock ticks has occurred, a delayed task is made ready.) 
+- The tick ISR may also call a user tick handler if the user code requires actions to be taken on each clock 
+tick.
+*/
+void YKTickHandler(void){
+  //YKEnterMutex();
+	//While the timer is not finished, counter++
+	//When the counter is finished call the scheduler to continue delayed task
+	//YKExitMutex();
+}
 
 /******************** Functions in yaks.s ********************/
 // Functions are made inside of yaks.s because they are coded in assembly
@@ -144,10 +191,6 @@ void YKScheduler(int save_flag){     // Determines the highest priority ready ta
   
 
 /******************** Functions not in this lab ********************/
-//void YKDelayTask(unsigned count){}
-//void YKEnterISR(void){}
-//void YKExitISR(void){}
-//void YKTickHandler(void){}
 //YKSEM* YKSemCreate(int initialValue)
 //void YKSemPend(YKSEM *semaphore)
 //void YKSemPost(YKSEM *semaphore)

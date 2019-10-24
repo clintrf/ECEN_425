@@ -29,7 +29,8 @@
 extern unsigned int YKCtxSwCount;            // must be incremented each time a context switch occurs, defined as - 
                                       //  - the dispatching of a task other than the task that ran most recently.
 extern unsigned int YKIdleCount;             // Must be incremented by the idle task in its while(1) loop.
-
+extern unsigned int YKTickNum;
+extern unsigned int YKISRDepth;
 
 /******************** Global Structs ********************/
 
@@ -59,7 +60,10 @@ void YKNewTask(void (* task)(void), void *taskStack, unsigned char priority);   
 void YKRun(void);                           // Starts actual execution of user code
 //void YKScheduler(void);                   // original Scheduler
 void YKScheduler(int save_flag);   // Pass Scheduler a flag to know if it should save
-
+void YKDelayTask(unsigned count){}
+void YKEnterISR(void){}
+void YKExitISR(void){}
+void YKTickHandler(void){}
 
 
 /******************** Functions in yaks.s ********************/
@@ -71,10 +75,6 @@ void YKDispatcherSave(int ** save_sp, int ** save_ss, int *restore_sp, int * res
 
 
 /******************** Functions not in this lab ********************/
-//void YKDelayTask(unsigned count){}
-//void YKEnterISR(void){}
-//void YKExitISR(void){}
-//void YKTickHandler(void){}
 //YKSEM* YKSemCreate(int initialValue)
 //void YKSemPend(YKSEM *semaphore)
 //void YKSemPost(YKSEM *semaphore)
