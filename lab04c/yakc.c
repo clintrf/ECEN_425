@@ -11,7 +11,7 @@ char run_flag = 0;
 int idleStack[IDLE_STACK_SIZE];
 
 TCBptr YKRdyList;
-TCBptr YKSuspList;
+TCBptr YKDelayList;
 TCBptr YKAvailTCBList;		/* a list of available TCBs */
 TCB    YKTCBArray[MAXTASKS+1];	/* array to allocate all needed TCBs*/
 
