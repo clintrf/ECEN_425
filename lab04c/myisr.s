@@ -12,8 +12,8 @@
 RESET:
 	call YKEnterISR
 	call c_reset_handler
-	call YKExitISR ; TODO: not sure if this should be called before or after the next instruction
 	pop word[bp+20]
+	call YKExitISR ; TODO: not sure if this should be called before or after the next instruction
 
 KEY:
 

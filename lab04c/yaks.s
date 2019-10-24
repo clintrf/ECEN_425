@@ -29,6 +29,7 @@ YKDispatcherNSave:   		; Dispatcher that saves to mem/stack
 	iret		
 
 YKDispatcherSave:   		; Dispatcher that saves to mem/stack
+	call print_debug
 	cli
 	push bp
 	mov bp, sp
@@ -38,8 +39,7 @@ YKDispatcherSave:   		; Dispatcher that saves to mem/stack
 	add sp, 2
 	
 	pushf
-	push CS
-
+	push CS	
 	push AX
 
 	push AX

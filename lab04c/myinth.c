@@ -41,3 +41,7 @@ void delay(){
 	int i=0;
 	for(i = 0; i < DELAY; i++){}
 }
+
+void print_debug(){
+	printString("\r\nDEBUGGER\r\n");
+}

@@ -117,25 +117,33 @@ void YKRun(void){                 // Starts actual execution of user code
 }
 
 void YKScheduler(int save_flag){     // Determines the highest priority ready task
+  int testVar;  
+  int* testPt; 
   TCBptr highest_priority_task = YKRdyList;
-  TCBptr currentlyRunning = TKCurrentlyRunning;  
-	
+  TCBptr currentlyRunning = TKCurrentlyRunning; 
+
   if(!run_flag || (TKCurrentlyRunning == highest_priority_task)){                               // NOT redundant! Tell the kernel to begin for first time
     return;	  
-  }
-  
+  } 
   // update YKCtxSwCount
   YKCtxSwCount = YKCtxSwCount + 1;
   TKCurrentlyRunning = highest_priority_task;   
- 
   if(!save_flag){
+    printString("NonSave Dispatcher\n\r");
+    //printInt(*(highest_priority_task->stackptr));
+    printString("asdf\n\r");
+    printInt(YKIdleCount);
     YKDispatcherNSave(highest_priority_task->stackptr, highest_priority_task->ss);
   }
   else{
-    YKDispatcherSave(&(currentlyRunning->stackptr),&(currentlyRunning->ss), 
+    printString("Save Dispatcher\n\r");
+    //printInt(&(currentlyRunning->stackptr));
+    //testPt = &(currentlyRunning->stackptr);
+    YKDispatcherSave((currentlyRunning->stackptr),(currentlyRunning->ss), 
 		     highest_priority_task->stackptr, highest_priority_task->ss);
 
   }
+  printString("9\n\r");
 }
 /*
 YKDelayTask. Prototype: void YKDelayTask(unsigned count)
@@ -150,9 +158,10 @@ void YKDelayTask(unsigned count){
   TCBptr ready;
   YKEnterMutex();
 
-  if(count == 0)
+  if(count == 0){
     YKExitMutex();
     return;
+  }
   
 	
 	//Get next TCB from readylist
@@ -168,7 +177,7 @@ void YKDelayTask(unsigned count){
     ready->next->prev=ready;
   }
   ready->delay = count;
-	
+  printString("Delay Save\n\r");	
   YKScheduler(SAVE);
   YKExitMutex();
 }
@@ -180,6 +189,7 @@ void YKEnterISR(void){
 void YKExitISR(void){
   YKISRDepth--;
 	if(YKISRDepth == 0) {
+	printString("Exit nonsave\n\r");
     YKScheduler(NSAVE);
   }
 }

@@ -70,7 +70,7 @@ void YKTickHandler(void);
 void YKEnterMutex(void);              // Disables interrupts
 void YKExitMutex(void);               // Enables interrupts
 void YKDispatcherNSave(int *restore_sp, int * restore_ss); 
-void YKDispatcherSave(int ** save_sp, int ** save_ss, int *restore_sp, int * restore_ss); 
+void YKDispatcherSave(int * save_sp, int * save_ss, int *restore_sp, int * restore_ss); 
 
 
 
