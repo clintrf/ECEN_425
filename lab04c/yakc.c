@@ -149,10 +149,13 @@ void YKDelayTask(unsigned count){
     return;
   YKEnterMutex();
 	
-	//Get next TCB
+	//Get next TCB from readylist
+  TCBptr ready = YKRdyList;
 	//Remove from readylist
+  YKRdyList = ready->next;
 	//Put at top of delay list (which is a doubly-linked list)
-
+  ready->next = YKDelayList;
+  YKDelayList = ready;
 	YKScheduler(SAVE);
 	YKExitMutex();
 }
@@ -178,9 +181,34 @@ tick.
 void YKTickHandler(void){
   YKEnterMutex();
   YKTickNum++;
-	//While the timer is not finished, counter++; Which counter?
-	//When the counter is finished call the scheduler to continue delayed task
-	YKExitMutex();
+  TCBptr tempDelay = YKDelayList;
+	//While the delay is not finished, counter--; 
+  while(tempDelay->next != NULL){
+    tempDelay->delay--;
+    if(tempDelay->delay == 0){
+      // Put it in the ready list
+      TCBptr tempReady = YKRdyList;
+      while(tempReady->next != NULL){
+        if(tempReady->priority < tempDelay->priority){
+          // Clean up delay list
+          tempDelay->prev->next = tempDelay->next;
+          tempDelay->next->prev = tempDelay->prev;
+
+          // Clean up ready list
+          tempReady->prev->next = tempDelay;
+          tempDelay->prev = tempReady->prev;
+          tempDelay->next = tempReady;
+          tempReady->prev = tempDelay;
+          break;
+        }
+      }
+    }
+    else{
+      // Keep looping through
+      tempDelay = tempDelay->next;
+    }
+  }
+  YKExitMutex();
 }
 
 /******************** Functions in yaks.s ********************/

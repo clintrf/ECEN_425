@@ -1,4 +1,5 @@
 #include "clib.h"
+#include "yakk.h"
 
 void delay();
 
@@ -15,6 +16,7 @@ void c_reset_handler(){
 
 void c_tick_handler(){
 	static unsigned int tick = 0;
+	YKTickHandler();
 	printString("\nTICK ");
 	printInt(tick++);
 	printNewLine();
