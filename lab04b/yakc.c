@@ -147,15 +147,14 @@ This function is called only by tasks, and never by interrupt handlers or ISRs.
 void YKDelayTask(unsigned count){
   if(count == 0)
     return;
-  //YKEnterMutex();
+  YKEnterMutex();
 	
 	//Get next TCB
 	//Remove from readylist
 	//Put at top of delay list (which is a doubly-linked list)
 
-	//YKScheduler( save_dispatcher);
-	//YKExitMutex();
-
+	YKScheduler(SAVE);
+	YKExitMutex();
 }
 
 void YKEnterISR(void){
@@ -177,10 +176,11 @@ void YKExitISR(void){
 tick.
 */
 void YKTickHandler(void){
-  //YKEnterMutex();
-	//While the timer is not finished, counter++
+  YKEnterMutex();
+  YKTickNum++;
+	//While the timer is not finished, counter++; Which counter?
 	//When the counter is finished call the scheduler to continue delayed task
-	//YKExitMutex();
+	YKExitMutex();
 }
 
 /******************** Functions in yaks.s ********************/
