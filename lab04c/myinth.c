@@ -15,11 +15,12 @@ void c_reset_handler(){
 
 
 void c_tick_handler(){
-	static unsigned int tick = 0;
-	YKTickHandler();
+	static unsigned int tick = 1;
 	printString("\nTICK ");
 	printInt(tick++);
 	printNewLine();
+	
+	YKTickHandler(); //lab4c
 }
 
 void c_key_handler(){
