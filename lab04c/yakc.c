@@ -148,20 +148,29 @@ This function is called only by tasks, and never by interrupt handlers or ISRs.
 */
 void YKDelayTask(unsigned count){
   TCBptr ready;
+  YKEnterMutex();
 
   if(count == 0)
+    YKExitMutex();
     return;
-  YKEnterMutex();
+  
 	
 	//Get next TCB from readylist
   ready = YKRdyList;
 	//Remove from readylist
   YKRdyList = ready->next;
+  ready->next->prev = NULL;
 	//Put at top of delay list (which is a doubly-linked list)
   ready->next = YKDelayList;
   YKDelayList = ready;
-	YKScheduler(SAVE);
-	YKExitMutex();
+  ready->prev = NULL;
+  if(ready->next != NULL){ // if not empty
+    ready-next->prev=ready
+  }
+  ready->delay = count;
+	
+  YKScheduler(SAVE);
+  YKExitMutex();
 }
 
 void YKEnterISR(void){
