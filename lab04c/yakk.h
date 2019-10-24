@@ -49,7 +49,7 @@ typedef struct taskblock
 }  TCB;
 
 extern TCBptr YKRdyList;
-extern TCBptr YKSuspList;
+extern TCBptr YKDelayList;
 extern TCBptr YKAvailTCBList;		/* a list of available TCBs */
 extern TCB    YKTCBArray[MAXTASKS+1];	/* array to allocate all needed TCBs
 
