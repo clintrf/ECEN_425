@@ -46,6 +46,8 @@ KEY:
 	out 0x20, al
 	
 	; Inform OS that ISR has finished execution
+	
+	
 	call YKExitISR
 
 	;restore reg
@@ -59,6 +61,7 @@ KEY:
 	pop bx
 	pop ax
 	
+	sti    ; I think we have to enable interuts before we exit
 	; execute iret
 	iret 
 
