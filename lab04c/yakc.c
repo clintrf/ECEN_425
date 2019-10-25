@@ -139,7 +139,7 @@ void YKScheduler(int save_flag){     // Determines the highest priority ready ta
     printString("Save Dispatcher\n\r");
     //printInt(&(currentlyRunning->stackptr));
     //testPt = &(currentlyRunning->stackptr);
-    YKDispatcherSave((currentlyRunning->stackptr),(currentlyRunning->ss), 
+    YKDispatcherSave(&(currentlyRunning->stackptr),&(currentlyRunning->ss), 
 		     highest_priority_task->stackptr, highest_priority_task->ss);
 
   }
