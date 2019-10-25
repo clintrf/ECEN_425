@@ -10,24 +10,50 @@
 
 
 RESET:
+	push ax	
+	push bx	
+	push cx	
+	push dx	
+	push bp	
+	push si	
+	push di	
+	push ds	
+	push es
+	
 	call YKEnterISR
+	sti
 	call c_reset_handler
-	pop word[bp+20]
+	cli
+	mov	al, 0x20
+	out 	0x20, al
+	
+	;pop word[bp+20]
 	call YKExitISR ; TODO: not sure if this should be called before or after the next instruction
+	
+	pop es	
+	pop ds	
+	pop di	
+	pop si	
+	pop bp	
+	pop dx	
+	pop cx	
+	pop bx	
+	pop ax
+	
+	iret
+	
 
 KEY:
 
-	; save reg
-	push ax
-	push bx
-	push cx
-	push dx
-	
-	push si
-	push di
-	push bp
-	push es 
-	push ds
+	push ax	
+	push bx	
+	push cx	
+	push dx	
+	push bp	
+	push si	
+	push di	
+	push ds	
+	push es
 	
 	; Inform OS that ISR has begun execution
 	call YKEnterISR
@@ -51,32 +77,32 @@ KEY:
 	call YKExitISR
 
 	;restore reg
-	pop ds
-	pop es
-	pop bp
-	pop di
-	pop si
-	pop dx
-	pop cx
-	pop bx
+	pop es	
+	pop ds	
+	pop di	
+	pop si	
+	pop bp	
+	pop dx	
+	pop cx	
+	pop bx	
 	pop ax
-	
-	sti    ; I think we have to enable interuts before we exit
-	; execute iret
+
 	iret 
 
 TICK:
 	; save reg
-	push ax
-	push bx
-	push cx
-	push dx
+	push ax	
+	push bx	
+	push cx	
+	push dx	
+	push bp	
+	push si	
+	push di	
+	push ds	
+	push es
 	
-	push si
-	push di
-	push bp
-	push es 
-	push ds
+	mov bx, [YKRdyList]
+	mov [bx], sp
 	
 	; Inform OS that ISR has started execution
 	call YKEnterISR
@@ -98,14 +124,14 @@ TICK:
 	call YKExitISR
 
 	;restore reg
-	pop ds
-	pop es
-	pop bp
+	pop es	
+	pop ds	
 	pop di	
-	pop si
-	pop dx
-	pop cx
-	pop bx
+	pop si	
+	pop bp	
+	pop dx	
+	pop cx	
+	pop bx	
 	pop ax
 	
 	; execute iret
