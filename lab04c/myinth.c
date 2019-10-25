@@ -1,5 +1,4 @@
 #include "clib.h"
-#include "yakk.h"
 
 void delay();
 
