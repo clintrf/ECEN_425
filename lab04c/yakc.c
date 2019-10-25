@@ -28,7 +28,7 @@ void YKInitialize(void){    // Initializes all required kernel data structures
   YKIdleCount = 0;          // Set to 0
   TKCurrentlyRunning = 0;   // Set to 0
   
-  YKEnterMutex();           // Turn on interupts at initialization
+  //YKEnterMutex();           // Turn on interupts at initialization
   
   /* code to construct singly linked available TCB list from initial array */ 
   YKAvailTCBList = &(YKTCBArray[0]);
@@ -55,6 +55,8 @@ void YKNewTask( void (*task)(void), void *taskStack, unsigned char priority){   
       
   TCBptr tmp, tmp2;
   
+  YKEnterMutex();             //Disable interupts
+
   /* code to grab an unused TCB from the available list */
   tmp = YKAvailTCBList;
   YKAvailTCBList = tmp->next;
@@ -62,9 +64,6 @@ void YKNewTask( void (*task)(void), void *taskStack, unsigned char priority){   
   // Set the struct var definitions
   tmp->priority = priority;
   tmp->delay = DEFAULT_DELAY;
-  
-  
-  YKEnterMutex();             //Disable interupts
 
   // Code taken from the example code
   if (YKRdyList == NULL){	/* is this first insertion? */
@@ -85,8 +84,6 @@ void YKNewTask( void (*task)(void), void *taskStack, unsigned char priority){   
     tmp->next = tmp2;
     tmp2->prev = tmp;
   }
-
-  YKExitMutex();              		// starts interrupts
 	
   // Saving the stack pointer
   tmp->stackptr = taskStack; 		// from function call
@@ -108,7 +105,7 @@ void YKNewTask( void (*task)(void), void *taskStack, unsigned char priority){   
   *(tmp->stackptr+0)	= 0;		// ES	
 	
   YKScheduler(SAVE);          // Save current block of mem
-  
+  YKExitMutex();              		// starts interrupts
 }
 
 void YKRun(void){                 // Starts actual execution of user code
@@ -119,31 +116,32 @@ void YKRun(void){                 // Starts actual execution of user code
 void YKScheduler(int save_flag){     // Determines the highest priority ready task
   int testVar;  
   int* testPt; 
-  TCBptr highest_priority_task = YKRdyList;
-  TCBptr currentlyRunning = TKCurrentlyRunning; 
+  TCBptr highest_priority_task;
+  TCBptr currentlyRunning; 
+
+  YKEnterMutex();
+  printString("Entering Scheduler\n\r");
+  highest_priority_task = YKRdyList;
+  currentlyRunning = TKCurrentlyRunning;
 
   if(!run_flag || (TKCurrentlyRunning == highest_priority_task)){                               // NOT redundant! Tell the kernel to begin for first time
     return;	  
   } 
   // update YKCtxSwCount
   YKCtxSwCount = YKCtxSwCount + 1;
-  TKCurrentlyRunning = highest_priority_task;   
+  TKCurrentlyRunning = highest_priority_task; 
   if(!save_flag){
-    printString("NonSave Dispatcher\n\r");
-    //printInt(*(highest_priority_task->stackptr));
-    printString("asdf\n\r");
-    printInt(YKIdleCount);
+    printString("NONSAVE\n\r");
     YKDispatcherNSave(highest_priority_task->stackptr, highest_priority_task->ss);
+    printString("EXIT NONSAVE DISPATCHER\n\r");
   }
   else{
-    printString("Save Dispatcher\n\r");
-    //printInt(&(currentlyRunning->stackptr));
-    //testPt = &(currentlyRunning->stackptr);
+    printString("SAVE\n\r");
     YKDispatcherSave(&(currentlyRunning->stackptr),&(currentlyRunning->ss), 
 		     highest_priority_task->stackptr, highest_priority_task->ss);
-
+    printString("EXIT SAVE DISPATCHER\n\r");
   }
-  printString("9\n\r");
+  YKExitMutex();
 }
 /*
 YKDelayTask. Prototype: void YKDelayTask(unsigned count)
@@ -163,7 +161,6 @@ void YKDelayTask(unsigned count){
     return;
   }
   
-	
 	//Get next TCB from readylist
   ready = YKRdyList;
 	//Remove from readylist
@@ -177,20 +174,20 @@ void YKDelayTask(unsigned count){
     ready->next->prev=ready;
   }
   ready->delay = count;
-  printString("Delay Save\n\r");	
   YKScheduler(SAVE);
   YKExitMutex();
 }
 
 void YKEnterISR(void){
   YKISRDepth = YKISRDepth + 1;
+  printString("ENTER ISR\n\r");
 }
 
 void YKExitISR(void){
+  printString("EXIT ISR\n\r");
   YKISRDepth = YKISRDepth - 1;
 	if(YKISRDepth == 0) {
-	printString("Exit nonsave\n\r");
-    YKScheduler(NSAVE);
+    YKScheduler(SAVE);
   }
 }
 
@@ -222,7 +219,7 @@ void YKTickHandler(void){
       if(tempDelay->next != NULL){
         tempDelay->next->prev = tempDelay->prev;
       }
-      // incert delayed task in ready list 
+      // insert delayed task in ready list 
       tempReady = YKRdyList;
       while(tempReady->priority < tempDelay->priority){ // Find the next lower priority tempReady
         tempReady = tempReady->next;

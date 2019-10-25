@@ -27,12 +27,12 @@ void c_key_handler(){
 	if (c == 'd'){
 		printString("\r\nDELAY KEY PRESSED\r\n");
 		delay();
-		printString("\r\nDELAY COMPLETE\r\n");
+		printString("\r\nDELAY COMPLETE$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$\r\n");
 	}
 	else{
 		printString("\r\nKEYPRESS (");
 		printChar(c);
-		printString(") IGNORED\r\n");
+		printString(") IGNORED*********************************************\r\n");
 	}
 }
 
