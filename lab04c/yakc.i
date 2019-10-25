@@ -202,6 +202,12 @@ void YKScheduler(int save_flag){
   highest_priority_task = YKRdyList;
   currentlyRunning = TKCurrentlyRunning;
 
+  printString("Comp ");
+  printInt(TKCurrentlyRunning->priority);
+  printString(" ");
+  printInt(highest_priority_task->priority);
+  printNewLine();
+
   if(!run_flag || (TKCurrentlyRunning == highest_priority_task)){
     return;
   }
@@ -221,7 +227,7 @@ void YKScheduler(int save_flag){
   }
   YKExitMutex();
 }
-# 155 "yakc.c"
+# 161 "yakc.c"
 void YKDelayTask(unsigned count){
   TCBptr ready;
   YKEnterMutex();
@@ -250,17 +256,19 @@ void YKDelayTask(unsigned count){
 
 void YKEnterISR(void){
   YKISRDepth = YKISRDepth + 1;
-  printString("ENTER ISR\n\r");
+
 }
 
 void YKExitISR(void){
-  printString("EXIT ISR\n\r");
   YKISRDepth = YKISRDepth - 1;
+
+  printInt(YKISRDepth);
+
  if(YKISRDepth == 0) {
     YKScheduler(1);
   }
 }
-# 201 "yakc.c"
+# 209 "yakc.c"
 void YKTickHandler(void){
   TCBptr tempDelay, tempReady, tempNext;
 
@@ -271,7 +279,7 @@ void YKTickHandler(void){
   while(tempDelay != 0){
     tempNext = tempDelay->next;
     tempDelay->delay = tempDelay->delay - 1;
-    if(tempDelay->delay == 0){
+    if(tempDelay->delay <= 0){
 
       if(tempDelay->prev == 0){
         YKDelayList = tempDelay->next;

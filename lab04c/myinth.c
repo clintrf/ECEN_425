@@ -1,4 +1,5 @@
 #include "clib.h"
+#include "yakk.h"
 
 void delay();
 
@@ -23,10 +24,14 @@ void c_tick_handler(){
 }
 
 void c_key_handler(){
+	int i=0;
 	char c = (char) KeyBuffer;
 	if (c == 'd'){
 		printString("\r\nDELAY KEY PRESSED\r\n");
-		delay();
+		// delay();
+		for(i = 0; i < DELAY; i=i){
+			i++;
+		}
 		printString("\r\nDELAY COMPLETE$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$\r\n");
 	}
 	else{

@@ -34,7 +34,7 @@ YKDispatcherSave:   		; Dispatcher that saves to mem/stack
 	mov bp, sp
 	
 	;push AX
-	mov BX, [bp+2]	; The return address.
+	;mov BX, [bp+2]	; The return address.
 	pop bp
 	add sp, 2
 	
@@ -42,16 +42,16 @@ YKDispatcherSave:   		; Dispatcher that saves to mem/stack
 	pushf
 
 	; This is something about the flags that Ian told me to do
-	;push BX
-	;add sp, 2
-	;pop BX
-	;or BX, 0x200
-	;push BX
-	;sub sp, 2
-	;pop BX
+	push BX
+	add sp, 2
+	pop BX
+	or BX, 0x200
+	push BX
+	sub sp, 2
+	pop BX
 	
 	push CS	
-	push BX
+	push word[bp+2]
 	; Push all register values to the stack
 	push AX
 	push BX
@@ -89,6 +89,5 @@ YKDispatcherSave:   		; Dispatcher that saves to mem/stack
 	pop CX
 	pop BX
 	pop AX
-	call print_debug
 	iret			
 	

@@ -30,6 +30,54 @@ void exit(unsigned char code);
 
 void signalEOI(void);
 # 2 "myinth.c" 2
+# 1 "yakk.h" 1
+# 29 "yakk.h"
+extern unsigned int YKCtxSwCount;
+
+extern unsigned int YKIdleCount;
+extern unsigned int YKTickNum;
+extern unsigned int YKISRDepth;
+
+
+
+
+typedef struct taskblock *TCBptr;
+typedef struct taskblock
+{
+
+    int *stackptr;
+    int *ss;
+    int state;
+    int priority;
+    int delay;
+    TCBptr next;
+    TCBptr prev;
+} TCB;
+
+extern TCBptr YKRdyList;
+extern TCBptr YKDelayList;
+extern TCBptr YKAvailTCBList;
+extern TCB YKTCBArray[3 +1];
+
+
+void YKInitialize(void);
+void YKIdleTask(void);
+void YKNewTask(void (* task)(void), void *taskStack, unsigned char priority);
+void YKRun(void);
+
+void YKScheduler(int save_flag);
+void YKDelayTask(unsigned count);
+void YKEnterISR(void);
+void YKExitISR(void);
+void YKTickHandler(void);
+
+
+
+void YKEnterMutex(void);
+void YKExitMutex(void);
+void YKDispatcherNSave(int *restore_sp, int * restore_ss);
+void YKDispatcherSave(int ** save_sp, int ** save_ss, int *restore_sp, int * restore_ss);
+# 3 "myinth.c" 2
 
 void delay();
 
@@ -54,10 +102,14 @@ void c_tick_handler(){
 }
 
 void c_key_handler(){
+ int i=0;
  char c = (char) KeyBuffer;
  if (c == 'd'){
   printString("\r\nDELAY KEY PRESSED\r\n");
-  delay();
+
+  for(i = 0; i < 5000; i=i){
+   i++;
+  }
   printString("\r\nDELAY COMPLETE$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$\r\n");
  }
  else{

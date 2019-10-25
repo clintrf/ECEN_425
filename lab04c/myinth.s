@@ -6,17 +6,17 @@ L_myinth_1:
 	DB	0xA,"RESET PROGRAM",0xA,0
 	ALIGN	2
 c_reset_handler:
-	; >>>>> Line:	10
+	; >>>>> Line:	11
 	; >>>>> void c_reset_handler(){ 
 	jmp	L_myinth_2
 L_myinth_3:
-	; >>>>> Line:	11
+	; >>>>> Line:	12
 	; >>>>> printString("\nRESET PROGRAM\n"); 
 	mov	ax, L_myinth_1
 	push	ax
 	call	printString
 	add	sp, 2
-	; >>>>> Line:	12
+	; >>>>> Line:	13
 	; >>>>> exit(0); 
 	xor	al, al
 	push	ax
@@ -36,27 +36,27 @@ L_myinth_6:
 	DB	0xA,"TICK ",0
 	ALIGN	2
 c_tick_handler:
-	; >>>>> Line:	16
+	; >>>>> Line:	17
 	; >>>>> void c_tick_handler(){ 
 	jmp	L_myinth_7
 L_myinth_8:
-	; >>>>> Line:	18
+	; >>>>> Line:	19
 	; >>>>> printString("\nTICK "); 
 	mov	ax, L_myinth_6
 	push	ax
 	call	printString
 	add	sp, 2
-	; >>>>> Line:	19
+	; >>>>> Line:	20
 	; >>>>> printInt(tick++); 
 	mov	ax, word [L_myinth_5]
 	inc	word [L_myinth_5]
 	push	ax
 	call	printInt
 	add	sp, 2
-	; >>>>> Line:	20
+	; >>>>> Line:	21
 	; >>>>> printNewLine(); 
 	call	printNewLine
-	; >>>>> Line:	22
+	; >>>>> Line:	23
 	; >>>>> YKTickHandler(); 
 	call	YKTickHandler
 	mov	sp, bp
@@ -76,109 +76,122 @@ L_myinth_10:
 	DB	0xD,0xA,"DELAY KEY PRESSED",0xD,0xA,0
 	ALIGN	2
 c_key_handler:
-	; >>>>> Line:	25
+	; >>>>> Line:	26
 	; >>>>> void c_key_handler(){ 
 	jmp	L_myinth_14
 L_myinth_15:
-	; >>>>> Line:	27
+	; >>>>> Line:	29
 	; >>>>> if (c == 'd'){ 
+	mov	word [bp-2], 0
 	mov	al, byte [KeyBuffer]
-	mov	byte [bp-1], al
-	; >>>>> Line:	27
+	mov	byte [bp-3], al
+	; >>>>> Line:	29
 	; >>>>> if (c == 'd'){ 
-	cmp	byte [bp-1], 100
+	cmp	byte [bp-3], 100
 	jne	L_myinth_16
-	; >>>>> Line:	28
+	; >>>>> Line:	30
 	; >>>>> printString("\r\nDELAY KEY PRESSED\r\n"); 
 	mov	ax, L_myinth_10
 	push	ax
 	call	printString
 	add	sp, 2
-	; >>>>> Line:	29
-	; >>>>> delay(); 
-	call	delay
-	; >>>>> Line:	30
+	; >>>>> Line:	32
+	; >>>>> for(i = 0; i < 5000; i=i){ 
+	mov	word [bp-2], 0
+	jmp	L_myinth_18
+L_myinth_17:
+	; >>>>> Line:	33
+	; >>>>> i++; 
+	inc	word [bp-2]
+L_myinth_20:
+	mov	ax, word [bp-2]
+	mov	word [bp-2], ax
+L_myinth_18:
+	cmp	word [bp-2], 5000
+	jl	L_myinth_17
+L_myinth_19:
+	; >>>>> Line:	35
 	; >>>>> printString("\r\nDELAY COMPLETE$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$\r\n"); 
 	mov	ax, L_myinth_11
 	push	ax
 	call	printString
 	add	sp, 2
-	jmp	L_myinth_17
+	jmp	L_myinth_21
 L_myinth_16:
-	; >>>>> Line:	33
-	; >>>>> printString("\r\nKEYPRESS (" 
+	; >>>>> Line:	38
+	; >>>>> printString("\r\nKEYPRESS ("); 
 	mov	ax, L_myinth_12
 	push	ax
 	call	printString
 	add	sp, 2
-	; >>>>> Line:	34
+	; >>>>> Line:	39
 	; >>>>> printChar(c); 
-	push	word [bp-1]
+	push	word [bp-3]
 	call	printChar
 	add	sp, 2
-	; >>>>> Line:	35
-	; >>>>> printString(") IGNORED*********************************************\r\n"); 
+	; >>>>> Line:	40
+	; >>>>>  
 	mov	ax, L_myinth_13
 	push	ax
 	call	printString
 	add	sp, 2
-L_myinth_17:
+L_myinth_21:
 	mov	sp, bp
 	pop	bp
 	ret
 L_myinth_14:
 	push	bp
 	mov	bp, sp
-	push	cx
+	sub	sp, 4
 	jmp	L_myinth_15
 	ALIGN	2
 delay:
-	; >>>>> Line:	39
+	; >>>>> Line:	44
 	; >>>>> void delay(){ 
-	jmp	L_myinth_19
-L_myinth_20:
-	; >>>>> Line:	41
-	; >>>>> for(i = 0; i < 5000; i++){} 
-	mov	word [bp-2], 0
-	; >>>>> Line:	41
-	; >>>>> for(i = 0; i < 5000; i++){} 
-	mov	word [bp-2], 0
-	jmp	L_myinth_22
-L_myinth_21:
+	jmp	L_myinth_23
 L_myinth_24:
-	; >>>>> Line:	41
+	; >>>>> Line:	46
+	; >>>>> for(i = 0; i < 5000; i++){} 
+	mov	word [bp-2], 0
+	; >>>>> Line:	46
+	; >>>>> for(i = 0; i < 5000; i++){} 
+	mov	word [bp-2], 0
+	jmp	L_myinth_26
+L_myinth_25:
+L_myinth_28:
+	; >>>>> Line:	46
 	; >>>>> for(i = 0; i < 5000; i++){} 
 	inc	word [bp-2]
-L_myinth_22:
+L_myinth_26:
 	cmp	word [bp-2], 5000
-	jl	L_myinth_21
-L_myinth_23:
+	jl	L_myinth_25
+L_myinth_27:
 	mov	sp, bp
 	pop	bp
 	ret
-L_myinth_19:
+L_myinth_23:
 	push	bp
 	mov	bp, sp
 	push	cx
-	jmp	L_myinth_20
-L_myinth_26:
+	jmp	L_myinth_24
+L_myinth_30:
 	DB	0xD,0xA,"DEBUGGER",0xD,0xA,0
 	ALIGN	2
 print_debug:
-	; >>>>> Line:	44
+	; >>>>> Line:	49
 	; >>>>> void print_debug(){ 
-	jmp	L_myinth_27
-L_myinth_28:
-	; >>>>> Line:	45
+	jmp	L_myinth_31
+L_myinth_32:
+	; >>>>> Line:	50
 	; >>>>> printString("\r\nDEBUGGER\r\n"); 
-	mov	ax, L_myinth_26
+	mov	ax, L_myinth_30
 	push	ax
 	call	printString
 	add	sp, 2
 	mov	sp, bp
 	pop	bp
 	ret
-L_myinth_27:
+L_myinth_31:
 	push	bp
 	mov	bp, sp
-	jmp	L_myinth_28
+	jmp	L_myinth_32

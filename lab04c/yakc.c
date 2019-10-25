@@ -123,6 +123,12 @@ void YKScheduler(int save_flag){     // Determines the highest priority ready ta
   printString("Entering Scheduler\n\r");
   highest_priority_task = YKRdyList;
   currentlyRunning = TKCurrentlyRunning;
+  
+  printString("Comp ");
+  printInt(TKCurrentlyRunning->priority);
+  printString(" ");
+  printInt(highest_priority_task->priority);
+  printNewLine();
 
   if(!run_flag || (TKCurrentlyRunning == highest_priority_task)){                               // NOT redundant! Tell the kernel to begin for first time
     return;	  
@@ -180,12 +186,14 @@ void YKDelayTask(unsigned count){
 
 void YKEnterISR(void){
   YKISRDepth = YKISRDepth + 1;
-  printString("ENTER ISR\n\r");
+  // printNewLine();
 }
 
 void YKExitISR(void){
-  printString("EXIT ISR\n\r");
   YKISRDepth = YKISRDepth - 1;
+  // printString("Depth ");
+  printInt(YKISRDepth);
+  // printNewLine();
 	if(YKISRDepth == 0) {
     YKScheduler(SAVE);
   }
@@ -208,7 +216,7 @@ void YKTickHandler(void){
   while(tempDelay != NULL){
     tempNext = tempDelay->next;
     tempDelay->delay = tempDelay->delay - 1;
-    if(tempDelay->delay == 0){
+    if(tempDelay->delay <= 0){
       // Find ready task in delay list
       if(tempDelay->prev == NULL){
         YKDelayList = tempDelay->next;
