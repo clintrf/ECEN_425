@@ -52,7 +52,6 @@ void YKIdleTask(void){      // Kernel's idle task
 }
 
 void YKNewTask( void (*task)(void), void *taskStack, unsigned char priority){    // Creates a new task
-      
   TCBptr tmp, tmp2;
   
   YKEnterMutex();             //Disable interupts
@@ -120,15 +119,15 @@ void YKScheduler(int save_flag){     // Determines the highest priority ready ta
   TCBptr currentlyRunning; 
 
   YKEnterMutex();
-  printString("Entering Scheduler\n\r");
+  //printString("Entering Scheduler\n\r");
   highest_priority_task = YKRdyList;
   currentlyRunning = TKCurrentlyRunning;
   
-  printString("Comp ");
-  printInt(TKCurrentlyRunning->priority);
-  printString(" ");
-  printInt(highest_priority_task->priority);
-  printNewLine();
+  // printString("Comp ");
+  // printInt(TKCurrentlyRunning->priority);
+  // printString(" ");
+  // printInt(highest_priority_task->priority);
+  // printNewLine();
 
   if(!run_flag || (TKCurrentlyRunning == highest_priority_task)){                               // NOT redundant! Tell the kernel to begin for first time
     return;	  
@@ -137,15 +136,15 @@ void YKScheduler(int save_flag){     // Determines the highest priority ready ta
   YKCtxSwCount = YKCtxSwCount + 1;
   TKCurrentlyRunning = highest_priority_task; 
   if(!save_flag){
-    printString("NONSAVE\n\r");
+    //printString("NONSAVE\n\r");
     YKDispatcherNSave(highest_priority_task->stackptr, highest_priority_task->ss);
-    printString("EXIT NONSAVE DISPATCHER\n\r");
+    //printString("EXIT NONSAVE DISPATCHER\n\r");
   }
   else{
-    printString("SAVE\n\r");
+    //printString("SAVE\n\r");
     YKDispatcherSave(&(currentlyRunning->stackptr),&(currentlyRunning->ss), 
 		     highest_priority_task->stackptr, highest_priority_task->ss);
-    printString("EXIT SAVE DISPATCHER\n\r");
+    //printString("EXIT SAVE DISPATCHER\n\r");
   }
   YKExitMutex();
 }
@@ -192,7 +191,7 @@ void YKEnterISR(void){
 void YKExitISR(void){
   YKISRDepth = YKISRDepth - 1;
   // printString("Depth ");
-  printInt(YKISRDepth);
+  //printInt(YKISRDepth);
   // printNewLine();
 	if(YKISRDepth == 0) {
     YKScheduler(SAVE);

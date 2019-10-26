@@ -5,7 +5,7 @@ void delay();
 
 extern int KeyBuffer;
 
-#define DELAY 5000
+#define DELAY 200
 
 
 void c_reset_handler(){
