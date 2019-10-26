@@ -17,6 +17,9 @@ YKDispatcherNSave:   		; Dispatcher that saves to mem/stack
 	mov sp, word[bp+4]			; getting first arg
 	mov ss, word[bp+6]			; getting second arg	
 	
+	mov	al, 0x20
+	out 	0x20, al
+	
 	; Pop register values off the stack
 	pop ES
 	pop DS
@@ -78,6 +81,9 @@ YKDispatcherSave:   		; Dispatcher that saves to mem/stack
 	; Save the sp and ss values to restore to sp and ss
 	mov sp, word[bp+8]			; getting third arg
 	mov ss, word[bp+10]			; getting fourth arg	
+	
+	mov	al, 0x20
+	out 	0x20, al
 
 	; Pop register values back off the stack
 	pop ES
