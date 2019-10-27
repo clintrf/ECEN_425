@@ -1118,7 +1118,7 @@ L_clib_83:
 ;7 Execute the iret instruction. This restores in one atomic operation the values for IP, CS, and the flags, which were automatically -
 ;	; - saved on the stack by the processor when the interrupt occurred. This effectively restores execution to the point where the interrupt occurred.
 
-
+; changed
 RESET:
 	push ax	
 	push bx	
@@ -1164,6 +1164,16 @@ KEY:
 	push di	
 	push ds	
 	push es
+	
+        mov ax, [YKISRDepth]
+	cmp ax, 0
+	jnz key_not_lowest_interrupt
+
+	; Save the SP of the task we interrupted
+	mov bx, [YKRdyList]
+	mov [bx], sp
+
+key_not_lowest_interrupt:
 	
 	; Inform OS that ISR has begun execution
 	call YKEnterISR
@@ -1211,9 +1221,15 @@ TICK:
 	push ds	
 	push es
 	
+	mov ax, [YKISRDepth]
+	cmp ax, 0
+	jnz not_lowest_interrupt
+
+	; Save the SP of the task we interrupted
 	mov bx, [YKRdyList]
 	mov [bx], sp
-	
+
+not_lowest_interrupt:
 	; Inform OS that ISR has started execution
 	call YKEnterISR
 

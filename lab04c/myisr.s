@@ -56,14 +56,14 @@ KEY:
 	push es
 	
         mov ax, [YKISRDepth]
-	test ax, ax
-	jnz isr_keypress_not_lowest_interrupt
+	cmp ax, 0
+	jnz key_not_lowest_interrupt
 
 	; Save the SP of the task we interrupted
 	mov bx, [YKRdyList]
 	mov [bx], sp
 
-isr_keypress_not_lowest_interrupt:
+key_not_lowest_interrupt:
 	
 	; Inform OS that ISR has begun execution
 	call YKEnterISR
@@ -112,15 +112,14 @@ TICK:
 	push es
 	
 	mov ax, [YKISRDepth]
-	test ax, ax
-	jnz isr_tick_not_lowest_interrupt
+	cmp ax, 0
+	jnz not_lowest_interrupt
 
 	; Save the SP of the task we interrupted
 	mov bx, [YKRdyList]
 	mov [bx], sp
 
-isr_tick_not_lowest_interrupt:
-	
+not_lowest_interrupt:
 	; Inform OS that ISR has started execution
 	call YKEnterISR
 
