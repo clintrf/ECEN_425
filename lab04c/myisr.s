@@ -55,15 +55,14 @@ KEY:
 	push ds	
 	push es
 	
-        mov ax, [YKISRDepth]
-	cmp ax, 0
-	jnz key_not_lowest_interrupt
-
-	; Save the SP of the task we interrupted
-	mov bx, [YKRdyList]
+        mov ax, [YKISRDepth] ;save the depth counter
+	cmp ax, 0            ; check if the depth is zero, if it is save the SP of the task we are interupting
+	jnz key_not_lowest_interrupt  ; skip saving the stack because we are not interupting that task
+	
+	mov bx, [YKRdyList] ; save the sp
 	mov [bx], sp
 
-key_not_lowest_interrupt:
+key_not_lowest_interrupt:    ; enter the ISR like normal
 	
 	; Inform OS that ISR has begun execution
 	call YKEnterISR
@@ -71,13 +70,13 @@ key_not_lowest_interrupt:
 	; enable interrupts for higher priority IRQs ? 
 	sti
 	
-	; run inte
+	; run 
 	call c_key_handler
 	
 	; disable interrupts ?
 	cli
 	
-	; send eoi to pic
+	
 	mov al, 0x20
 	out 0x20, al
 	
@@ -111,16 +110,15 @@ TICK:
 	push ds	
 	push es
 	
-	mov ax, [YKISRDepth]
-	cmp ax, 0
+        mov ax, [YKISRDepth] ;save the depth counter
+	cmp ax, 0            ; check if the depth is zero, if it is save the SP of the task we are interupting
 	jnz not_lowest_interrupt
 
-	; Save the SP of the task we interrupted
-	mov bx, [YKRdyList]
+
+	mov bx, [YKRdyList] ; save SP of interupted task
 	mov [bx], sp
 
-not_lowest_interrupt:
-	; Inform OS that ISR has started execution
+not_lowest_interrupt:	
 	call YKEnterISR
 
 	; enable interrupts for higher priority IRQs ? 
@@ -136,10 +134,9 @@ not_lowest_interrupt:
 	mov al, 0x20
 	out 0x20, al
 	
-	; Inform OS that ISR has finished execution
 	call YKExitISR
 
-	;restore reg
+	;restore
 	pop es	
 	pop ds	
 	pop di	
@@ -150,5 +147,4 @@ not_lowest_interrupt:
 	pop bx	
 	pop ax
 	
-	; execute iret
 	iret 
