@@ -94,10 +94,13 @@ void YKNewTask( void (*task)(void), void *taskStack, unsigned char priority){   
     if(i == 11){
       *(tmp->stackptr+i)	= 0x200; 	//flag interupt
     }
-    elif(i == 9){
+    else if(i == 9){
       *(tmp->stackptr+i)	= (int)task;	// IP
     }
-    *(tmp->stackptr+i)	= 0;		// ES	
+    else{
+      *(tmp->stackptr+i)	= 0;		// ES	
+    }
+    
   }
   //*(tmp->stackptr+11)	= 0x200; 	//flag interupt
   //*(tmp->stackptr+10)	= 0;		// CS
