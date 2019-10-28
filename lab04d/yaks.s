@@ -15,7 +15,7 @@ YKDispatcherNSave:   		; Dispatcher that saves to mem/stack
 
 	; Get the ss and sp values to restore and save them to ss and sp
 	mov sp, word[bp+4]			; getting first arg (highest priority task sp)
-	mov ss, word[bp+6]			; getting second arg (highest priority task ss)
+	;mov ss, word[bp+6]			; getting second arg (highest priority task ss)
 	
 	mov	al, 0x20
 	out 	0x20, al
@@ -75,12 +75,12 @@ YKDispatcherSave:   		; Dispatcher that saves to mem/stack
 	mov word [si], sp
 
 	; Store the save ss to si
-	mov si, word [bp+6]			; getting second arg (ss)
-	mov word [si], ss
+	;mov si, word [bp+6]			; getting second arg (ss)
+	;mov word [si], ss
 
 	; Save the sp and ss values to restore to sp and ss
 	mov sp, word[bp+8]			; getting third arg
-	mov ss, word[bp+10]			; getting fourth arg	
+	;mov ss, word[bp+10]			; getting fourth arg	
 	
 	mov	al, 0x20
 	out 	0x20, al
