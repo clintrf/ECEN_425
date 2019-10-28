@@ -94,26 +94,17 @@ void YKNewTask( void (*task)(void), void *taskStack, unsigned char priority){   
     if(i == 11){
       *(tmp->stackptr+i)	= 0x200; 	//flag interupt
     }
+    else if(i == 10){
+      *(tmp->stackptr+i)	= 0;	// CS
+    }
     else if(i == 9){
       *(tmp->stackptr+i)	= (int)task;	// IP
     }
     else{
-      *(tmp->stackptr+i)	= 0;		// ES	
+      *(tmp->stackptr+i)	= 0;		// AX,BX,CX,DX,BP,SI,DI,DS,ES	
     }
     
   }
-  //*(tmp->stackptr+11)	= 0x200; 	//flag interupt
-  //*(tmp->stackptr+10)	= 0;		// CS
-  //*(tmp->stackptr+9)	= (int)task;	// IP
-  //*(tmp->stackptr+8)	= 0;		// AX
-  //*(tmp->stackptr+7)	= 0;		// BX
-  //*(tmp->stackptr+6)	= 0;		// CX
-  //*(tmp->stackptr+5)	= 0;		// DX
-  //*(tmp->stackptr+4)	= 0;		// BP
-  //*(tmp->stackptr+3)	= 0;		// SI
-  //*(tmp->stackptr+2)	= 0;		// DI
-  //*(tmp->stackptr+1)	= 0;		// DS
-  //*(tmp->stackptr+0)	= 0;		// ES	
 	
   YKScheduler(SAVE);          // Save current block of mem
   YKExitMutex();              		// starts interrupts
