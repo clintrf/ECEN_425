@@ -86,7 +86,6 @@ void YKNewTask( void (*task)(void), void *taskStack, unsigned char priority){   
 	
   // Saving the stack pointer
   tmp->stackptr = taskStack; 		// from function call
-  tmp->ss = 0;
 	
   // storeing the context into stack
   tmp->stackptr		= tmp->stackptr - 11;
