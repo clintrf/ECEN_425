@@ -40,7 +40,7 @@ typedef struct taskblock
 {				        /* the TCB struct definition */
     //void *stackptr;		/* pointer to current top of stack */
     int *stackptr;
-    int *ss;
+
     int state;			/* current state */
     int priority;		/* current priority */
     int delay;			/* #ticks yet to wait */
@@ -69,8 +69,8 @@ void YKTickHandler(void);       // handles the ticks
 /******************** Functions in yaks.s ********************/
 void YKEnterMutex(void);              // Disables interrupts
 void YKExitMutex(void);               // Enables interrupts
-void YKDispatcherNSave(int *restore_sp, int * restore_ss); 
-void YKDispatcherSave(int ** save_sp, int ** save_ss, int *restore_sp, int * restore_ss); 
+void YKDispatcherNSave(int *restore_sp); 
+void YKDispatcherSave(int ** save_sp, int *restore_sp); 
 
 
 
