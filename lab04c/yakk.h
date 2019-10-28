@@ -63,7 +63,7 @@ void YKScheduler(int save_flag);   // Pass Scheduler a flag to know if it should
 void YKDelayTask(unsigned count);  // Function call to delay the current task... count is for how long
 void YKEnterISR(void);             // Enters the ISR and increments the counter for how deap it is
 void YKExitISR(void);              // Exits the ISR and decrements the counter for how deap it is
-void YKTickHandler(void);is.       // handles the ticks
+void YKTickHandler(void);       // handles the ticks
 
 
 /******************** Functions in yaks.s ********************/
