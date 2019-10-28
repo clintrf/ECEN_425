@@ -137,13 +137,12 @@ void YKScheduler(int save_flag){     // Determines the highest priority ready ta
   TKCurrentlyRunning = highest_priority_task; 
   if(!save_flag){
     //printString("NONSAVE\n\r");
-    YKDispatcherNSave(highest_priority_task->stackptr, highest_priority_task->ss);
+    YKDispatcherNSave(highest_priority_task->stackptr);
     //printString("EXIT NONSAVE DISPATCHER\n\r");
   }
   else{
     //printString("SAVE\n\r");
-    YKDispatcherSave(&(currentlyRunning->stackptr),&(currentlyRunning->ss), 
-		     highest_priority_task->stackptr, highest_priority_task->ss);
+    YKDispatcherSave(&(currentlyRunning->stackptr), highest_priority_task->stackptr);
     //printString("EXIT SAVE DISPATCHER\n\r");
   }
   YKExitMutex();
