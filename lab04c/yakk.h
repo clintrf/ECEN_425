@@ -60,10 +60,10 @@ void YKNewTask(void (* task)(void), void *taskStack, unsigned char priority);   
 void YKRun(void);                           // Starts actual execution of user code
 //void YKScheduler(void);                   // original Scheduler
 void YKScheduler(int save_flag);   // Pass Scheduler a flag to know if it should save
-void YKDelayTask(unsigned count);
-void YKEnterISR(void);
-void YKExitISR(void);
-void YKTickHandler(void);
+void YKDelayTask(unsigned count);  // Function call to delay the current task... count is for how long
+void YKEnterISR(void);             // Enters the ISR and increments the counter for how deap it is
+void YKExitISR(void);              // Exits the ISR and decrements the counter for how deap it is
+void YKTickHandler(void);is.       // handles the ticks
 
 
 /******************** Functions in yaks.s ********************/
