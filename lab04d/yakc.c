@@ -53,6 +53,7 @@ void YKIdleTask(void){      // Kernel's idle task
 
 void YKNewTask( void (*task)(void), void *taskStack, unsigned char priority){    // Creates a new task
   TCBptr tmp, tmp2;
+  int i;
   
   YKEnterMutex();             //Disable interupts
 
@@ -89,18 +90,27 @@ void YKNewTask( void (*task)(void), void *taskStack, unsigned char priority){   
 	
   // storeing the context into stack
   tmp->stackptr		= tmp->stackptr - 11;
-  *(tmp->stackptr+11)	= 0x200; 	//flag interupt
-  *(tmp->stackptr+10)	= 0;		// CS
-  *(tmp->stackptr+9)	= (int)task;	// IP
-  *(tmp->stackptr+8)	= 0;		// AX
-  *(tmp->stackptr+7)	= 0;		// BX
-  *(tmp->stackptr+6)	= 0;		// CX
-  *(tmp->stackptr+5)	= 0;		// DX
-  *(tmp->stackptr+4)	= 0;		// BP
-  *(tmp->stackptr+3)	= 0;		// SI
-  *(tmp->stackptr+2)	= 0;		// DI
-  *(tmp->stackptr+1)	= 0;		// DS
-  *(tmp->stackptr+0)	= 0;		// ES	
+  for(i=11; i>=0;i--){
+    if(i == 11){
+      *(tmp->stackptr+i)	= 0x200; 	//flag interupt
+    }
+    elif(i == 9){
+      *(tmp->stackptr+i)	= (int)task;	// IP
+    }
+    *(tmp->stackptr+i)	= 0;		// ES	
+  }
+  //*(tmp->stackptr+11)	= 0x200; 	//flag interupt
+  //*(tmp->stackptr+10)	= 0;		// CS
+  //*(tmp->stackptr+9)	= (int)task;	// IP
+  //*(tmp->stackptr+8)	= 0;		// AX
+  //*(tmp->stackptr+7)	= 0;		// BX
+  //*(tmp->stackptr+6)	= 0;		// CX
+  //*(tmp->stackptr+5)	= 0;		// DX
+  //*(tmp->stackptr+4)	= 0;		// BP
+  //*(tmp->stackptr+3)	= 0;		// SI
+  //*(tmp->stackptr+2)	= 0;		// DI
+  //*(tmp->stackptr+1)	= 0;		// DS
+  //*(tmp->stackptr+0)	= 0;		// ES	
 	
   YKScheduler(SAVE);          // Save current block of mem
   YKExitMutex();              		// starts interrupts
