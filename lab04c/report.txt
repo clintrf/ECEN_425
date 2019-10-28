@@ -4,12 +4,11 @@
 //--for nested interrupts in our myisr.s file. We spent hours bangging our heads against the wall trying to change things in
 //--in the dispature when we really should have been looking in the isr. 
 
-//--With regard to the previous comment, we were saving the SP of the delayed stack when the isr depth wasn't zero during 
-//--a delay so that we wouldn't lose track of it. Once the depth returned to zero then we needed to stop saving that SP so 
-//--we weren't over writing that variable because while the isr depth remain zero that stack pointer shouldn't be 
-//--changing during key interrupts.
+//--With regard to the previous comment, we weren't saving the SP of the delayed stack when the isr depth was zero and was 
+//--getting interupted. Once the depth got to zero then we needed to save that SP so we knew which stack to go back to.
 
-//--We should have just rewriten our dispature from scratch and simplified it. 
+//--We should have just rewriten our dispature from scratch and simplified it instead of doing nested interupt control in the
+//--ISR
 
 //Hours spent on lab:
 //Total Time spent == 20+ hours
