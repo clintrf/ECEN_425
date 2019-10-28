@@ -1,18 +1,15 @@
 //Problems encountered:
-//-I got hung up on having to initialize the variable at the top of the function and not in the middle.
-//--There is documentation on this issue but I glazed over that particular part.
+//-We felt like we understood the basics of what was suposto be going on but then we got hung up on actually understanding what
+//--actually was happening with the nested interrupts. The way we implemented our dispature was ok, but ment we had to check
+//--for nested interrupts in our myisr.s file. We spent hours bangging our heads against the wall trying to change things in
+//--in the dispature when we really should have been looking in the isr. 
 
-//-It also took me a good deal of time to figure out how to save and restore context. I understood pop and 
-//--push but I didn’t understand how to save and restore context without giving the dispatcher both a  
-//--pointer to the ss and the sp? The creation of the example struct only had the sp (stackPointer) which
-//--lead me to believe I needed to have implemented it with only the sp.
+//--With regard to the previous comment, we were saving the SP of the delayed stack when the isr depth wasn't zero during 
+//--a delay so that we wouldn't lose track of it. Once the depth returned to zero then we needed to stop saving that SP so 
+//--we weren't over writing that variable because while the isr depth remain zero that stack pointer shouldn't be 
+//--changing during key interrupts.
 
-//-Didn't understand some of the documentation applied to what we were specificly codeing. 
-//--It wasn't till after I figured it out that I realized how the documentation actually 
-//--worked and by then it was to late.
+//--We should have just rewriten our dispature from scratch and simplified it. 
 
 //Hours spent on lab:
-//-To get it to the point where it could compile for the first time took around 10 hours (not including my partners time) 
-//-Debugging after that took another 5 to 6 hours. 
-
-//=Total Time spent 16+ hours
+//Total Time spent == 20+ hours
