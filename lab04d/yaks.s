@@ -10,12 +10,12 @@ YKExitMutex:                    ; Enables Interrupts
 	ret
 
 YKDispatcherNSave:   		; Dispatcher that saves to mem/stack
-	push bp
-	mov bp, sp
+	push bp			; Push the base pointer onto the stack
+	mov bp, sp		; set the current base pointer to be the stack pointer
 
 	; Get the ss and sp values to restore and save them to ss and sp
-	mov sp, word[bp+4]			; getting first arg
-	mov ss, word[bp+6]			; getting second arg	
+	mov sp, word[bp+4]			; getting first arg (highest priority task sp)
+	mov ss, word[bp+6]			; getting second arg (highest priority task ss)
 	
 	mov	al, 0x20
 	out 	0x20, al
