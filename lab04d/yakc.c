@@ -2,15 +2,14 @@
 #include "yakk.h"
 
 
+int idleStack[256];
+
 /******************** Global Variables ********************/
-unsigned int YKCtxSwCount;            // must be incremented each time a context switch occurs, defined as - 
+unsigned int YKCtxSwCount;            // must be incremented each time a context switch occurs, defined as -
                                       //  - the dispatching of a task other than the task that ran most recently.
 unsigned int YKIdleCount;             // Must be incremented by the idle task in its while(1) loop.
-unsigned int YKISRDepth;
 unsigned int YKTickNum;
-char run_flag = 0;
-
-int idleStack[IDLE_STACK_SIZE];
+unsigned int YKISRDepth;
 
 TCBptr YKRdyList;
 TCBptr YKDelayList;
@@ -19,51 +18,49 @@ TCB    YKTCBArray[MAXTASKS+1];	/* array to allocate all needed TCBs*/
 
 TCBptr TKCurrentlyRunning;
 
-
-/******************** Function Def ********************/
+char run_flag = 0;
 
 void YKInitialize(void){    // Initializes all required kernel data structures
   int i;
   YKCtxSwCount = 0;         // Set to 0
   YKIdleCount = 0;          // Set to 0
   TKCurrentlyRunning = 0;   // Set to 0
-  
-  //YKEnterMutex();           // Turn on interupts at initialization
-  
-  /* code to construct singly linked available TCB list from initial array */ 
+	YKISRDepth = 0;
+
+  YKEnterMutex();
+
+  /* code to construct singly linked available TCB list from initial array */
   YKAvailTCBList = &(YKTCBArray[0]);
-  
+
   for (i = 0; i < MAXTASKS; i++)
 	  YKTCBArray[i].next = &(YKTCBArray[i+1]);
   YKTCBArray[MAXTASKS].next = NULL;
-	
-  YKNewTask(YKIdleTask, (void*)&idleStack[IDLE_STACK_SIZE], LOWEST_PRIORITY);
+
+  YKNewTask(YKIdleTask, (void*)&idleStack[256], 100);
   //call YKIdleTask         // From YAK Kernel instruction book
   //^ could call YKIdleTask as YKNewTask()
-  
-  
 }
 
 void YKIdleTask(void){      // Kernel's idle task
   while(1){                 // From YAK Kernal instuction book
-    YKIdleCount=YKIdleCount+1;          // 
+    YKIdleCount=YKIdleCount+1;          //
     YKExitMutex();
-  }                        
+  }
 }
 
 void YKNewTask( void (*task)(void), void *taskStack, unsigned char priority){    // Creates a new task
   TCBptr tmp, tmp2;
   int i;
-  
+
   YKEnterMutex();             //Disable interupts
 
   /* code to grab an unused TCB from the available list */
   tmp = YKAvailTCBList;
   YKAvailTCBList = tmp->next;
-  
+
   // Set the struct var definitions
   tmp->priority = priority;
-  tmp->delay = DEFAULT_DELAY;
+  tmp->delay = 0;
 
   // Code taken from the example code
   if (YKRdyList == NULL){	/* is this first insertion? */
@@ -84,10 +81,10 @@ void YKNewTask( void (*task)(void), void *taskStack, unsigned char priority){   
     tmp->next = tmp2;
     tmp2->prev = tmp;
   }
-	
+
   // Saving the stack pointer
   tmp->stackptr = taskStack; 		// from function call
-	
+
   // storeing the context into stack
   tmp->stackptr		= tmp->stackptr - 11;
   for(i=11; i>=0;i--){
@@ -101,31 +98,32 @@ void YKNewTask( void (*task)(void), void *taskStack, unsigned char priority){   
       *(tmp->stackptr+i)	= (int)task;	// IP
     }
     else{
-      *(tmp->stackptr+i)	= 0;		// AX,BX,CX,DX,BP,SI,DI,DS,ES	
+      *(tmp->stackptr+i)	= 0;		// AX,BX,CX,DX,BP,SI,DI,DS,ES
     }
-    
+
   }
-	
-  YKScheduler(SAVE);          // Save current block of mem
+
+  YKScheduler(1);          // Save current block of mem
   YKExitMutex();              		// starts interrupts
 }
 
 void YKRun(void){                 // Starts actual execution of user code
-  run_flag = HIGH;                // Start the Scheduler for the very first time
-  YKScheduler(NSAVE);             // run the top proccess 
+	printString("Start Run and call scheduler\n");
+  run_flag = 1;                // Start the Scheduler for the very first time
+  YKScheduler(0);             // run the top proccess
 }
 
 void YKScheduler(int save_flag){     // Determines the highest priority ready task
-  int testVar;  
-  int* testPt; 
+  int testVar;
+  int* testPt;
   TCBptr highest_priority_task;
-  TCBptr currentlyRunning; 
+  TCBptr currentlyRunning;
 
   YKEnterMutex();
   //printString("Entering Scheduler\n\r");
   highest_priority_task = YKRdyList;
   currentlyRunning = TKCurrentlyRunning;
-  
+
   // printString("Comp ");
   // printInt(TKCurrentlyRunning->priority);
   // printString(" ");
@@ -133,11 +131,11 @@ void YKScheduler(int save_flag){     // Determines the highest priority ready ta
   // printNewLine();
 
   if(!run_flag || (TKCurrentlyRunning == highest_priority_task)){                               // NOT redundant! Tell the kernel to begin for first time
-    return;	  
-  } 
+    return;
+  }
   // update YKCtxSwCount
   YKCtxSwCount = YKCtxSwCount + 1;
-  TKCurrentlyRunning = highest_priority_task; 
+  TKCurrentlyRunning = highest_priority_task;
   if(!save_flag){
     //printString("NONSAVE\n\r");
     YKDispatcherNSave(highest_priority_task->stackptr);
@@ -150,15 +148,7 @@ void YKScheduler(int save_flag){     // Determines the highest priority ready ta
   }
   YKExitMutex();
 }
-/*
-YKDelayTask. Prototype: void YKDelayTask(unsigned count)
-- This function delays a task for the specified number of clock ticks. 
-- After taking care of all required bookkeeping to mark the change of state for the currently running task, 
-this function calls the scheduler. 
-- After the specified number of ticks, the kernel will mark the task ready. 
-- If the function is called with a count argument of 0 then it should not delay and should simply return. 
-This function is called only by tasks, and never by interrupt handlers or ISRs.
-*/
+
 void YKDelayTask(unsigned count){
   TCBptr ready;
   YKEnterMutex();
@@ -167,7 +157,7 @@ void YKDelayTask(unsigned count){
     YKExitMutex();
     return;
   }
-  
+
 	//Get next TCB from readylist
   ready = YKRdyList;
 	//Remove from readylist
@@ -181,9 +171,10 @@ void YKDelayTask(unsigned count){
     ready->next->prev=ready;
   }
   ready->delay = count;
-  YKScheduler(SAVE);
+  YKScheduler(1);
   YKExitMutex();
 }
+
 
 void YKEnterISR(void){
   YKISRDepth = YKISRDepth + 1;
@@ -196,24 +187,17 @@ void YKExitISR(void){
   //printInt(YKISRDepth);
   // printNewLine();
 	if(YKISRDepth == 0) {
-    YKScheduler(SAVE);
+    YKScheduler(1);
   }
 }
 
-/*
-- This function must be called from the tick ISR each time it runs. 
-- YKTickHandler is responsible for the bookkeeping required to support the timely reawakening of delayed tasks. 
-(If the specified number of clock ticks has occurred, a delayed task is made ready.) 
-- The tick ISR may also call a user tick handler if the user code requires actions to be taken on each clock 
-tick.
-*/
 void YKTickHandler(void){
   TCBptr tempDelay, tempReady, tempNext;
 
   YKEnterMutex();
-  YKTickNum = YKTickNum + 1; 
+  YKTickNum = YKTickNum + 1;
   tempDelay = YKDelayList;
-	//While the delay is not finished, counter--; 
+	//While the delay is not finished, counter--;
   while(tempDelay != NULL){
     tempNext = tempDelay->next;
     tempDelay->delay = tempDelay->delay - 1;
@@ -228,7 +212,7 @@ void YKTickHandler(void){
       if(tempDelay->next != NULL){
         tempDelay->next->prev = tempDelay->prev;
       }
-      // insert delayed task in ready list 
+      // insert delayed task in ready list
       tempReady = YKRdyList;
       while(tempReady->priority < tempDelay->priority){ // Find the next lower priority tempReady
         tempReady = tempReady->next;
@@ -249,12 +233,14 @@ void YKTickHandler(void){
   YKExitMutex();
 }
 
+
+
 /******************** Functions in yaks.s ********************/
 // Functions are made inside of yaks.s because they are coded in assembly
 //void YKDispatcher(void);    // Begins or resumes execution of the next task
 //void YKEnterMutex(void);    // Disables interrupts
 //void YKExitMutex(void);     // Enables interrupts
-  
+
 
 /******************** Functions not in this lab ********************/
 //YKSEM* YKSemCreate(int initialValue)

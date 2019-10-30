@@ -4,8 +4,10 @@
 void delay();
 
 extern int KeyBuffer;
-
+extern void YKTickHandler(void);
 #define DELAY 5000
+
+
 
 
 void c_reset_handler(){
@@ -13,13 +15,12 @@ void c_reset_handler(){
 	exit(0);
 }
 
-
 void c_tick_handler(){
-	static unsigned int tick = 1;
+	static unsigned int tick = 0;
 	printString("\nTICK ");
 	printInt(tick++);
 	printNewLine();
-	
+
 	YKTickHandler(); //lab4c
 }
 
@@ -28,10 +29,7 @@ void c_key_handler(){
 	char c = (char) KeyBuffer;
 	if (c == 'd'){
 		printString("\r\nDELAY KEY PRESSED\r\n");
-		// delay();
-		for(i = 0; i < DELAY; i=i){
-			i++;
-		}
+		delay();
 		printString("\r\nDELAY COMPLETE$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$\r\n");
 	}
 	else{
