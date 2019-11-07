@@ -4,8 +4,8 @@
 #define YAKK_H
 
 #define NULL 0
-#define MAXTASKS 6
-#define SEM_COUNT 5
+#define MAXTASKS 10
+#define SEM_COUNT 20
 
 
 /******************** Global Variables ********************/
@@ -18,7 +18,8 @@ extern unsigned int YKSemCount;
 /******************** Global Structs ********************/
 typedef struct semaphore
 {				        /* the TCB struct definition */
-    int val;
+    int val;       // indicates if semaphore has is ready
+    int active;    // indicates if semaphore has been initialezed
     int id;
 }  YKSEM;
 
@@ -33,7 +34,7 @@ typedef struct taskblock
     int delay;			/* #ticks yet to wait */
     TCBptr next;		/* forward ptr for dbl linked list */
     TCBptr prev;		/* backward ptr for dbl linked list */
-    YKSEM semWait;      /* semaphore the task is waiting for. NULL if not waiting */
+    YKSEM *semWait;      /* semaphore the task is waiting for. NULL if not waiting, lets make it a pointer*/
 }  TCB;
 
 
