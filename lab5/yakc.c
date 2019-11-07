@@ -325,7 +325,7 @@ void YKSemPend(YKSEM *semaphore){
 	
   TCBptr readyTask;
   YKEnterMutex();
-  semaphore->val--;
+  semaphore->val = semaphore->val - 1;
   YKExitMutex();
   
   if (semaphore->val >= 0){ return; } // break if it gets above zero because that means its available
@@ -347,8 +347,6 @@ void YKSemPend(YKSEM *semaphore){
   YKScheduler(1);
   YKExitMutex();
   
-	
-	
 }
 
 /* Release semaphore
@@ -391,7 +389,7 @@ void YKSemPost(YKSEM *semaphore){
   semWaiting = YKSemWaitList;
 
   YKEnterMutex();
-  semaphore->val++;
+  semaphore->val = semaphore->val + 1;
 	
   // Loop through suspended tasks
   while(semWaiting != NULL){
