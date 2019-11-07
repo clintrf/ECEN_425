@@ -43,7 +43,7 @@ void YKInitialize(void){    // Initializes all required kernel data structures
   YKTCBArray[MAXTASKS].next = NULL;
   
   for (i = 0; i < SEM_COUNT; i++){ 
-    YKSemArray[i].val = 0;           // init the value of the semaphore
+    YKSemArray[i].val = -10;           // init the value of the semaphore
     YKSemArray[i].active = 0;        // init if the semaphore has been activated (has not)
     YKSemArray[i].id = i;            // init the Id of the semaphore so we can track it / debug
   }
