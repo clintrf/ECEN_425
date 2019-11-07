@@ -32,6 +32,7 @@ void YKInitialize(void){    // Initializes all required kernel data structures
   YKISRDepth = 0;
   //YKSemCount = 0;
 
+  
   YKEnterMutex();
 
   /* code to construct singly linked available TCB list from initial array */
@@ -62,7 +63,9 @@ void YKNewTask( void (*task)(void), void *taskStack, unsigned char priority){   
   int i;
 
   YKEnterMutex();             //Disable interupts
-
+	
+  taskStack = ((int *)taskStack) - 1;
+	
   /* code to grab an unused TCB from the available list */
   tmp = YKAvailTCBList;
   YKAvailTCBList = tmp->next;
@@ -70,7 +73,6 @@ void YKNewTask( void (*task)(void), void *taskStack, unsigned char priority){   
   // Set the struct var definitions
   tmp->priority = priority;
   tmp->delay = 0;
-  tmp->semWait.val = NULL;
 
   // Code taken from the example code
   if (YKRdyList == NULL){	/* is this first insertion? */
