@@ -9,7 +9,7 @@ unsigned int YKCtxSwCount;            // must be incremented each time a context
 unsigned int YKIdleCount;             // Must be incremented by the idle task in its while(1) loop.
 unsigned int YKTickNum;
 unsigned int YKISRDepth;
-unsigned int YKSemCount;
+//unsigned int YKSemCount;
 
 TCBptr YKRdyList;
 TCBptr YKDelayList;
@@ -19,7 +19,8 @@ TCB    YKTCBArray[MAXTASKS+1];	/* array to allocate all needed TCBs*/
 
 TCBptr TKCurrentlyRunning;
 
-YKSEM* YKSemArray[SEM_COUNT]; // Not sure how large this array should be, change it if needed
+YKSEM YKSemArray[SEM_COUNT]; // Not sure how large this array should be, change it if needed
+TCBptr YKSemWaitList;        // List of the semaphores currently waiting
 
 char run_flag = 0;
 
@@ -28,8 +29,8 @@ void YKInitialize(void){    // Initializes all required kernel data structures
   YKCtxSwCount = 0;         // Set to 0
   YKIdleCount = 0;          // Set to 0
   TKCurrentlyRunning = 0;   // Set to 0
-	YKISRDepth = 0;
-  YKSemCount = 0;
+  YKISRDepth = 0;
+  //YKSemCount = 0;
 
   YKEnterMutex();
 
@@ -39,10 +40,14 @@ void YKInitialize(void){    // Initializes all required kernel data structures
   for (i = 0; i < MAXTASKS; i++)
 	  YKTCBArray[i].next = &(YKTCBArray[i+1]);
   YKTCBArray[MAXTASKS].next = NULL;
+  
+  for (i = 0; i < SEM_COUNT; i++){ 
+    YKSemArray[i].val = 0;           // init the value of the semaphore
+    YKSemArray[i].active = 0;        // init if the semaphore has been activated (has not)
+    YKSemArray[i].id = i;            // init the Id of the semaphore so we can track it / debug
+  }
 
   YKNewTask(YKIdleTask, (void*)&idleStack[256], 100);
-  //call YKIdleTask         // From YAK Kernel instruction book
-  //^ could call YKIdleTask as YKNewTask()
 }
 
 void YKIdleTask(void){      // Kernel's idle task
@@ -233,26 +238,36 @@ void YKTickHandler(void){
 }
 
 YKSEM* YKSemCreate(int initialValue){
-  YKSEM* newSem;
   int i;
-
-  newSem->val = initialValue;
-  newSem->id = YKSemCount;
-  printInt(YKSemCount);
-  if(initialValue >= 0 && YKSemCount < SEM_COUNT){
-    YKSemArray[YKSemCount] = newSem;
-    printString("Create");
-    YKSemCount++;
-    for(i = 0; i < YKSemCount; i++){
-      printInt(YKSemArray[i]->val);
-    }
-    printNewLine();
-
-    return newSem;
-  }
-  else{
-    return NULL;
-  }
+  //YKSEM* newSem;
+  //newSem->val = initialValue;
+  //newSem->id = YKSemCount;
+  //printInt(YKSemCount);
+  //if(initialValue >= 0 && YKSemCount < SEM_COUNT){
+  //  YKSemArray[YKSemCount] = newSem;
+  //  printString("Create");
+  //  YKSemCount++;
+  //  for(i = 0; i < YKSemCount; i++){
+  //    printInt(YKSemArray[i]->val);
+  //  }
+  //  printNewLine();
+  //
+  //  return newSem;
+  //}
+  //else{
+  //  return NULL;
+  //}
+  
+	
+  //YKEnterMutex();
+  
+  for (i = 0; YKSemArray[i].active; i++){}; // find next open semaphore
+  
+  YKSemArray[i].active = 1; //make active
+  YKSemArray[i].value = initialValue;
+  YKSemArray[i].id = i;
+	
+  return &(YKSemArray[i]);
 }
 
 /* Take semaphore
@@ -263,50 +278,77 @@ suspended by the kernel until the semaphore is available, and the scheduler is c
 This function is called only by tasks, and never by ISRs or interrupt handlers.
 */
 void YKSemPend(YKSEM *semaphore){
+//   TCBptr readyTask;
+//   TCBptr suspTask;
+//   int i;
+//   printString("Pend ");
+//   printInt(semaphore->id);
+//   for(i = 0; i < YKSemCount; i++){
+//     printInt(YKSemArray[i]->id);
+//   }
+//   printNewLine();
+
+//   YKEnterMutex();
+//   if(semaphore->val > 0){
+//     semaphore->val--;
+//   }
+//   else{
+//     semaphore->val--;
+//     // Move task from ready list to susp list
+//     readyTask = YKRdyList;
+//     YKRdyList = readyTask->next;
+//     YKRdyList->prev = NULL;
+
+//     suspTask = YKSuspList;
+//     // Find where the the task to suspend should go
+//     while(readyTask->priority < suspTask->priority && suspTask->next != NULL){
+//       suspTask = suspTask->next;
+//     }
+
+//     if(suspTask->prev == NULL){ // insert readyTask at beginning of suspList
+//       readyTask->next = suspTask;
+//       suspTask->prev = readyTask;
+//       readyTask->prev = NULL;
+//       YKSuspList = readyTask;
+//     }
+//     else{ // otherwise insert normally
+//       readyTask->next = suspTask;
+//       readyTask->prev = suspTask->prev;
+//       suspTask->prev->next = readyTask;
+//       suspTask->prev = readyTask;
+//       YKSuspList = readyTask;
+//     }
+
+//     YKScheduler(1);
+//   }
+//   YKExitMutex();
+	
   TCBptr readyTask;
-  TCBptr suspTask;
-  int i;
-  printString("Pend ");
-  printInt(semaphore->id);
-  for(i = 0; i < YKSemCount; i++){
-    printInt(YKSemArray[i]->id);
-  }
-  printNewLine();
-
   YKEnterMutex();
-  if(semaphore->val > 0){
-    semaphore->val--;
-  }
-  else{
-    semaphore->val--;
-    // Move task from ready list to susp list
-    readyTask = YKRdyList;
-    YKRdyList = readyTask->next;
-    YKRdyList->prev = NULL;
-
-    suspTask = YKSuspList;
-    // Find where the the task to suspend should go
-    while(readyTask->priority < suspTask->priority && suspTask->next != NULL){
-      suspTask = suspTask->next;
-    }
-
-    if(suspTask->prev == NULL){ // insert readyTask at beginning of suspList
-      readyTask->next = suspTask;
-      suspTask->prev = readyTask;
-      readyTask->prev = NULL;
-      YKSuspList = readyTask;
-    }
-    else{ // otherwise insert normally
-      readyTask->next = suspTask;
-      readyTask->prev = suspTask->prev;
-      suspTask->prev->next = readyTask;
-      suspTask->prev = readyTask;
-      YKSuspList = readyTask;
-    }
-
-    YKScheduler(1);
-  }
+  // make semaphore unavalible to take
   YKExitMutex();
+  
+  if (semaphore->val >= 0){ return; } // break if it gets above zero because that means its available
+	  
+  YKEnterMutex();
+  readyTask = YKRdyList;
+  YKRdyList = readyTask->next;
+  readyTask->next->prev = NULL;
+  readyTask->prev = YKSemWaitList; // store on the top of the sem wait list
+  YKSemWaitList = readyTask;
+  readyTask->prev = NULL;
+	
+  if(readyTask->next != NULL){
+    readyTask->next->prev = tmp;
+  }
+	
+  readyTask->semWait = semaphore;
+	
+  YKScheduler(1);
+  YKExitMutex();
+  
+	
+	
 }
 
 /* Release semaphore
@@ -320,29 +362,82 @@ If the function is called from an interrupt handler, the scheduler should not be
 called within the function. It will be called shortly in YKExitISR after all ISR actions are completed.
 */
 void YKSemPost(YKSEM *semaphore){
-  TCBptr suspTask;
-  printString("Post ");
-  printInt(semaphore->id);
-  printNewLine();
+//   TCBptr suspTask;
+//   printString("Post ");
+//   printInt(semaphore->id);
+//   printNewLine();
+
+//   YKEnterMutex();
+//   semaphore->val++;
+//   suspTask = YKSuspList;
+//   // Loop through suspended tasks
+//   while(suspTask->next != NULL){
+//       //  if task is highest priority and is waiting for sem, make ready
+//       if(&(suspTask->semWait) == semaphore){
+
+//         //  if called from task code (ISR depth == 0), call the scheduler
+//         if(YKISRDepth == 0){
+//           YKScheduler(1);
+//         }
+//         YKExitMutex();
+//         return;
+//       }
+//       suspTask = suspTask->next;
+//     }
+//   YKExitMutex();
+	
+  TCBptr semWaiting, unSuspTask, readyTask;
+  unSuspTask = NULL;
+  semWaiting = YKSemWaitList;
 
   YKEnterMutex();
   semaphore->val++;
-  suspTask = YKSuspList;
+	
   // Loop through suspended tasks
-  while(suspTask->next != NULL){
+  while(semWaiting != NULL){
       //  if task is highest priority and is waiting for sem, make ready
-      if(&(suspTask->semWait) == semaphore){
-
-        //  if called from task code (ISR depth == 0), call the scheduler
-        if(YKISRDepth == 0){
-          YKScheduler(1);
-        }
-        YKExitMutex();
-        return;
+      if(semWaiting->semWait) == semaphore){
+        if((unSuspTask == NULL) || (semWaiting->priority < unSuspTask->priority)){
+          unSuspTask = semWaiting;
+	}
       }
-      suspTask = suspTask->next;
-    }
+      semWaiting = semWaiting->next;
+  }
+	
+  if(unSuspTask == NULL){ // if it never assigns unSuspTask in while loop then kill and return
+    YKExitMutex();
+    return;
+  }
+	
+  if (unSuspTask->next != NULL){
+    YKSemWaitList = unSuspTask->next;
+  }
+  else{
+    unSuspTask->next->prev = unSuspTask->prev;
+  }
+  
+  // now deal with the ready list
+  readyTask = YKRdyList;
+  while(readyTask->priority < unSuspTask->priority){
+    readyTask = readyTask->next
+  }
+  if(readyTask->prev == NULL){ // AKA its at the front
+    YKRdyList = unSuspTask;
+  }
+  else{                        // insert it
+    readyTask->prev-next = unSuspTask;
+  }
+  unSuspTask->prev = readyTask->prev;
+  unSuspTask->next = readyTask;
+  readyTask->prev = unSuspTask;
+	
+  unSuspTask->semWait = NULL;
+	
+  if( YKISRDepth == 0){
+  YKScheduler(1);
+  }
   YKExitMutex();
+  return;
 }
 
 
