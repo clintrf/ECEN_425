@@ -398,7 +398,7 @@ void YKSemPost(YKSEM *semaphore){
   // Loop through suspended tasks
   while(semWaiting != NULL){
       //  if task is highest priority and is waiting for sem, make ready
-      if(semWaiting->semWait) == semaphore){
+      if(semWaiting->semWait == semaphore){
         if((unSuspTask == NULL) || (semWaiting->priority < unSuspTask->priority)){
           unSuspTask = semWaiting;
 	}
