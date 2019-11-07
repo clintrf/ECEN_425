@@ -30,6 +30,7 @@ void c_key_handler(){
 		printString("\r\nDELAY COMPLETE$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$\r\n");
 	}
 	else if(c == 'p'){
+		printString("\r\n P Key Pressed pppppppppppppppppppppppppppp\r\n");
 		YKSemPost(NSemPtr);
 	}
 	else{
