@@ -4,8 +4,8 @@
 #define YAKK_H
 
 #define NULL 0
-#define MAXTASKS 10
-#define SEM_COUNT 20
+#define MAXTASKS 9
+#define SEM_COUNT 19
 
 
 /******************** Global Variables ********************/
@@ -13,7 +13,6 @@ extern unsigned int YKCtxSwCount;            // must be incremented each time a 
                                              //  - the dispatching of a task other than the task that ran most recently.
 extern unsigned int YKIdleCount;             // Must be incremented by the idle task in its while(1) loop.
 extern unsigned int YKTickNum;
-extern unsigned int YKSemCount;
 
 /******************** Global Structs ********************/
 typedef struct YKSEM
@@ -40,7 +39,7 @@ typedef struct taskblock
 
 extern TCBptr YKRdyList;
 extern TCBptr YKDelayList;
-extern TCBptr YKSuspList;
+extern TCBptr YKSemWaitList;
 extern TCBptr YKAvailTCBList;		/* a list of available TCBs */
 extern TCB    YKTCBArray[MAXTASKS+1];	/* array to allocate all needed TCBs*/
 
