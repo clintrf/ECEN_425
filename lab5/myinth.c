@@ -14,7 +14,7 @@ void c_reset_handler(){
 }
 
 void c_tick_handler(){
-	static unsigned int tick = 0;
+	static unsigned int tick = 1;
 	printString("\nTICK ");
 	printInt(tick++);
 	printNewLine();
