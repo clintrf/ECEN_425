@@ -5,7 +5,7 @@
 
 extern int KeyBuffer;
 extern YKSEM *NSemPtr;
-//extern void YKSemPost(YKSEM *semaphore);
+
 void delay();
 extern void YKTickHandler(void);
 #define DELAY 5000
@@ -32,7 +32,7 @@ void c_key_handler(){
 		printString("\r\nDELAY COMPLETE$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$\r\n");
 	}
 	else if(c == 'p'){
-		printString("\r\n P Key Pressed pppppppppppppppppppppppppppp\r\n");
+		printString("\r\n P KEY PRESSED\r\n");
 		YKSemPost(NSemPtr);
 	}
 	else{
