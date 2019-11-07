@@ -13,8 +13,14 @@ extern unsigned int YKCtxSwCount;            // must be incremented each time a 
                                              //  - the dispatching of a task other than the task that ran most recently.
 extern unsigned int YKIdleCount;             // Must be incremented by the idle task in its while(1) loop.
 extern unsigned int YKTickNum;
+extern unsigned int YKSemCount;
 
 /******************** Global Structs ********************/
+typedef struct semaphore
+{				        /* the TCB struct definition */
+    int val;
+    int id;
+}  YKSEM;
 
 // TCB Struct
 typedef struct taskblock *TCBptr;
@@ -27,18 +33,17 @@ typedef struct taskblock
     int delay;			/* #ticks yet to wait */
     TCBptr next;		/* forward ptr for dbl linked list */
     TCBptr prev;		/* backward ptr for dbl linked list */
+    YKSEM semWait;      /* semaphore the task is waiting for. NULL if not waiting */
 }  TCB;
 
-typedef struct semaphore
-{				        /* the TCB struct definition */
-    int val;
-}  YKSEM;
 
 extern TCBptr YKRdyList;
 extern TCBptr YKDelayList;
 extern TCBptr YKSuspList;
 extern TCBptr YKAvailTCBList;		/* a list of available TCBs */
-extern TCB    YKTCBArray[MAXTASKS+1];	/* array to allocate all needed TCBs
+extern TCB    YKTCBArray[MAXTASKS+1];	/* array to allocate all needed TCBs*/
+
+extern YKSEM* YKSemArray[SEM_COUNT];
 
 /******************** Functions in yakc.c ********************/
 void YKInitialize(void);                    // Initializes all required kernel data structures

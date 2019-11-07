@@ -19,7 +19,7 @@ TCB    YKTCBArray[MAXTASKS+1];	/* array to allocate all needed TCBs*/
 
 TCBptr TKCurrentlyRunning;
 
-YKSEM YKSemArray[SEM_COUNT]; // Not sure how large this array should be, change it if needed
+YKSEM* YKSemArray[SEM_COUNT]; // Not sure how large this array should be, change it if needed
 
 char run_flag = 0;
 
@@ -29,6 +29,7 @@ void YKInitialize(void){    // Initializes all required kernel data structures
   YKIdleCount = 0;          // Set to 0
   TKCurrentlyRunning = 0;   // Set to 0
 	YKISRDepth = 0;
+  YKSemCount = 0;
 
   YKEnterMutex();
 
@@ -64,6 +65,7 @@ void YKNewTask( void (*task)(void), void *taskStack, unsigned char priority){   
   // Set the struct var definitions
   tmp->priority = priority;
   tmp->delay = 0;
+  tmp->semWait.val = NULL;
 
   // Code taken from the example code
   if (YKRdyList == NULL){	/* is this first insertion? */
@@ -126,12 +128,6 @@ void YKScheduler(int save_flag){     // Determines the highest priority ready ta
   //printString("Entering Scheduler\n\r");
   highest_priority_task = YKRdyList;
   currentlyRunning = TKCurrentlyRunning;
-
-  // printString("Comp ");
-  // printInt(TKCurrentlyRunning->priority);
-  // printString(" ");
-  // printInt(highest_priority_task->priority);
-  // printNewLine();
 
   if(!run_flag || (TKCurrentlyRunning == highest_priority_task)){                               // NOT redundant! Tell the kernel to begin for first time
     return;
@@ -237,12 +233,22 @@ void YKTickHandler(void){
 }
 
 YKSEM* YKSemCreate(int initialValue){
-  YKSEM newSem;
-  newSem.val = initialValue;
+  YKSEM* newSem;
+  int i;
+
+  newSem->val = initialValue;
+  newSem->id = YKSemCount;
+  printInt(YKSemCount);
   if(initialValue >= 0 && YKSemCount < SEM_COUNT){
     YKSemArray[YKSemCount] = newSem;
+    printString("Create");
     YKSemCount++;
-    return &newSem;
+    for(i = 0; i < YKSemCount; i++){
+      printInt(YKSemArray[i]->val);
+    }
+    printNewLine();
+
+    return newSem;
   }
   else{
     return NULL;
@@ -259,6 +265,13 @@ This function is called only by tasks, and never by ISRs or interrupt handlers.
 void YKSemPend(YKSEM *semaphore){
   TCBptr readyTask;
   TCBptr suspTask;
+  int i;
+  printString("Pend ");
+  printInt(semaphore->id);
+  for(i = 0; i < YKSemCount; i++){
+    printInt(YKSemArray[i]->id);
+  }
+  printNewLine();
 
   YKEnterMutex();
   if(semaphore->val > 0){
@@ -308,6 +321,9 @@ called within the function. It will be called shortly in YKExitISR after all ISR
 */
 void YKSemPost(YKSEM *semaphore){
   TCBptr suspTask;
+  printString("Post ");
+  printInt(semaphore->id);
+  printNewLine();
 
   YKEnterMutex();
   semaphore->val++;
@@ -315,9 +331,16 @@ void YKSemPost(YKSEM *semaphore){
   // Loop through suspended tasks
   while(suspTask->next != NULL){
       //  if task is highest priority and is waiting for sem, make ready
+      if(&(suspTask->semWait) == semaphore){
+
+        //  if called from task code (ISR depth == 0), call the scheduler
+        if(YKISRDepth == 0){
+          YKScheduler(1);
+        }
+        YKExitMutex();
+        return;
+      }
       suspTask = suspTask->next;
-      //  if called from task code (ISR depth == 0), call the scheduler
-      //  else, do not call scheduler
     }
   YKExitMutex();
 }

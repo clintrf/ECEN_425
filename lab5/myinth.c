@@ -7,9 +7,6 @@ extern int KeyBuffer;
 extern void YKTickHandler(void);
 #define DELAY 5000
 
-
-
-
 void c_reset_handler(){
 	printString("\nRESET PROGRAM\n");
 	exit(0);
@@ -31,6 +28,9 @@ void c_key_handler(){
 		printString("\r\nDELAY KEY PRESSED\r\n");
 		delay();
 		printString("\r\nDELAY COMPLETE$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$\r\n");
+	}
+	else if(c == 'p'){
+		//YKSemPost(NSemPtr);
 	}
 	else{
 		printString("\r\nKEYPRESS (");

@@ -1,25 +1,25 @@
 # Make file for Lab 4b
 
-lab4d.bin:	lab4dfinal.s
-		nasm lab4dfinal.s -o lab4d.bin -l lab4d.lst
+lab5.bin:	lab5final.s
+		nasm lab5final.s -o lab5.bin -l lab5.lst
 
-lab4dfinal.s:	clib.s myisr.s myinth.s yaks.s lab4d_app.s yakc.s
-		cat clib.s myisr.s myinth.s yakc.s yaks.s lab4d_app.s > lab4dfinal.s
+lab5final.s:	clib.s myisr.s myinth.s yaks.s lab5_app.s yakc.s
+		cat clib.s myisr.s myinth.s yakc.s yaks.s lab5_app.s > lab5final.s
 
 myinth.s:	myinth.c
 		cpp myinth.c myinth.i
 		c86 -g myinth.i myinth.s
 
-lab4d_app.s:	lab4d_app.c yakk.h
-		cpp lab4d_app.c lab4d_app.i
-		c86 -g lab4d_app.i lab4d_app.s
+lab5_app.s:	lab5_app.c yakk.h
+		cpp lab5_app.c lab5_app.i
+		c86 -g lab5_app.i lab5_app.s
 
 yakc.s:		yakc.c yakk.h
 		cpp yakc.c yakc.i
 		c86 -g yakc.i yakc.s
 
 clean:
-		rm lab4d.bin lab4d.lst lab4dfinal.s \
+		rm lab5.bin lab5.lst lab5final.s \
 		myinth.s myinth.i \
 		yakc.s yakc.i \
-		lab4d_app.s lab4d_app.i
+		lab5_app.s lab5_app.i
