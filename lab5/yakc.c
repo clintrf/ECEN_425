@@ -266,7 +266,7 @@ YKSEM* YKSemCreate(int initialValue){
   for (i = 0; YKSemArray[i].active; i++){}; // find next open semaphore
   
   YKSemArray[i].active = 1; //make active
-  YKSemArray[i].value = initialValue;
+  YKSemArray[i].val = initialValue;
   YKSemArray[i].id = i;
 	
   return &(YKSemArray[i]);
@@ -341,7 +341,7 @@ void YKSemPend(YKSEM *semaphore){
   readyTask->prev = NULL;
 	
   if(readyTask->next != NULL){
-    readyTask->next->prev = tmp;
+    readyTask->next->prev = readyTask;
   }
 	
   readyTask->semWait = semaphore;
