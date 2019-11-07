@@ -14,7 +14,7 @@ void c_reset_handler(){
 }
 
 void c_tick_handler(){
-	static unsigned int tick = 1;
+	static int tick = 0;
 	printString("\nTICK ");
 	printInt(tick++);
 	printNewLine();
@@ -23,7 +23,6 @@ void c_tick_handler(){
 }
 
 void c_key_handler(){
-	int i=0;
 	char c = (char) KeyBuffer;
 	if (c == 'd'){
 		printString("\r\nDELAY KEY PRESSED\r\n");
