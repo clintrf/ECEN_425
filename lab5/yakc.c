@@ -13,7 +13,7 @@ unsigned int YKISRDepth;
 
 TCBptr YKRdyList;
 TCBptr YKDelayList;
-TCBptr YKSuspList;
+//TCBptr YKSuspList;
 TCBptr YKAvailTCBList;		/* a list of available TCBs */
 TCB    YKTCBArray[MAXTASKS+1];	/* array to allocate all needed TCBs*/
 
