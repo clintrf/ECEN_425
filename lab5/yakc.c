@@ -17,10 +17,10 @@ TCBptr YKDelayList;
 TCBptr YKAvailTCBList;		/* a list of available TCBs */
 TCB    YKTCBArray[MAXTASKS+1];	/* array to allocate all needed TCBs*/
 
-TCBptr TKCurrentlyRunning;
-
 YKSEM YKSemArray[SEM_COUNT]; // Not sure how large this array should be, change it if needed
 TCBptr YKSemWaitList;        // List of the semaphores currently waiting
+
+TCBptr TKCurrentlyRunning;
 
 char run_flag = 0;
 
