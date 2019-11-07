@@ -44,8 +44,6 @@ extern TCBptr YKSuspList;
 extern TCBptr YKAvailTCBList;		/* a list of available TCBs */
 extern TCB    YKTCBArray[MAXTASKS+1];	/* array to allocate all needed TCBs*/
 
-extern YKSEM* YKSemArray[SEM_COUNT];
-
 /******************** Functions in yakc.c ********************/
 void YKInitialize(void);                    // Initializes all required kernel data structures
 void YKIdleTask(void);                      // Kernel's idle task
