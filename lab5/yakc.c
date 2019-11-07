@@ -62,9 +62,9 @@ void YKNewTask( void (*task)(void), void *taskStack, unsigned char priority){   
   TCBptr tmp, tmp2;
   int i;
 
+  taskStack = ((int *)taskStack) - 1;	
+
   YKEnterMutex();             //Disable interupts
-	
-  taskStack = ((int *)taskStack) - 1;
 	
   /* code to grab an unused TCB from the available list */
   tmp = YKAvailTCBList;
@@ -189,10 +189,8 @@ void YKEnterISR(void){
 
 void YKExitISR(void){
   YKISRDepth = YKISRDepth - 1;
-  // printString("Depth ");
-  //printInt(YKISRDepth);
-  // printNewLine();
-	if(YKISRDepth == 0) {
+	
+  if(YKISRDepth == 0) {
     YKScheduler(1);
   }
 }
@@ -261,7 +259,7 @@ YKSEM* YKSemCreate(int initialValue){
   //}
   
 	
-  //YKEnterMutex();
+  YKEnterMutex();
   
   for (i = 0; YKSemArray[i].active; i++){}; // find next open semaphore
   
@@ -327,7 +325,7 @@ void YKSemPend(YKSEM *semaphore){
 	
   TCBptr readyTask;
   YKEnterMutex();
-  // make semaphore unavalible to take
+  semaphore->val--;
   YKExitMutex();
   
   if (semaphore->val >= 0){ return; } // break if it gets above zero because that means its available
