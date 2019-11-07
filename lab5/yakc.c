@@ -53,6 +53,7 @@ void YKInitialize(void){    // Initializes all required kernel data structures
 
 void YKIdleTask(void){      // Kernel's idle task
   while(1){                 // From YAK Kernal instuction book
+    YKEnterMutex();
     YKIdleCount=YKIdleCount+1;          //
     YKExitMutex();
   }
@@ -63,8 +64,6 @@ void YKNewTask( void (*task)(void), void *taskStack, unsigned char priority){   
   int i;
 
   taskStack = ((int *)taskStack) - 1;	
-
-  YKEnterMutex();             //Disable interupts
 	
   /* code to grab an unused TCB from the available list */
   tmp = YKAvailTCBList;
@@ -73,7 +72,9 @@ void YKNewTask( void (*task)(void), void *taskStack, unsigned char priority){   
   // Set the struct var definitions
   tmp->priority = priority;
   tmp->delay = 0;
-
+	
+  YKEnterMutex();             //Disable interupts
+	
   // Code taken from the example code
   if (YKRdyList == NULL){	/* is this first insertion? */
     YKRdyList = tmp;
@@ -116,7 +117,7 @@ void YKNewTask( void (*task)(void), void *taskStack, unsigned char priority){   
   }
 
   YKScheduler(1);          // Save current block of mem
-  YKExitMutex();              		// starts interrupts
+  //YKExitMutex();              		// starts interrupts
 }
 
 void YKRun(void){                 // Starts actual execution of user code
@@ -126,12 +127,12 @@ void YKRun(void){                 // Starts actual execution of user code
 }
 
 void YKScheduler(int save_flag){     // Determines the highest priority ready task
-  int testVar;
-  int* testPt;
+  //int testVar;
+  //int* testPt;
   TCBptr highest_priority_task;
   TCBptr currentlyRunning;
 
-  YKEnterMutex();
+  //YKEnterMutex();
   //printString("Entering Scheduler\n\r");
   highest_priority_task = YKRdyList;
   currentlyRunning = TKCurrentlyRunning;
@@ -152,7 +153,7 @@ void YKScheduler(int save_flag){     // Determines the highest priority ready ta
     YKDispatcherSave(&(currentlyRunning->stackptr), highest_priority_task->stackptr);
     //printString("EXIT SAVE DISPATCHER\n\r");
   }
-  YKExitMutex();
+  //YKExitMutex();
 }
 
 void YKDelayTask(unsigned count){
@@ -260,8 +261,11 @@ YKSEM* YKSemCreate(int initialValue){
   
 	
   YKEnterMutex();
-  
-  for (i = 0; YKSemArray[i].active; i++){}; // find next open semaphore
+  i = 0;
+  while(YKSemArray[i].active){
+    i = i+1;
+  }
+  //for (i = 0; YKSemArray[i].active; i++){}; // find next open semaphore
   
   YKSemArray[i].active = 1; //make active
   YKSemArray[i].val = initialValue;
@@ -334,7 +338,7 @@ void YKSemPend(YKSEM *semaphore){
   readyTask = YKRdyList;
   YKRdyList = readyTask->next;
   readyTask->next->prev = NULL;
-  readyTask->prev = YKSemWaitList; // store on the top of the sem wait list
+  readyTask->next = YKSemWaitList; // store on the top of the sem wait list
   YKSemWaitList = readyTask;
   readyTask->prev = NULL;
 	
@@ -407,10 +411,14 @@ void YKSemPost(YKSEM *semaphore){
     return;
   }
 	
-  if (unSuspTask->next != NULL){
-    YKSemWaitList = unSuspTask->next;
+  if(unSuspTask->prev == NULL){
+      YKSemWaitList = unSuspTask->next;
   }
   else{
+    unSuspTask->prev->next = unSuspTask->next;
+  }
+	
+  if (unSuspTask->next != NULL){
     unSuspTask->next->prev = unSuspTask->prev;
   }
   
