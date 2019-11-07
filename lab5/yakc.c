@@ -420,14 +420,14 @@ void YKSemPost(YKSEM *semaphore){
   
   // now deal with the ready list
   readyTask = YKRdyList;
-  while(readyTask->priority < unSuspTask->priority){
-    readyTask = readyTask->next
+  while (readyTask->priority < unSuspTask->priority){
+    readyTask = readyTask->next;
   }
   if(readyTask->prev == NULL){ // AKA its at the front
     YKRdyList = unSuspTask;
   }
   else{                        // insert it
-    readyTask->prev-next = unSuspTask;
+    readyTask->prev->next = unSuspTask;
   }
   unSuspTask->prev = readyTask->prev;
   unSuspTask->next = readyTask;
