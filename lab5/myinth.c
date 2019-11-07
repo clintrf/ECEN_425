@@ -5,7 +5,7 @@
 
 extern int KeyBuffer;
 extern YKSEM *NSemPtr;
-extern void YKSemPost(YKSEM *semaphore);
+//extern void YKSemPost(YKSEM *semaphore);
 void delay();
 extern void YKTickHandler(void);
 #define DELAY 5000
