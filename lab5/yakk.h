@@ -16,7 +16,7 @@ extern unsigned int YKTickNum;
 extern unsigned int YKSemCount;
 
 /******************** Global Structs ********************/
-typedef struct semaphore
+typedef struct YKSEM
 {				        /* the TCB struct definition */
     int val;       // indicates if semaphore has is ready
     int active;    // indicates if semaphore has been initialezed
