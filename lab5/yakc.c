@@ -440,7 +440,7 @@ void YKSemPost(YKSEM *semaphore){
   unSuspTask->semWait = NULL;
 	
   if( YKISRDepth == 0){
-  YKScheduler(1);
+    YKScheduler(1);
   }
   YKExitMutex();
   return;
