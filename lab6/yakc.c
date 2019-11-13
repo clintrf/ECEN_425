@@ -446,6 +446,42 @@ void YKSemPost(YKSEM *semaphore){
   return;
 }
 
+//Initializes the message queue, returns pointer to that queue
+YKQ *YKQCreate(void **start, unsigned size){
+  YKQ queue;
+  queue.base_addr = start;
+  queue.size = size;
+  queue.to_insert = *queue.base_addr;
+  queue.to_remove = NULL; // Where should this point to?
+
+  return &queue; 
+}
+
+/*
+This function removes the oldest message from the indicated message queue if it is non-empty. 
+If the message queue is empty, the calling task is suspended by the kernel until a message becomes available. 
+The function returns the oldest message in the queue (cast to C's generic "void pointer" type). 
+This function is called only by tasks and never by interrupt handlers or ISRs.
+*/
+void *YKQPend(YKQ *queue){
+  
+}
+
+/*
+This function places a message in a message queue. 
+- The first parameter is the queue in which the message is to be placed.
+- The second parameter is a pointer to the message (cast as a void pointer). 
+- If space was available in the queue and the message was successfully inserted, the function returns the 
+value 1. If the queue is full, no message is inserted and the value 0 is returned. 
+- If any suspended tasks are waiting for a message from this queue, the highest priority task is made ready 
+to run. 
+- If called from task code (Depth = 0), the function should call the scheduler so newly awakened 
+high-priority tasks have an opportunity to run immediately. 
+- Otherwise, the scheduler should not be called in YKQPost.
+*/
+int YKQPost(YKQ *queue, void *msg){
+
+}
 
 /******************** Functions in yaks.s ********************/
 // Functions are made inside of yaks.s because they are coded in assembly
@@ -455,9 +491,6 @@ void YKSemPost(YKSEM *semaphore){
 
 
 /******************** Functions not in this lab ********************/
-//YKQ *YKQCreate(void **start, unsigned size)
-//void *YKQPend(YKQ *queue)
-//int YKQPost(YKQ *queue, void *msg)
 //YKEVENT *YKEventCreate(unsigned initialValue)
 //unsigned YKEventPend(YKEVENT *event, unsigned eventMask, int waitMode)
 //void YKEventSet(YKEVENT *event, unsigned eventMask)

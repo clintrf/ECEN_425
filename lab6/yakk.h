@@ -1,4 +1,5 @@
 // yak.h file for the yak.c file
+#include "lab6defs.h"
 
 #ifndef YAKK_H
 #define YAKK_H
@@ -15,8 +16,16 @@ extern unsigned int YKIdleCount;             // Must be incremented by the idle 
 extern unsigned int YKTickNum;
 
 /******************** Global Structs ********************/
+typedef struct YKQ
+{				        
+    int size;       // number of entries in the queue
+    void** base_addr;   // base address of queue
+    void* to_remove;    // next location to remove from
+    void* to_insert;    // Next location to insert at
+}  YKQ;
+
 typedef struct YKSEM
-{				        /* the TCB struct definition */
+{				       
     int val;       // indicates if semaphore has is ready
     int active;    // indicates if semaphore has been initialezed
     int id;
@@ -55,6 +64,9 @@ void YKEnterISR(void);             // Enters the ISR and increments the counter 
 void YKExitISR(void);              // Exits the ISR and decrements the counter for how deap it is
 void YKTickHandler(void);       // handles the ticks
 
+YKQ *YKQCreate(void **start, unsigned size);
+void *YKQPend(YKQ *queue);
+int YKQPost(YKQ *queue, void *msg);
 
 /******************** Functions in yaks.s ********************/
 void YKEnterMutex(void);              // Disables interrupts
@@ -67,9 +79,6 @@ void YKSemPost(YKSEM *semaphore);
 
 
 /******************** Functions not in this lab ********************/
-//YKQ *YKQCreate(void **start, unsigned size)
-//void *YKQPend(YKQ *queue)
-//int YKQPost(YKQ *queue, void *msg)
 //YKEVENT *YKEventCreate(unsigned initialValue)
 //unsigned YKEventPend(YKEVENT *event, unsigned eventMask, int waitMode)
 //void YKEventSet(YKEVENT *event, unsigned eventMask)
