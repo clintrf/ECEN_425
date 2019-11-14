@@ -447,16 +447,38 @@ void YKSemPost(YKSEM *semaphore){
   return;
 }
 
+void queueInsert(YKQ* queue, void* msg){
+  queue->base_addr[queue->head] = msg;
+  if(queue->head < queue->size){
+    queue->head += 1;
+  }
+  else{
+    queue->head = 0;
+  }
+}
+
+void* queueRemove(YKQ* queue){
+  void* msg;
+  msg = queue->base_addr[queue->tail];
+  if(queue->tail > 0){
+    queue->head -= 1;
+  }
+  else{
+    queue->head = queue->size - 1;
+  }
+  return msg;
+}
+
 //Initializes the message queue, returns pointer to that queue
 YKQ *YKQCreate(void **start, unsigned size){
-  YKQ queue;
-  queue.base_addr = start;
-  queue.cur_length = 0;
-  queue.size = size;
-  queue.tail = 0;
-  queue.head = 0; 
+  YKQ* queue;
+  queue->base_addr = start;
+  queue->cur_length = 0;
+  queue->size = size;
+  queue->tail = 0;
+  queue->head = 0; 
 
-  return &queue; 
+  return queue; 
 }
 
 /*
@@ -468,7 +490,7 @@ This function is called only by tasks and never by interrupt handlers or ISRs.
 void *YKQPend(YKQ *queue){
   int i;
   void* msg;
-  TCBPtr readyTask;
+  TCBptr readyTask;
   YKEnterMutex();
   if(queue->cur_length == 0){
     // suspend calling task until there is something in the queue
@@ -508,10 +530,11 @@ high-priority tasks have an opportunity to run immediately.
 - Otherwise, the scheduler should not be called in YKQPost.
 */
 int YKQPost(YKQ *queue, void *msg){
-  TCBPtr queueWait, unWaitTask, readyTask;
+  TCBptr queueWait, unWaitTask, readyTask;
   YKEnterMutex();
 
   if(queue->cur_length < queue->size){
+    printString("Post it");
     queue->cur_length += 1;
     // Insert message
     queueInsert(queue, msg);
@@ -570,31 +593,13 @@ int YKQPost(YKQ *queue, void *msg){
     return 1;
   }
   else{
+    printString("Whoops, dont post it");
+    printInt(queue->cur_length);
+    printString(" ");
+    printInt(queue->size);
     YKExitMutex();
     return 0;
   }
-}
-
-void queueInsert(YKQ* queue, void* msg){
-  queue->base_addr[queue->head] = msg;
-  if(queue->head < queue->size){
-    queue->head += 1;
-  }
-  else{
-    queue->head = 0;
-  }
-}
-
-void* queueRemove(YKQ* queue){
-  void* msg;
-  msg = queue->base_addr[queue->tail];
-  if(queue->tail > 0){
-    queue->head -= 1;
-  }
-  else{
-    queue->head = queue->size - 1;
-  }
-  return msg;
 }
 
 /******************** Functions in yaks.s ********************/

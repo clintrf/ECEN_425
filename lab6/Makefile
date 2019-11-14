@@ -10,8 +10,8 @@ myinth.s:	myinth.c
 		cpp myinth.c myinth.i
 		c86 -g myinth.i myinth.s
 
-lab6_app.s:	lab6_app.c yakk.h
-		cpp lab6_app.c lab6_app.i
+lab6_app.s:	lab6app.c yakk.h
+		cpp lab6app.c lab6_app.i
 		c86 -g lab6_app.i lab6_app.s
 
 yakc.s:		yakc.c yakk.h
