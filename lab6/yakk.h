@@ -16,12 +16,16 @@ extern unsigned int YKIdleCount;             // Must be incremented by the idle 
 extern unsigned int YKTickNum;
 
 /******************** Global Structs ********************/
+// for each queue you will need enough information to maintain the queue as a circular buffer 
+// (such as a head pointer, a tail pointer, and a size). Your kernel also needs a way to indicate that 
+// a task is suspended while waiting for a particular semaphore or a message from a particular queue. 
 typedef struct YKQ
 {				        
-    int size;       // number of entries in the queue
+    int size;           // max number of entries in the queue
+    int cur_length;     // number of entries currently in the queue
     void** base_addr;   // base address of queue
-    void* to_remove;    // next location to remove from
-    void* to_insert;    // Next location to insert at
+    int head;    // next location to remove from
+    int tail;    // Next location to insert at
 }  YKQ;
 
 typedef struct YKSEM
@@ -43,6 +47,7 @@ typedef struct taskblock
     TCBptr next;		/* forward ptr for dbl linked list */
     TCBptr prev;		/* backward ptr for dbl linked list */
     YKSEM *semWait;      /* semaphore the task is waiting for. NULL if not waiting, lets make it a pointer*/
+    YKQ *queueWait;
 }  TCB;
 
 

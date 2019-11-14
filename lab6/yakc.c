@@ -19,6 +19,7 @@ TCB    YKTCBArray[MAXTASKS+1];	/* array to allocate all needed TCBs*/
 
 YKSEM YKSemArray[SEM_COUNT]; // Not sure how large this array should be, change it if needed
 TCBptr YKSemWaitList;        // List of the semaphores currently waiting
+TCBptr YKQWaitList;
 
 TCBptr TKCurrentlyRunning;
 
@@ -401,7 +402,7 @@ void YKSemPost(YKSEM *semaphore){
       if(semWaiting->semWait == semaphore){
         if((unSuspTask == NULL) || (semWaiting->priority < unSuspTask->priority)){
           unSuspTask = semWaiting;
-	}
+	      }
       }
       semWaiting = semWaiting->next;
   }
@@ -450,9 +451,10 @@ void YKSemPost(YKSEM *semaphore){
 YKQ *YKQCreate(void **start, unsigned size){
   YKQ queue;
   queue.base_addr = start;
+  queue.cur_length = 0;
   queue.size = size;
-  queue.to_insert = *queue.base_addr;
-  queue.to_remove = NULL; // Where should this point to?
+  queue.tail = 0;
+  queue.head = 0; 
 
   return &queue; 
 }
@@ -464,7 +466,33 @@ The function returns the oldest message in the queue (cast to C's generic "void 
 This function is called only by tasks and never by interrupt handlers or ISRs.
 */
 void *YKQPend(YKQ *queue){
-  
+  int i;
+  void* msg;
+  TCBPtr readyTask;
+  YKEnterMutex();
+  if(queue->cur_length == 0){
+    // suspend calling task until there is something in the queue
+    readyTask = YKRdyList;
+    YKRdyList = readyTask->next;
+    readyTask->next->prev = NULL;
+    readyTask->next = YKQWaitList; // store on the top of the queue wait list
+    YKQWaitList = readyTask;
+    readyTask->prev = NULL;
+
+    if(readyTask->next != NULL){
+      readyTask->next->prev = readyTask;
+    }
+
+    readyTask->queueWait = queue;
+
+    YKExitMutex();
+    return NULL;
+  }
+  else{
+    msg = queueRemove(queue);
+    YKExitMutex();
+    return msg;
+  }
 }
 
 /*
@@ -480,7 +508,93 @@ high-priority tasks have an opportunity to run immediately.
 - Otherwise, the scheduler should not be called in YKQPost.
 */
 int YKQPost(YKQ *queue, void *msg){
+  TCBPtr queueWait, unWaitTask, readyTask;
+  YKEnterMutex();
 
+  if(queue->cur_length < queue->size){
+    queue->cur_length += 1;
+    // Insert message
+    queueInsert(queue, msg);
+    queueWait = YKQWaitList;
+    unWaitTask = NULL;
+
+    while(queueWait != NULL){
+      //  if task is highest priority and is waiting for sem, make ready
+      if(queueWait->queueWait == queue){
+        if((unWaitTask == NULL) || (queueWait->priority < unWaitTask->priority)){
+          unWaitTask = queueWait;
+	      }
+      }
+      queueWait = queueWait->next;
+    }
+    
+    // If suspended tasks are waiting for a msg from this queue
+    if(unWaitTask == NULL){
+      YKExitMutex();
+      return 1;
+    }
+
+    //    make the highest priority task ready
+    if(unWaitTask->prev == NULL){
+      YKQWaitList = unWaitTask->next;
+    }
+    else{
+      unWaitTask->prev->next = unWaitTask->next;
+    }
+    
+    if (unWaitTask->next != NULL){
+      unWaitTask->next->prev = unWaitTask->prev;
+    }
+    
+    // now deal with the ready list
+    readyTask = YKRdyList;
+    while (readyTask->priority < unWaitTask->priority){
+      readyTask = readyTask->next;
+    }
+    if(readyTask->prev == NULL){ // AKA its at the front
+      YKRdyList = unWaitTask;
+    }
+    else{                        // insert it
+      readyTask->prev->next = unWaitTask;
+    }
+    unWaitTask->prev = readyTask->prev;
+    unWaitTask->next = readyTask;
+    readyTask->prev = unWaitTask;
+    
+    unWaitTask->semWait = NULL;
+  
+    if(YKISRDepth == 0){
+      YKScheduler(0);
+    }
+    YKExitMutex();
+    return 1;
+  }
+  else{
+    YKExitMutex();
+    return 0;
+  }
+}
+
+void queueInsert(YKQ* queue, void* msg){
+  queue->base_addr[queue->head] = msg;
+  if(queue->head < queue->size){
+    queue->head += 1;
+  }
+  else{
+    queue->head = 0;
+  }
+}
+
+void* queueRemove(YKQ* queue){
+  void* msg;
+  msg = queue->base_addr[queue->tail];
+  if(queue->tail > 0){
+    queue->head -= 1;
+  }
+  else{
+    queue->head = queue->size - 1;
+  }
+  return msg;
 }
 
 /******************** Functions in yaks.s ********************/
