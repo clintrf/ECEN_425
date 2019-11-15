@@ -528,41 +528,39 @@ int YKQPost(YKQ *queue, void *msg){
     return 1;
   }
 
-    //    make the highest priority task ready
-    if(unWaitTask->prev == NULL){
-      YKQWaitList = unWaitTask->next;
-    }
-    else{
-      unWaitTask->prev->next = unWaitTask->next;
-    }
-    
-    if (unWaitTask->next != NULL){
-      unWaitTask->next->prev = unWaitTask->prev;
-    }
-    
-    // now deal with the ready list
-    readyTask = YKRdyList;
-    while (readyTask->priority < unWaitTask->priority){
-      readyTask = readyTask->next;
-    }
-    if(readyTask->prev == NULL){ // AKA its at the front
-      YKRdyList = unWaitTask;
-    }
-    else{                        // insert it
-      readyTask->prev->next = unWaitTask;
-    }
-    unWaitTask->prev = readyTask->prev;
-    unWaitTask->next = readyTask;
-    readyTask->prev = unWaitTask;
-    
-    unWaitTask->queueWait = NULL;
-  
-    if(YKISRDepth == 0){
-      YKScheduler(1);
-    }
-    YKExitMutex();
-    return 1;
+  //    make the highest priority task ready
+  if(unWaitTask->prev == NULL){
+    YKQWaitList = unWaitTask->next;
   }
+  else{
+    unWaitTask->prev->next = unWaitTask->next;
+  }
+    
+  if (unWaitTask->next != NULL){
+    unWaitTask->next->prev = unWaitTask->prev;
+  }   
+  // now deal with the ready list
+  readyTask = YKRdyList;
+  while (readyTask->priority < unWaitTask->priority){
+    readyTask = readyTask->next;
+  }
+  if(readyTask->prev == NULL){ // AKA its at the front
+    YKRdyList = unWaitTask;
+  }
+  else{                        // insert it
+    readyTask->prev->next = unWaitTask;
+  }
+  unWaitTask->prev = readyTask->prev;
+  unWaitTask->next = readyTask;
+  readyTask->prev = unWaitTask;
+   
+  unWaitTask->queueWait = NULL;
+  
+  if(YKISRDepth == 0){
+    YKScheduler(1);
+  }
+  YKExitMutex();
+  return 1;
 }
 
 /******************** Functions in yaks.s ********************/
