@@ -24,6 +24,7 @@ TCBptr YKQWaitList;
 
 TCBptr TKCurrentlyRunning;
 
+int tickcount = 0;
 char run_flag = 0;
 
 void YKInitialize(void){    // Initializes all required kernel data structures
@@ -33,7 +34,7 @@ void YKInitialize(void){    // Initializes all required kernel data structures
   TKCurrentlyRunning = 0;   // Set to 0
   YKISRDepth = 0;
   //YKSemCount = 0;
-
+  YKTickNum = 0;
   
   YKEnterMutex();
 
@@ -212,6 +213,11 @@ void YKTickHandler(void){
 
   YKEnterMutex();
   YKTickNum = YKTickNum + 1;
+  if(tickcount< 7){
+    tickcount++;
+    YKTickNum = 0;
+  }
+  //YKTickNum = YKTickNum + 1;
   tempDelay = YKDelayList;
 	//While the delay is not finished, counter--;
   while(tempDelay != NULL){

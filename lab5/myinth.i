@@ -38,18 +38,6 @@ extern unsigned int YKIdleCount;
 extern unsigned int YKTickNum;
 
 
-
-
-
-typedef struct YKQ
-{
-    int size;
-    int length;
-    void** base_addr;
-    int head;
-    int tail;
-} YKQ;
-
 typedef struct YKSEM
 {
     int val;
@@ -69,7 +57,6 @@ typedef struct taskblock
     TCBptr next;
     TCBptr prev;
     YKSEM *semWait;
-    YKQ *queueWait;
 } TCB;
 
 
@@ -91,9 +78,6 @@ void YKEnterISR(void);
 void YKExitISR(void);
 void YKTickHandler(void);
 
-YKQ *YKQCreate(void **start, unsigned size);
-void *YKQPend(YKQ *queue);
-int YKQPost(YKQ *queue, void *msg);
 
 
 void YKEnterMutex(void);
@@ -104,49 +88,53 @@ YKSEM* YKSemCreate(int initialValue);
 void YKSemPend(YKSEM *semaphore);
 void YKSemPost(YKSEM *semaphore);
 # 3 "myinth.c" 2
-# 1 "lab6defs.h" 1
-# 11 "lab6defs.h"
-struct msg
-{
-    int tick;
-    int data;
-};
-# 4 "myinth.c" 2
-# 12 "myinth.c"
-extern struct msg MsgArray[20];
-extern YKQ *MsgQPtr;
-extern int GlobalFlag;
+
+
+
+extern int KeyBuffer;
+extern YKSEM *NSemPtr;
+
+void delay();
+extern void YKTickHandler(void);
+
 
 void c_reset_handler(){
+ printString("\nRESET PROGRAM\n");
  exit(0);
 }
 
 void c_tick_handler(){
-    static int next = 0;
-    static int data = 0;
+ static int tick = 0;
+ printString("\nTICK ");
+ printInt(tick++);
+ printNewLine();
 
-
-
-
-    MsgArray[next].tick = YKTickNum;
-    data = (data + 89) % 100;
-    MsgArray[next].data = data;
-
-    if (YKQPost(MsgQPtr, (void *) &(MsgArray[next])) == 0){
-        printString("  TickISR: queue overflow! \n");
-    }
-    else if (++next >= 20){
-        next = 0;
-    }
-
-
-
-
-
-
+ YKTickHandler();
 }
 
 void c_key_handler(){
- GlobalFlag = 1;
-# 62 "myinth.c"
+ char c = (char) KeyBuffer;
+ if (c == 'd'){
+  printString("\r\nDELAY KEY PRESSED\r\n");
+  delay();
+  printString("\r\nDELAY COMPLETE$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$\r\n");
+ }
+ else if(c == 'p'){
+  printString("\r\n P KEY PRESSED\r\n");
+  YKSemPost(NSemPtr);
+ }
+ else{
+  printString("\r\nKEYPRESS (");
+  printChar(c);
+  printString(") IGNORED*********************************************\r\n");
+ }
+}
+
+void delay(){
+ int i=0;
+ for(i = 0; i < 5000; i++){}
+}
+
+void print_debug(){
+ printString("\r\nDEBUGGER\r\n");
 }

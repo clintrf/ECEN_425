@@ -21,8 +21,8 @@ void c_tick_handler(){
     static int next = 0;
     static int data = 0;
 
-    YKTickHandler(); //lab4c
-    
+    //YKTickHandler(); //lab4c
+
     /* create a message with tick (sequence #) and pseudo-random data */
     MsgArray[next].tick = YKTickNum;
     data = (data + 89) % 100;
@@ -34,7 +34,7 @@ void c_tick_handler(){
     else if (++next >= MSGARRAYSIZE){
         next = 0;
     }
-	
+
 	// static int tick = 0;
 	// printString("\nTICK ");
 	// printInt(tick++);

@@ -83,7 +83,7 @@ L_lab6_app_8:
 	call	printInt
 	add	sp, 2
 	; >>>>> Line:	46
-	; >>>>> printNewLi 
+	; >>>>> printNewLine 
 	call	printNewLine
 	jmp	L_lab6_app_13
 L_lab6_app_12:
@@ -418,7 +418,7 @@ L_lab6_app_41:
 	call	YKNewTask
 	add	sp, 6
 	; >>>>> Line:	143
-	; >>>>> nt = 0; 
+	; >>>>> ount = 0; 
 	mov	al, 20
 	push	ax
 	mov	ax, (ATaskStk+1024)
@@ -497,7 +497,7 @@ L_lab6_app_42:
 	; >>>>> YKIdleCount = 0; 
 	mov	word [YKIdleCount], 0
 	; >>>>> Line:	164
-	; >>>>>  
+	; >>>>> YK 
 	call	YKExitMutex
 L_lab6_app_43:
 	jmp	L_lab6_app_42

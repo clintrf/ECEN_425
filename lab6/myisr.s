@@ -111,7 +111,10 @@ not_lowest_interrupt:
 	call YKEnterISR
 
 	sti                 ; enable interrupts for higher priority IRQs ?
+
+	call YKTickHandler;
 	call c_tick_handler ; run interrupt handler ? I think this is the c file
+
 	cli                 ; disable interrupts
 
 	mov al, 0x20        ; send eoi to pic

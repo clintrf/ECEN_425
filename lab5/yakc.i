@@ -38,18 +38,6 @@ extern unsigned int YKIdleCount;
 extern unsigned int YKTickNum;
 
 
-
-
-
-typedef struct YKQ
-{
-    int size;
-    int length;
-    void** base_addr;
-    int head;
-    int tail;
-} YKQ;
-
 typedef struct YKSEM
 {
     int val;
@@ -69,7 +57,6 @@ typedef struct taskblock
     TCBptr next;
     TCBptr prev;
     YKSEM *semWait;
-    YKQ *queueWait;
 } TCB;
 
 
@@ -91,9 +78,6 @@ void YKEnterISR(void);
 void YKExitISR(void);
 void YKTickHandler(void);
 
-YKQ *YKQCreate(void **start, unsigned size);
-void *YKQPend(YKQ *queue);
-int YKQPost(YKQ *queue, void *msg);
 
 
 void YKEnterMutex(void);
@@ -122,13 +106,10 @@ TCBptr YKAvailTCBList;
 TCB YKTCBArray[9 +1];
 
 YKSEM YKSemArray[19];
-YKQ YKQueueArray[2];
 TCBptr YKSemWaitList;
-TCBptr YKQWaitList;
 
 TCBptr TKCurrentlyRunning;
 
-int tickcount = 0;
 char run_flag = 0;
 
 void YKInitialize(void){
@@ -138,7 +119,7 @@ void YKInitialize(void){
   TKCurrentlyRunning = 0;
   YKISRDepth = 0;
 
-  YKTickNum = 0;
+
 
   YKEnterMutex();
 
@@ -153,15 +134,6 @@ void YKInitialize(void){
     YKSemArray[i].val = -10;
     YKSemArray[i].active = 0;
     YKSemArray[i].id = i;
-  }
-
-  for (i = 0; i < 2; i++){
-    YKQueueArray[i].size = 0;
-    YKQueueArray[i].length = 0;
-    YKQueueArray[i].base_addr = 0;
-    YKQueueArray[i].head = 0;
-    YKQueueArray[i].tail = 0;
-
   }
 
   YKNewTask(YKIdleTask, (void*)&idleStack[256], 100);
@@ -237,7 +209,7 @@ void YKNewTask( void (*task)(void), void *taskStack, unsigned char priority){
 }
 
 void YKRun(void){
-  printString("Start Run and call scheduler\n");
+ printString("Start Run and call scheduler\n");
   run_flag = 1;
   YKScheduler(0);
 }
@@ -317,11 +289,6 @@ void YKTickHandler(void){
 
   YKEnterMutex();
   YKTickNum = YKTickNum + 1;
-  if(tickcount< 7){
-    tickcount++;
-    YKTickNum = 0;
-  }
-
   tempDelay = YKDelayList;
 
   while(tempDelay != 0){
@@ -361,6 +328,7 @@ void YKTickHandler(void){
 
 YKSEM* YKSemCreate(int initialValue){
   int i;
+# 263 "yakc.c"
   YKEnterMutex();
   i = 0;
   while(YKSemArray[i].active){
@@ -374,9 +342,9 @@ YKSEM* YKSemCreate(int initialValue){
 
   return &(YKSemArray[i]);
 }
-# 281 "yakc.c"
+# 284 "yakc.c"
 void YKSemPend(YKSEM *semaphore){
-
+# 330 "yakc.c"
   TCBptr readyTask;
   YKEnterMutex();
   semaphore->val = semaphore->val - 1;
@@ -402,8 +370,9 @@ void YKSemPend(YKSEM *semaphore){
   YKExitMutex();
 
 }
-# 319 "yakc.c"
+# 366 "yakc.c"
 void YKSemPost(YKSEM *semaphore){
+# 391 "yakc.c"
   TCBptr semWaiting, unSuspTask, readyTask;
   unSuspTask = 0;
   semWaiting = YKSemWaitList;
@@ -417,7 +386,7 @@ void YKSemPost(YKSEM *semaphore){
       if(semWaiting->semWait == semaphore){
         if((unSuspTask == 0) || (semWaiting->priority < unSuspTask->priority)){
           unSuspTask = semWaiting;
-       }
+ }
       }
       semWaiting = semWaiting->next;
   }
@@ -460,160 +429,4 @@ void YKSemPost(YKSEM *semaphore){
   }
   YKExitMutex();
   return;
-}
-
-void queueInsert(YKQ* queue, void* msg){
-  queue->base_addr[queue->head] = msg;
-  if(queue->head < queue->size){
-    queue->head += 1;
-  }
-  else{
-    queue->head = 0;
-  }
-}
-
-void* queueRemove(YKQ* queue){
-  void* msg;
-  msg = *(queue->base_addr + queue->tail);
-  if(queue->tail > 0){
-    queue->head -= 1;
-  }
-  else{
-    queue->head = queue->size - 1;
-  }
-  return msg;
-}
-
-
-YKQ *YKQCreate(void **start, unsigned size){
-
-
-
-
-
-
-
-  int i;
-  YKEnterMutex();
-  for (i = 0; YKQueueArray[i].base_addr; i++){};
-
-  YKQueueArray[i].base_addr = start;
-  YKQueueArray[i].length = 0;
-  YKQueueArray[i].size = size;
-  YKQueueArray[i].tail = 0;
-  YKQueueArray[i].head = 0;
-
-  return &(YKQueueArray[i]);
-
-}
-
-
-
-
-
-
-
-void *YKQPend(YKQ *queue){
-# 457 "yakc.c"
-  TCBptr readyTask;
-  void* msg;
-  YKEnterMutex();
-  if(queue->length == 0){
-    readyTask = YKRdyList;
-    YKRdyList = readyTask->next;
-    readyTask->next->prev = 0;
-    readyTask->next = YKQWaitList;
-    YKQWaitList = readyTask;
-    readyTask->prev = 0;
-
-    if(readyTask->next != 0){
-      readyTask->next->prev = readyTask;
-    }
-
-    readyTask->queueWait = queue;
-    YKScheduler(1);
-  }
-  msg = *(queue->base_addr + queue->tail);
-  queue->size = queue->size - 1;
-
-  if((queue->tail + 1) < queue->length){
-    queue->tail = queue->tail + 1;
-  }
-  else{
-    queue->tail = 0;
-  }
-
-  YKExitMutex();
-  return msg;
-}
-# 501 "yakc.c"
-int YKQPost(YKQ *queue, void *msg){
-  TCBptr queueWait, unWaitTask, readyTask;
-  YKEnterMutex();
-
-  if((queue->length - 1) == queue->size){
-    return 0;
-  }
-  unWaitTask = 0;
-  queueWait = YKQWaitList;
-
-
-  *(queue->base_addr + queue->head) = msg;
-  queue->size = queue->size + 1;
-  if((queue->head + 1) < queue->length){
-    queue->head = queue->head + 1;
-  }
-  else{
-    queue->tail = 0;
-  }
-
-  while(queueWait != 0){
-
-    if(queueWait->queueWait == queue){
-      if((unWaitTask == 0) || (queueWait->priority < unWaitTask->priority)){
-        unWaitTask = queueWait;
-      }
-    }
-    queueWait = queueWait->next;
-  }
-
-
-  if(unWaitTask == 0){
-    YKExitMutex();
-    return 1;
-  }
-
-
-  if(unWaitTask->prev == 0){
-    YKQWaitList = unWaitTask->next;
-  }
-  else{
-    unWaitTask->prev->next = unWaitTask->next;
-  }
-
-  if (unWaitTask->next != 0){
-    unWaitTask->next->prev = unWaitTask->prev;
-  }
-
-  readyTask = YKRdyList;
-  while (readyTask->priority < unWaitTask->priority){
-    readyTask = readyTask->next;
-  }
-  if(readyTask->prev == 0){
-    YKRdyList = unWaitTask;
-  }
-  else{
-    readyTask->prev->next = unWaitTask;
-  }
-  unWaitTask->prev = readyTask->prev;
-  unWaitTask->next = readyTask;
-  readyTask->prev = unWaitTask;
-
-  unWaitTask->queueWait = 0;
-
-  if(YKISRDepth == 0){
-    YKScheduler(1);
-  }
-  YKExitMutex();
-  return 1;
 }

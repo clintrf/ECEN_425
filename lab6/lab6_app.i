@@ -37,16 +37,7 @@ void exit(unsigned char code);
 void signalEOI(void);
 # 8 "lab6app.c" 2
 # 1 "yakk.h" 1
-
-# 1 "lab6defs.h" 1
-# 11 "lab6defs.h"
-struct msg
-{
-    int tick;
-    int data;
-};
-# 3 "yakk.h" 2
-# 13 "yakk.h"
+# 12 "yakk.h"
 extern unsigned int YKCtxSwCount;
 
 extern unsigned int YKIdleCount;
@@ -59,7 +50,7 @@ extern unsigned int YKTickNum;
 typedef struct YKQ
 {
     int size;
-    int cur_length;
+    int length;
     void** base_addr;
     int head;
     int tail;
@@ -119,7 +110,14 @@ YKSEM* YKSemCreate(int initialValue);
 void YKSemPend(YKSEM *semaphore);
 void YKSemPost(YKSEM *semaphore);
 # 9 "lab6app.c" 2
-
+# 1 "lab6defs.h" 1
+# 11 "lab6defs.h"
+struct msg
+{
+    int tick;
+    int data;
+};
+# 10 "lab6app.c" 2
 
 
 
