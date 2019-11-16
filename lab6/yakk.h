@@ -1,12 +1,11 @@
 // yak.h file for the yak.c file
-#include "lab6defs.h"
-
 #ifndef YAKK_H
 #define YAKK_H
 
 #define NULL 0
 #define MAXTASKS 9
 #define SEM_COUNT 19
+#define QUE_COUNT 2
 
 
 /******************** Global Variables ********************/
@@ -22,7 +21,7 @@ extern unsigned int YKTickNum;
 typedef struct YKQ
 {				        
     int size;           // max number of entries in the queue
-    int cur_length;     // number of entries currently in the queue
+    int length;     // number of entries currently in the queue
     void** base_addr;   // base address of queue
     int head;    // next location to remove from
     int tail;    // Next location to insert at
