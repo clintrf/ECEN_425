@@ -145,7 +145,12 @@ void ATask(void)
     while (1)
     {
         tmp = (struct msg *) YKQPend(MsgQPtr);
-
+        printString("Msg ticks: ");
+        printInt(tmp->tick);
+        printNewLine();
+        printString("Count: ");
+        printInt(count);
+        printNewLine();
 
         if (tmp->tick != count+1)
         {
@@ -284,6 +289,7 @@ void main(void)
     GlobalFlag = 0;
     MsgQPtr = YKQCreate(MsgQ, 10);
     YKNewTask(STask, (void *) &STaskStk[512], 30);
-
+    printString("New task created");
+    printNewLine();
     YKRun();
 }

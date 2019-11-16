@@ -34,7 +34,10 @@ c_tick_handler:
 	; >>>>> void c_tick_handler(){ 
 	jmp	L_myinth_7
 L_myinth_8:
-	; >>>>> Line:	27
+	; >>>>> Line:	23
+	; >>>>> YKTickHandler(); 
+	call	YKTickHandler
+	; >>>>> Line:	26
 	; >>>>> MsgArray[next].tick = YKTickNum; 
 	mov	ax, word [L_myinth_4]
 	shl	ax, 1
@@ -43,7 +46,7 @@ L_myinth_8:
 	add	si, MsgArray
 	mov	ax, word [YKTickNum]
 	mov	word [si], ax
-	; >>>>> Line:	28
+	; >>>>> Line:	27
 	; >>>>> data = (data + 89) % 100; 
 	mov	ax, word [L_myinth_5]
 	add	ax, 89
@@ -52,7 +55,7 @@ L_myinth_8:
 	idiv	cx
 	mov	ax, dx
 	mov	word [L_myinth_5], ax
-	; >>>>> Line:	29
+	; >>>>> Line:	28
 	; >>>>> MsgArray[next].data = data; 
 	mov	ax, word [L_myinth_4]
 	shl	ax, 1
@@ -62,7 +65,7 @@ L_myinth_8:
 	add	si, 2
 	mov	ax, word [L_myinth_5]
 	mov	word [si], ax
-	; >>>>> Line:	31
+	; >>>>> Line:	30
 	; >>>>> if (YKQPost(MsgQPtr, (void *) &(MsgArray[next])) == 0){ 
 	mov	ax, word [L_myinth_4]
 	shl	ax, 1
@@ -74,7 +77,7 @@ L_myinth_8:
 	add	sp, 4
 	test	ax, ax
 	jne	L_myinth_9
-	; >>>>> Line:	32
+	; >>>>> Line:	31
 	; >>>>> printString("  TickISR: queue overflow! \n"); 
 	mov	ax, L_myinth_6
 	push	ax
@@ -82,14 +85,14 @@ L_myinth_8:
 	add	sp, 2
 	jmp	L_myinth_10
 L_myinth_9:
-	; >>>>> Line:	34
+	; >>>>> Line:	33
 	; >>>>> else if (++next >= 20){ 
 	mov	ax, word [L_myinth_4]
 	inc	ax
 	mov	word [L_myinth_4], ax
 	cmp	ax, 20
 	jl	L_myinth_11
-	; >>>>> Line:	35
+	; >>>>> Line:	34
 	; >>>>> next = 0; 
 	mov	word [L_myinth_4], 0
 L_myinth_11:
@@ -103,11 +106,11 @@ L_myinth_7:
 	jmp	L_myinth_8
 	ALIGN	2
 c_key_handler:
-	; >>>>> Line:	45
+	; >>>>> Line:	44
 	; >>>>> void c_key_handler(){ 
 	jmp	L_myinth_13
 L_myinth_14:
-	; >>>>> Line:	46
+	; >>>>> Line:	45
 	; >>>>> GlobalFlag = 1; 
 	mov	word [GlobalFlag], 1
 	mov	sp, bp

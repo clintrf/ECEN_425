@@ -20,8 +20,7 @@ void c_reset_handler(){
 void c_tick_handler(){
     static int next = 0;
     static int data = 0;
-
-    //YKTickHandler(); //lab4c
+    YKTickHandler(); //lab4c
 
     /* create a message with tick (sequence #) and pseudo-random data */
     MsgArray[next].tick = YKTickNum;

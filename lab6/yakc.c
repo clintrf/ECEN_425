@@ -145,7 +145,7 @@ void YKScheduler(int save_flag){     // Determines the highest priority ready ta
   TCBptr currentlyRunning;
 
   //YKEnterMutex();
-  //printString("Entering Scheduler\n\r");
+  printString("Entering Scheduler\n\r");
   highest_priority_task = YKRdyList;
   currentlyRunning = TKCurrentlyRunning;
 
@@ -156,14 +156,14 @@ void YKScheduler(int save_flag){     // Determines the highest priority ready ta
   YKCtxSwCount = YKCtxSwCount + 1;
   TKCurrentlyRunning = highest_priority_task;
   if(!save_flag){
-    //printString("NONSAVE\n\r");
+    printString("NONSAVE\n\r");
     YKDispatcherNSave(highest_priority_task->stackptr);
-    //printString("EXIT NONSAVE DISPATCHER\n\r");
+    printString("EXIT NONSAVE DISPATCHER\n\r");
   }
   else{
-    //printString("SAVE\n\r");
+    printString("SAVE\n\r");
     YKDispatcherSave(&(currentlyRunning->stackptr), highest_priority_task->stackptr);
-    //printString("EXIT SAVE DISPATCHER\n\r");
+    printString("EXIT SAVE DISPATCHER\n\r");
   }
   //YKExitMutex();
 }
@@ -171,7 +171,8 @@ void YKScheduler(int save_flag){     // Determines the highest priority ready ta
 void YKDelayTask(unsigned count){
   TCBptr ready;
   YKEnterMutex();
-
+  // printString("Delay");
+  // printNewLine();
   if(count == 0){
     YKExitMutex();
     return;
@@ -213,11 +214,10 @@ void YKTickHandler(void){
 
   YKEnterMutex();
   YKTickNum = YKTickNum + 1;
-  if(tickcount< 7){
-    tickcount++;
-    YKTickNum = 0;
-  }
-  //YKTickNum = YKTickNum + 1;
+  printString("Tick handler ");
+  printInt(YKTickNum);
+  printNewLine();
+
   tempDelay = YKDelayList;
 	//While the delay is not finished, counter--;
   while(tempDelay != NULL){
@@ -415,7 +415,7 @@ YKQ *YKQCreate(void **start, unsigned size){
   YKQueueArray[i].size = size;
   YKQueueArray[i].tail = 0;
   YKQueueArray[i].head = 0; 
-	
+	YKExitMutex();
   return &(YKQueueArray[i]);
   
 }
@@ -458,6 +458,8 @@ void *YKQPend(YKQ *queue){
   void* msg;
   YKEnterMutex();
   if(queue->length == 0){
+    printString("Queue is empty, delaying task");
+    printNewLine();
     readyTask = YKRdyList;
     YKRdyList = readyTask->next;
     readyTask->next->prev = NULL;
@@ -473,9 +475,9 @@ void *YKQPend(YKQ *queue){
     YKScheduler(1);  
   }
   msg = *(queue->base_addr + queue->tail);
-  queue->size = queue->size - 1;
+  queue->length = queue->length - 1;
 	
-  if((queue->tail + 1) < queue->length){
+  if((queue->tail + 1) < queue->size){
     queue->tail = queue->tail + 1;
   }
   else{
@@ -502,20 +504,23 @@ int YKQPost(YKQ *queue, void *msg){
   TCBptr queueWait, unWaitTask, readyTask;
   YKEnterMutex();
 
-  if((queue->length - 1) == queue->size){
+  if((queue->length + 1) == queue->size){
     return 0; // is full
   }
+  printString("Insert into queue ");
+  printInt(queue->size);
+  printNewLine();
   unWaitTask = NULL;	
   queueWait = YKQWaitList;	
 
   // insert
-  *(queue->base_addr + queue->head) = msg;
-  queue->size = queue->size + 1;	
-  if((queue->head + 1) < queue->length){
+  queue->base_addr[queue->head] = msg;
+  queue->length = queue->length + 1;	
+  if((queue->head + 1) < queue->size){
     queue->head = queue->head + 1;
   }
   else{
-    queue->tail = 0; // wrap around
+    queue->head = 0; // wrap around
   }
 	
   while(queueWait != NULL){

@@ -124,8 +124,7 @@ void c_reset_handler(){
 void c_tick_handler(){
     static int next = 0;
     static int data = 0;
-
-
+    YKTickHandler();
 
 
     MsgArray[next].tick = YKTickNum;
@@ -148,5 +147,5 @@ void c_tick_handler(){
 
 void c_key_handler(){
  GlobalFlag = 1;
-# 62 "myinth.c"
+# 61 "myinth.c"
 }
