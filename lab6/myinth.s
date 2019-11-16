@@ -34,6 +34,9 @@ c_tick_handler:
 	; >>>>> void c_tick_handler(){ 
 	jmp	L_myinth_7
 L_myinth_8:
+	; >>>>> Line:	24
+	; >>>>> YKTickHandler(); 
+	call	YKTickHandler
 	; >>>>> Line:	27
 	; >>>>> MsgArray[next].tick = YKTickNum; 
 	mov	ax, word [L_myinth_4]

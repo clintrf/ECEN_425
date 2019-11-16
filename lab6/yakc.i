@@ -128,7 +128,6 @@ TCBptr YKQWaitList;
 
 TCBptr TKCurrentlyRunning;
 
-int tickcount = 0;
 char run_flag = 0;
 
 void YKInitialize(void){
@@ -165,6 +164,7 @@ void YKInitialize(void){
   }
 
   YKNewTask(YKIdleTask, (void*)&idleStack[256], 100);
+  YKExitMutex();
 }
 
 void YKIdleTask(void){
@@ -233,7 +233,7 @@ void YKNewTask( void (*task)(void), void *taskStack, unsigned char priority){
   }
 
   YKScheduler(1);
-
+  YKExitMutex();
 }
 
 void YKRun(void){
@@ -248,7 +248,7 @@ void YKScheduler(int save_flag){
   TCBptr highest_priority_task;
   TCBptr currentlyRunning;
 
-
+  YKEnterMutex();
 
   highest_priority_task = YKRdyList;
   currentlyRunning = TKCurrentlyRunning;
@@ -269,7 +269,7 @@ void YKScheduler(int save_flag){
     YKDispatcherSave(&(currentlyRunning->stackptr), highest_priority_task->stackptr);
 
   }
-
+  YKExitMutex();
 }
 
 void YKDelayTask(unsigned count){
@@ -316,12 +316,8 @@ void YKTickHandler(void){
   TCBptr tempDelay, tempReady, tempNext;
 
   YKEnterMutex();
-  YKTickNum = YKTickNum + 1;
-  if(tickcount< 7){
-    tickcount++;
-    YKTickNum = 0;
-  }
 
+  YKTickNum = YKTickNum + 1;
   tempDelay = YKDelayList;
 
   while(tempDelay != 0){
@@ -374,7 +370,7 @@ YKSEM* YKSemCreate(int initialValue){
 
   return &(YKSemArray[i]);
 }
-# 281 "yakc.c"
+# 277 "yakc.c"
 void YKSemPend(YKSEM *semaphore){
 
   TCBptr readyTask;
@@ -402,7 +398,7 @@ void YKSemPend(YKSEM *semaphore){
   YKExitMutex();
 
 }
-# 319 "yakc.c"
+# 315 "yakc.c"
 void YKSemPost(YKSEM *semaphore){
   TCBptr semWaiting, unSuspTask, readyTask;
   unSuspTask = 0;
@@ -514,7 +510,7 @@ YKQ *YKQCreate(void **start, unsigned size){
 
 
 void *YKQPend(YKQ *queue){
-# 457 "yakc.c"
+# 453 "yakc.c"
   TCBptr readyTask;
   void* msg;
   YKEnterMutex();
@@ -546,7 +542,7 @@ void *YKQPend(YKQ *queue){
   YKExitMutex();
   return msg;
 }
-# 501 "yakc.c"
+# 497 "yakc.c"
 int YKQPost(YKQ *queue, void *msg){
   TCBptr queueWait, unWaitTask, readyTask;
   YKEnterMutex();

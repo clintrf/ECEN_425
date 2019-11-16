@@ -2,22 +2,26 @@
 	CPU	8086
 	ALIGN	2
 	jmp	main	; Jump to program start
-L_lab6_app_5:
+L_lab6_app_7:
 	DB	"Max: ",0
-L_lab6_app_4:
+L_lab6_app_6:
 	DB	"Min: ",0
-L_lab6_app_3:
+L_lab6_app_5:
 	DB	0x9,0
-L_lab6_app_2:
+L_lab6_app_4:
 	DB	"Ticks: ",0
-L_lab6_app_1:
+L_lab6_app_3:
 	DB	"! Dropped msgs: tick ",0
+L_lab6_app_2:
+	DB	"cout ",0
+L_lab6_app_1:
+	DB	"tick ",0
 	ALIGN	2
 ATask:
 	; >>>>> Line:	26
 	; >>>>> { 
-	jmp	L_lab6_app_6
-L_lab6_app_7:
+	jmp	L_lab6_app_8
+L_lab6_app_9:
 	; >>>>> Line:	30
 	; >>>>> min = 100; 
 	mov	word [bp-4], 100
@@ -29,52 +33,83 @@ L_lab6_app_7:
 	mov	word [bp-8], 0
 	; >>>>> Line:	34
 	; >>>>> while (1) 
-	jmp	L_lab6_app_9
-L_lab6_app_8:
+	jmp	L_lab6_app_11
+L_lab6_app_10:
 	; >>>>> Line:	36
 	; >>>>> tmp = (struct msg *) YKQPend(MsgQPtr); 
 	push	word [MsgQPtr]
 	call	YKQPend
 	add	sp, 2
 	mov	word [bp-2], ax
-	; >>>>> Line:	39
-	; >>>>> if (tmp->tick != count+1) 
-	mov	ax, word [bp-8]
-	inc	ax
-	mov	si, word [bp-2]
-	mov	dx, word [si]
-	cmp	dx, ax
-	je	L_lab6_app_11
-	; >>>>> Line:	41
-	; >>>>> print("! Dropped msgs: tick ", 21); 
-	mov	ax, 21
-	push	ax
+	; >>>>> Line:	38
+	; >>>>> printString("tick "); 
 	mov	ax, L_lab6_app_1
 	push	ax
-	call	print
-	add	sp, 4
-	; >>>>> Line:	42
-	; >>>>> if (tmp->tick - (count+1) > 1) { 
+	call	printString
+	add	sp, 2
+	; >>>>> Line:	39
+	; >>>>> printInt(tmp->tick); 
 	mov	si, word [bp-2]
-	mov	ax, word [si]
-	sub	ax, word [bp-8]
-	dec	ax
-	cmp	ax, 1
-	jle	L_lab6_app_12
-	; >>>>> Line:	43
+	push	word [si]
+	call	printInt
+	add	sp, 2
+	; >>>>> Line:	40
+	; >>>>> printNewLine(); 
+	call	printNewLine
+	; >>>>> Line:	41
+	; >>>>> printString("cout "); 
+	mov	ax, L_lab6_app_2
+	push	ax
+	call	printString
+	add	sp, 2
+	; >>>>> Line:	42
 	; >>>>> printInt(count+1); 
 	mov	ax, word [bp-8]
 	inc	ax
 	push	ax
 	call	printInt
 	add	sp, 2
-	; >>>>> Line:	44
+	; >>>>> Line:	43
+	; >>>>> printNewLine(); 
+	call	printNewLine
+	; >>>>> Line:	46
+	; >>>>> if (tmp->tick != count+1) 
+	mov	ax, word [bp-8]
+	inc	ax
+	mov	si, word [bp-2]
+	mov	dx, word [si]
+	cmp	dx, ax
+	je	L_lab6_app_13
+	; >>>>> Line:	48
+	; >>>>> print("! Dropped msgs: tick ", 21); 
+	mov	ax, 21
+	push	ax
+	mov	ax, L_lab6_app_3
+	push	ax
+	call	print
+	add	sp, 4
+	; >>>>> Line:	49
+	; >>>>> nt 
+	mov	si, word [bp-2]
+	mov	ax, word [si]
+	sub	ax, word [bp-8]
+	dec	ax
+	cmp	ax, 1
+	jle	L_lab6_app_14
+	; >>>>> Line:	50
+	; >>>>> printInt(count+1); 
+	mov	ax, word [bp-8]
+	inc	ax
+	push	ax
+	call	printInt
+	add	sp, 2
+	; >>>>> Line:	51
 	; >>>>> printChar('-'); 
 	mov	al, 45
 	push	ax
 	call	printChar
 	add	sp, 2
-	; >>>>> Line:	45
+	; >>>>> Line:	52
 	; >>>>> printInt(tmp->tick-1); 
 	mov	si, word [bp-2]
 	mov	ax, word [si]
@@ -82,332 +117,338 @@ L_lab6_app_8:
 	push	ax
 	call	printInt
 	add	sp, 2
-	; >>>>> Line:	46
-	; >>>>> printNewLine 
-	call	printNewLine
-	jmp	L_lab6_app_13
-L_lab6_app_12:
-	; >>>>> Line:	49
-	; >>>>> printInt(tmp->tick-1); 
-	mov	si, word [bp-2]
-	mov	ax, word [si]
-	dec	ax
-	push	ax
-	call	printInt
-	add	sp, 2
-	; >>>>> Line:	50
+	; >>>>> Line:	53
 	; >>>>> printNewLine(); 
 	call	printNewLine
+	jmp	L_lab6_app_15
+L_lab6_app_14:
+	; >>>>> Line:	56
+	; >>>>> printInt(tmp->tick-1);YKDelayTask(5); 
+	mov	si, word [bp-2]
+	mov	ax, word [si]
+	dec	ax
+	push	ax
+	call	printInt
+	add	sp, 2
+	; >>>>> Line:	56
+	; >>>>> printInt(tmp->tick-1);YKDelayTask(5); 
+	mov	ax, 5
+	push	ax
+	call	YKDelayTask
+	add	sp, 2
+	; >>>>> Line:	57
+	; >>>>> printNewLine(); 
+	call	printNewLine
+L_lab6_app_15:
 L_lab6_app_13:
-L_lab6_app_11:
-	; >>>>> Line:	55
+	; >>>>> Line:	62
 	; >>>>> count = tmp->tick; 
 	mov	si, word [bp-2]
 	mov	ax, word [si]
 	mov	word [bp-8], ax
-	; >>>>> Line:	58
+	; >>>>> Line:	65
 	; >>>>> if (tmp->data < min) 
 	mov	si, word [bp-2]
 	add	si, 2
 	mov	ax, word [bp-4]
 	cmp	ax, word [si]
-	jle	L_lab6_app_14
-	; >>>>> Line:	59
+	jle	L_lab6_app_16
+	; >>>>> Line:	66
 	; >>>>> min = tmp->data; 
 	mov	si, word [bp-2]
 	add	si, 2
 	mov	ax, word [si]
 	mov	word [bp-4], ax
-L_lab6_app_14:
-	; >>>>> Line:	60
+L_lab6_app_16:
+	; >>>>> Line:	67
 	; >>>>> if (tmp->data > max) 
 	mov	si, word [bp-2]
 	add	si, 2
 	mov	ax, word [bp-6]
 	cmp	ax, word [si]
-	jge	L_lab6_app_15
-	; >>>>> Line:	61
+	jge	L_lab6_app_17
+	; >>>>> Line:	68
 	; >>>>> max = tmp->data; 
 	mov	si, word [bp-2]
 	add	si, 2
 	mov	ax, word [si]
 	mov	word [bp-6], ax
-L_lab6_app_15:
-	; >>>>> Line:	64
+L_lab6_app_17:
+	; >>>>> Line:	71
 	; >>>>> print("Ticks: ", 7); 
 	mov	ax, 7
-	push	ax
-	mov	ax, L_lab6_app_2
-	push	ax
-	call	print
-	add	sp, 4
-	; >>>>> Line:	65
-	; >>>>> printInt(count); 
-	push	word [bp-8]
-	call	printInt
-	add	sp, 2
-	; >>>>> Line:	66
-	; >>>>> print("\t", 1); 
-	mov	ax, 1
-	push	ax
-	mov	ax, L_lab6_app_3
-	push	ax
-	call	print
-	add	sp, 4
-	; >>>>> Line:	67
-	; >>>>> print("Min: ", 5); 
-	mov	ax, 5
 	push	ax
 	mov	ax, L_lab6_app_4
 	push	ax
 	call	print
 	add	sp, 4
-	; >>>>> Line:	68
-	; >>>>> printInt(min); 
-	push	word [bp-4]
+	; >>>>> Line:	72
+	; >>>>> while (1 
+	push	word [bp-8]
 	call	printInt
 	add	sp, 2
-	; >>>>> Line:	69
+	; >>>>> Line:	73
 	; >>>>> print("\t", 1); 
 	mov	ax, 1
-	push	ax
-	mov	ax, L_lab6_app_3
-	push	ax
-	call	print
-	add	sp, 4
-	; >>>>> Line:	70
-	; >>>>> print("Max: ", 5); 
-	mov	ax, 5
 	push	ax
 	mov	ax, L_lab6_app_5
 	push	ax
 	call	print
 	add	sp, 4
-	; >>>>> Line:	71
+	; >>>>> Line:	74
+	; >>>>> print("Min: ", 5); 
+	mov	ax, 5
+	push	ax
+	mov	ax, L_lab6_app_6
+	push	ax
+	call	print
+	add	sp, 4
+	; >>>>> Line:	75
+	; >>>>> printInt(min); 
+	push	word [bp-4]
+	call	printInt
+	add	sp, 2
+	; >>>>> Line:	76
+	; >>>>> print("\t", 1); 
+	mov	ax, 1
+	push	ax
+	mov	ax, L_lab6_app_5
+	push	ax
+	call	print
+	add	sp, 4
+	; >>>>> Line:	77
+	; >>>>> print("Max: ", 5); 
+	mov	ax, 5
+	push	ax
+	mov	ax, L_lab6_app_7
+	push	ax
+	call	print
+	add	sp, 4
+	; >>>>> Line:	78
 	; >>>>> printInt(max); 
 	push	word [bp-6]
 	call	printInt
 	add	sp, 2
-	; >>>>> Line:	72
-	; >>>>> ount + 5) break; 
+	; >>>>> Line:	79
+	; >>>>> printNewLine(); 
 	call	printNewLine
-L_lab6_app_9:
-	jmp	L_lab6_app_8
-L_lab6_app_10:
+L_lab6_app_11:
+	jmp	L_lab6_app_10
+L_lab6_app_12:
 	mov	sp, bp
 	pop	bp
 	ret
-L_lab6_app_6:
+L_lab6_app_8:
 	push	bp
 	mov	bp, sp
 	sub	sp, 8
-	jmp	L_lab6_app_7
+	jmp	L_lab6_app_9
 	ALIGN	2
 BTask:
-	; >>>>> Line:	77
+	; >>>>> Line:	84
 	; >>>>> { 
-	jmp	L_lab6_app_17
-L_lab6_app_18:
-	; >>>>> Line:	81
+	jmp	L_lab6_app_19
+L_lab6_app_20:
+	; >>>>> Line:	88
 	; >>>>> curval = 1001; 
 	mov	word [bp-4], 1001
-	; >>>>> Line:	82
+	; >>>>> Line:	89
 	; >>>>> chcount = 0; 
 	mov	word [bp-10], 0
-	; >>>>> Line:	84
+	; >>>>> Line:	91
 	; >>>>> while (1) 
-	jmp	L_lab6_app_20
-L_lab6_app_19:
-	; >>>>> Line:	86
+	jmp	L_lab6_app_22
+L_lab6_app_21:
+	; >>>>> Line:	93
 	; >>>>> YKDelayTask(2); 
 	mov	ax, 2
 	push	ax
 	call	YKDelayTask
 	add	sp, 2
-	; >>>>> Line:	88
+	; >>>>> Line:	95
 	; >>>>> if (GlobalFlag == 1) 
 	cmp	word [GlobalFlag], 1
-	jne	L_lab6_app_22
-	; >>>>> Line:	90
+	jne	L_lab6_app_24
+	; >>>>> Line:	97
 	; >>>>> YKEnterMutex(); 
 	call	YKEnterMutex
-	; >>>>> Line:	91
+	; >>>>> Line:	98
 	; >>>>> busycount = YKTickNum; 
 	mov	ax, word [YKTickNum]
 	mov	word [bp-2], ax
-	; >>>>> Line:	92
+	; >>>>> Line:	99
 	; >>>>> YKExitMutex(); 
 	call	YKExitMutex
-	; >>>>> Line:	94
-	; >>>>> while (1) 
-	jmp	L_lab6_app_24
-L_lab6_app_23:
-	; >>>>> Line:	96
+	; >>>>> Line:	101
+	; >>>>> while (1 
+	jmp	L_lab6_app_26
+L_lab6_app_25:
+	; >>>>> Line:	103
 	; >>>>> YKEnterMutex(); 
 	call	YKEnterMutex
-	; >>>>> Line:	97
+	; >>>>> Line:	104
 	; >>>>> tickNum = YKTickNum; 
 	mov	ax, word [YKTickNum]
 	mov	word [bp-12], ax
-	; >>>>> Line:	98
+	; >>>>> Line:	105
 	; >>>>> YKExitMutex(); 
 	call	YKExitMutex
-	; >>>>> Line:	99
+	; >>>>> Line:	106
 	; >>>>> if(tickNum >= busycount + 5) break; 
 	mov	ax, word [bp-2]
 	add	ax, 5
 	mov	dx, word [bp-12]
 	cmp	dx, ax
-	jb	L_lab6_app_26
-	; >>>>> Line:	99
+	jb	L_lab6_app_28
+	; >>>>> Line:	106
 	; >>>>> if(tickNum >= busycount + 5) break; 
-	jmp	L_lab6_app_25
-L_lab6_app_26:
-	; >>>>> Line:	101
-	; >>>>>  
+	jmp	L_lab6_app_27
+L_lab6_app_28:
+	; >>>>> Line:	108
+	; >>>>> curval += 2; 
 	add	word [bp-4], 2
-	; >>>>> Line:	102
+	; >>>>> Line:	109
 	; >>>>> flag = 0; 
 	mov	word [bp-8], 0
-	; >>>>> Line:	103
+	; >>>>> Line:	110
 	; >>>>> for (j = 3; (j*j) < curval; j += 2) 
 	mov	word [bp-6], 3
-	jmp	L_lab6_app_28
-L_lab6_app_27:
-	; >>>>> Line:	105
+	jmp	L_lab6_app_30
+L_lab6_app_29:
+	; >>>>> Line:	112
 	; >>>>> if (curval % j == 0) 
 	mov	ax, word [bp-4]
 	cwd
 	idiv	word [bp-6]
 	mov	ax, dx
 	test	ax, ax
-	jne	L_lab6_app_31
-	; >>>>> Line:	107
+	jne	L_lab6_app_33
+	; >>>>> Line:	114
 	; >>>>> flag = 1; 
 	mov	word [bp-8], 1
-	; >>>>> Line:	108
+	; >>>>> Line:	115
 	; >>>>> break; 
-	jmp	L_lab6_app_29
-L_lab6_app_31:
-L_lab6_app_30:
+	jmp	L_lab6_app_31
+L_lab6_app_33:
+L_lab6_app_32:
 	add	word [bp-6], 2
-L_lab6_app_28:
+L_lab6_app_30:
 	mov	ax, word [bp-6]
 	imul	word [bp-6]
 	mov	dx, word [bp-4]
 	cmp	dx, ax
-	jg	L_lab6_app_27
-L_lab6_app_29:
-	; >>>>> Line:	111
+	jg	L_lab6_app_29
+L_lab6_app_31:
+	; >>>>> Line:	118
 	; >>>>> if (!flag) 
 	mov	ax, word [bp-8]
 	test	ax, ax
-	jne	L_lab6_app_32
-	; >>>>> Line:	113
-	; >>>>> printChar('.'); 
+	jne	L_lab6_app_34
+	; >>>>> Line:	120
+	; >>>>> ty\r 
 	mov	al, 46
 	push	ax
 	call	printChar
 	add	sp, 2
-	; >>>>> Line:	114
+	; >>>>> Line:	121
 	; >>>>> if (++chcount > 75) 
 	mov	ax, word [bp-10]
 	inc	ax
 	mov	word [bp-10], ax
 	cmp	ax, 75
-	jle	L_lab6_app_33
-	; >>>>> Line:	116
-	; >>>>> printNewLine(); 
-	call	printNewLine
-	; >>>>> Line:	117
-	; >>>>> chcount = 0; 
-	mov	word [bp-10], 0
-L_lab6_app_33:
-L_lab6_app_32:
-L_lab6_app_24:
-	jmp	L_lab6_app_23
-L_lab6_app_25:
-	; >>>>> Line:	121
-	; >>>>> printNewLine(); 
-	call	printNewLine
-	; >>>>> Line:	122
-	; >>>>> chcount = 0; 
-	mov	word [bp-10], 0
+	jle	L_lab6_app_35
 	; >>>>> Line:	123
+	; >>>>> printNewLine(); 
+	call	printNewLine
+	; >>>>> Line:	124
+	; >>>>> chcount = 0; 
+	mov	word [bp-10], 0
+L_lab6_app_35:
+L_lab6_app_34:
+L_lab6_app_26:
+	jmp	L_lab6_app_25
+L_lab6_app_27:
+	; >>>>> Line:	128
+	; >>>>> printNewLine(); 
+	call	printNewLine
+	; >>>>> Line:	129
+	; >>>>> chcount = 0; 
+	mov	word [bp-10], 0
+	; >>>>> Line:	130
 	; >>>>> GlobalFlag = 0; 
 	mov	word [GlobalFlag], 0
+L_lab6_app_24:
 L_lab6_app_22:
-L_lab6_app_20:
-	jmp	L_lab6_app_19
-L_lab6_app_21:
+	jmp	L_lab6_app_21
+L_lab6_app_23:
 	mov	sp, bp
 	pop	bp
 	ret
-L_lab6_app_17:
+L_lab6_app_19:
 	push	bp
 	mov	bp, sp
 	sub	sp, 12
-	jmp	L_lab6_app_18
-L_lab6_app_39:
+	jmp	L_lab6_app_20
+L_lab6_app_41:
 	DB	"% >>>>>",0xD,0xA,0
-L_lab6_app_38:
+L_lab6_app_40:
 	DB	", CPU usage: ",0
-L_lab6_app_37:
+L_lab6_app_39:
 	DB	"<<<<< Context switches: ",0
-L_lab6_app_36:
+L_lab6_app_38:
 	DB	"Determining CPU capacity",0xD,0xA,0
-L_lab6_app_35:
+L_lab6_app_37:
 	DB	"Welcome to the YAK kernel",0xD,0xA,0
 	ALIGN	2
 STask:
-	; >>>>> Line:	129
-	; >>>>> { 
-	jmp	L_lab6_app_40
-L_lab6_app_41:
-	; >>>>> Line:	133
-	; >>>>> YKDelayTask(1); 
-	mov	ax, 1
-	push	ax
-	call	YKDelayTask
-	add	sp, 2
-	; >>>>> Line:	134
-	; >>>>> printString("Welcome to the YAK kernel\r\n"); 
-	mov	ax, L_lab6_app_35
-	push	ax
-	call	printString
-	add	sp, 2
-	; >>>>> Line:	135
-	; >>>>> printString("Determining CPU capacity\r\n"); 
-	mov	ax, L_lab6_app_36
-	push	ax
-	call	printString
-	add	sp, 2
 	; >>>>> Line:	136
+	; >>>>> { 
+	jmp	L_lab6_app_42
+L_lab6_app_43:
+	; >>>>> Line:	140
 	; >>>>> YKDelayTask(1); 
 	mov	ax, 1
 	push	ax
 	call	YKDelayTask
 	add	sp, 2
-	; >>>>> Line:	137
+	; >>>>> Line:	141
+	; >>>>> printString("Welcome to the YAK kernel\r\n"); 
+	mov	ax, L_lab6_app_37
+	push	ax
+	call	printString
+	add	sp, 2
+	; >>>>> Line:	142
+	; >>>>> printString("Determining CPU capacity\r 
+	mov	ax, L_lab6_app_38
+	push	ax
+	call	printString
+	add	sp, 2
+	; >>>>> Line:	143
+	; >>>>> YKDelayTask(1); 
+	mov	ax, 1
+	push	ax
+	call	YKDelayTask
+	add	sp, 2
+	; >>>>> Line:	144
 	; >>>>> YKIdleCount = 0; 
 	mov	word [YKIdleCount], 0
-	; >>>>> Line:	138
+	; >>>>> Line:	145
 	; >>>>> YKDelayTask(5); 
 	mov	ax, 5
 	push	ax
 	call	YKDelayTask
 	add	sp, 2
-	; >>>>> Line:	139
+	; >>>>> Line:	146
 	; >>>>> max = YKIdleCount / 25; 
 	mov	ax, word [YKIdleCount]
 	xor	dx, dx
 	mov	cx, 25
 	div	cx
 	mov	word [bp-2], ax
-	; >>>>> Line:	140
+	; >>>>> Line:	147
 	; >>>>> YKIdleCount = 0; 
 	mov	word [YKIdleCount], 0
-	; >>>>> Line:	142
+	; >>>>> Line:	149
 	; >>>>> YKNewTask(BTask, (void *) &BTaskStk[512], 10); 
 	mov	al, 10
 	push	ax
@@ -417,8 +458,8 @@ L_lab6_app_41:
 	push	ax
 	call	YKNewTask
 	add	sp, 6
-	; >>>>> Line:	143
-	; >>>>> ount = 0; 
+	; >>>>> Line:	150
+	; >>>>> YKNewTask(ATask, (void *) &ATaskStk[512], 20); 
 	mov	al, 20
 	push	ax
 	mov	ax, (ATaskStk+1024)
@@ -427,102 +468,102 @@ L_lab6_app_41:
 	push	ax
 	call	YKNewTask
 	add	sp, 6
-	; >>>>> Line:	145
+	; >>>>> Line:	152
 	; >>>>> while (1) 
-	jmp	L_lab6_app_43
-L_lab6_app_42:
-	; >>>>> Line:	147
+	jmp	L_lab6_app_45
+L_lab6_app_44:
+	; >>>>> Line:	154
 	; >>>>> YKDelayTask(20); 
 	mov	ax, 20
 	push	ax
 	call	YKDelayTask
 	add	sp, 2
-	; >>>>> Line:	149
+	; >>>>> Line:	156
 	; >>>>> YKEnterMutex(); 
 	call	YKEnterMutex
-	; >>>>> Line:	150
+	; >>>>> Line:	157
 	; >>>>> switchCount = YKCtxSwCount; 
 	mov	ax, word [YKCtxSwCount]
 	mov	word [bp-4], ax
-	; >>>>> Line:	151
+	; >>>>> Line:	158
 	; >>>>> idleCount = YKIdleCount; 
 	mov	ax, word [YKIdleCount]
 	mov	word [bp-6], ax
-	; >>>>> Line:	152
+	; >>>>> Line:	159
 	; >>>>> YKExitMutex(); 
 	call	YKExitMutex
-	; >>>>> Line:	154
+	; >>>>> Line:	161
 	; >>>>> printString("<<<<< Context switches: "); 
-	mov	ax, L_lab6_app_37
+	mov	ax, L_lab6_app_39
 	push	ax
 	call	printString
 	add	sp, 2
-	; >>>>> Line:	155
+	; >>>>> Line:	162
 	; >>>>> printInt((int)switchCount); 
 	push	word [bp-4]
 	call	printInt
 	add	sp, 2
-	; >>>>> Line:	156
+	; >>>>> Line:	163
 	; >>>>> printString(", CPU usage: "); 
-	mov	ax, L_lab6_app_38
+	mov	ax, L_lab6_app_40
 	push	ax
 	call	printString
 	add	sp, 2
-	; >>>>> Line:	157
-	; >>>>> tmp = (int) (idleCount/max); 
+	; >>>>> Line:	164
+	; >>>>>  
 	mov	ax, word [bp-6]
 	xor	dx, dx
 	div	word [bp-2]
 	mov	word [bp-8], ax
-	; >>>>> Line:	158
+	; >>>>> Line:	165
 	; >>>>> printInt(100-tmp); 
 	mov	ax, 100
 	sub	ax, word [bp-8]
 	push	ax
 	call	printInt
 	add	sp, 2
-	; >>>>> Line:	159
+	; >>>>> Line:	166
 	; >>>>> printString("% >>>>>\r\n"); 
-	mov	ax, L_lab6_app_39
+	mov	ax, L_lab6_app_41
 	push	ax
 	call	printString
 	add	sp, 2
-	; >>>>> Line:	161
+	; >>>>> Line:	168
 	; >>>>> YKEnterMutex(); 
 	call	YKEnterMutex
-	; >>>>> Line:	162
+	; >>>>> Line:	169
 	; >>>>> YKCtxSwCount = 0; 
 	mov	word [YKCtxSwCount], 0
-	; >>>>> Line:	163
+	; >>>>> Line:	170
 	; >>>>> YKIdleCount = 0; 
 	mov	word [YKIdleCount], 0
-	; >>>>> Line:	164
-	; >>>>> YK 
+	; >>>>> Line:	171
+	; >>>>> YKExitMutex(); 
 	call	YKExitMutex
-L_lab6_app_43:
-	jmp	L_lab6_app_42
-L_lab6_app_44:
+L_lab6_app_45:
+	jmp	L_lab6_app_44
+L_lab6_app_46:
 	mov	sp, bp
 	pop	bp
 	ret
-L_lab6_app_40:
+L_lab6_app_42:
 	push	bp
 	mov	bp, sp
 	sub	sp, 8
-	jmp	L_lab6_app_41
+	jmp	L_lab6_app_43
 	ALIGN	2
 main:
-	; >>>>> Line:	169
+	; >>>>> Line:	176
 	; >>>>> { 
-	jmp	L_lab6_app_46
-L_lab6_app_47:
-	; >>>>> Line:	170
+	jmp	L_lab6_app_48
+L_lab6_app_49:
+	; >>>>> Line:	177
 	; >>>>> YKInitialize(); 
 	call	YKInitialize
-	; >>>>> Line:	173
+	; >>>>> Line:	180
 	; >>>>> GlobalFlag = 0; 
 	mov	word [GlobalFlag], 0
-	; >>>>> Line:	174
+	; >>>>> Line:	181
 	; >>>>> MsgQPtr = YKQCreate(MsgQ, 10); 
 	mov	ax, 10
 	push	ax
@@ -531,7 +572,7 @@ L_lab6_app_47:
 	call	YKQCreate
 	add	sp, 4
 	mov	word [MsgQPtr], ax
-	; >>>>> Line:	175
+	; >>>>> Line:	182
 	; >>>>> YKNewTask(STask, (void *) &STaskStk[512], 30); 
 	mov	al, 30
 	push	ax
@@ -541,16 +582,16 @@ L_lab6_app_47:
 	push	ax
 	call	YKNewTask
 	add	sp, 6
-	; >>>>> Line:	177
+	; >>>>> Line:	184
 	; >>>>> YKRun(); 
 	call	YKRun
 	mov	sp, bp
 	pop	bp
 	ret
-L_lab6_app_46:
+L_lab6_app_48:
 	push	bp
 	mov	bp, sp
-	jmp	L_lab6_app_47
+	jmp	L_lab6_app_49
 	ALIGN	2
 MsgArray:
 	TIMES	80 db 0

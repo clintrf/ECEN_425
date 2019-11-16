@@ -125,7 +125,7 @@ void c_tick_handler(){
     static int next = 0;
     static int data = 0;
 
-
+    YKTickHandler();
 
 
     MsgArray[next].tick = YKTickNum;

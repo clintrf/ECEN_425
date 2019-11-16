@@ -146,6 +146,13 @@ void ATask(void)
     {
         tmp = (struct msg *) YKQPend(MsgQPtr);
 
+        printString("tick ");
+        printInt(tmp->tick);
+        printNewLine();
+        printString("cout ");
+        printInt(count+1);
+        printNewLine();
+
 
         if (tmp->tick != count+1)
         {
@@ -157,7 +164,7 @@ void ATask(void)
                 printNewLine();
             }
             else {
-                printInt(tmp->tick-1);
+                printInt(tmp->tick-1);YKDelayTask(5);
                 printNewLine();
             }
         }
