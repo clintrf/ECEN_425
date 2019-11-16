@@ -34,12 +34,12 @@ void ATask(void)                /* processes data in messages */
     while (1)
     {
         tmp = (struct msg *) YKQPend(MsgQPtr); /* get next msg */
-        printString("Msg ticks: ");
-        printInt(tmp->tick);
-        printNewLine();
-        printString("Count: ");
-        printInt(count);
-        printNewLine();
+        // printString("Msg ticks: ");
+        // printInt(tmp->tick);
+        // printNewLine();
+        // printString("Count: ");
+        // printInt(count);
+        // printNewLine();
         /* check sequence count in msg; were msgs dropped? */
         if (tmp->tick != count+1)
         {
@@ -178,7 +178,7 @@ void main(void)
     GlobalFlag = 0;
     MsgQPtr = YKQCreate(MsgQ, MSGQSIZE);
     YKNewTask(STask, (void *) &STaskStk[TASK_STACK_SIZE], 30);
-    printString("New task created");
-    printNewLine();
+    // printString("New task created");
+    // printNewLine();
     YKRun();
 }

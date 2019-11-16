@@ -145,7 +145,7 @@ void YKScheduler(int save_flag){     // Determines the highest priority ready ta
   TCBptr currentlyRunning;
 
   //YKEnterMutex();
-  printString("Entering Scheduler\n\r");
+  // printString("Entering Scheduler\n\r");
   highest_priority_task = YKRdyList;
   currentlyRunning = TKCurrentlyRunning;
 
@@ -156,14 +156,14 @@ void YKScheduler(int save_flag){     // Determines the highest priority ready ta
   YKCtxSwCount = YKCtxSwCount + 1;
   TKCurrentlyRunning = highest_priority_task;
   if(!save_flag){
-    printString("NONSAVE\n\r");
+    // printString("NONSAVE\n\r");
     YKDispatcherNSave(highest_priority_task->stackptr);
-    printString("EXIT NONSAVE DISPATCHER\n\r");
+    // printString("EXIT NONSAVE DISPATCHER\n\r");
   }
   else{
-    printString("SAVE\n\r");
+    // printString("SAVE\n\r");
     YKDispatcherSave(&(currentlyRunning->stackptr), highest_priority_task->stackptr);
-    printString("EXIT SAVE DISPATCHER\n\r");
+    // printString("EXIT SAVE DISPATCHER\n\r");
   }
   //YKExitMutex();
 }
@@ -214,9 +214,9 @@ void YKTickHandler(void){
 
   YKEnterMutex();
   YKTickNum = YKTickNum + 1;
-  printString("Tick handler ");
-  printInt(YKTickNum);
-  printNewLine();
+  // printString("Tick handler ");
+  // printInt(YKTickNum);
+  // printNewLine();
 
   tempDelay = YKDelayList;
 	//While the delay is not finished, counter--;
@@ -458,8 +458,8 @@ void *YKQPend(YKQ *queue){
   void* msg;
   YKEnterMutex();
   if(queue->length == 0){
-    printString("Queue is empty, delaying task");
-    printNewLine();
+    // printString("Queue is empty, delaying task");
+    // printNewLine();
     readyTask = YKRdyList;
     YKRdyList = readyTask->next;
     readyTask->next->prev = NULL;
@@ -507,9 +507,9 @@ int YKQPost(YKQ *queue, void *msg){
   if((queue->length + 1) == queue->size){
     return 0; // is full
   }
-  printString("Insert into queue ");
-  printInt(queue->size);
-  printNewLine();
+  // printString("Insert into queue ");
+  // printInt(queue->size);
+  // printNewLine();
   unWaitTask = NULL;	
   queueWait = YKQWaitList;	
 
