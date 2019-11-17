@@ -112,7 +112,6 @@ not_lowest_interrupt:
 
 	sti                 ; enable interrupts for higher priority IRQs ?
 
-	;call YKTickHandler;
 	call c_tick_handler ; run interrupt handler ? I think this is the c file
 
 	cli                 ; disable interrupts
