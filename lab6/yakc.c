@@ -501,7 +501,7 @@ int YKQPost(YKQ *queue, void *msg){
   TCBptr queueWait, unWaitTask, readyTask;
   YKEnterMutex();
 
-  if((queue->size - 1) == queue->cur_length){
+  if((queue->size) == (queue->cur_length+1)){
     return 0; // is full
   }
   unWaitTask = NULL;
