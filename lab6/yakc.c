@@ -35,7 +35,6 @@ void YKInitialize(void){    // Initializes all required kernel data structures
   YKISRDepth = 0;
   //YKSemCount = 0;
   YKTickNum = 0;
-
   YKEnterMutex();
 
   /* code to construct singly linked available TCB list from initial array */
@@ -204,7 +203,7 @@ void YKExitISR(void){
   YKISRDepth = YKISRDepth - 1;
 
   if(YKISRDepth == 0) {
-    YKScheduler(0);
+    YKScheduler(1); /// this is 0
   }
 }
 
