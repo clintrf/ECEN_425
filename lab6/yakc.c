@@ -413,7 +413,7 @@ YKQ *YKQCreate(void **start, unsigned size){
   YKQueueArray[i].size = size;
   YKQueueArray[i].tail = 0;
   YKQueueArray[i].head = 0;
-  YKExitMutex(); // colin add
+  //YKExitMutex(); // colin add
   return &(YKQueueArray[i]);
 
 }
@@ -500,7 +500,7 @@ int YKQPost(YKQ *queue, void *msg){
   TCBptr queueWait, unWaitTask, readyTask;
   YKEnterMutex();
 
-  if((queue->size) == (queue->cur_length+1)){
+  if((queue->cur_length) == (queue->size-1)){
     return 0; // is full
   }
   unWaitTask = NULL;
