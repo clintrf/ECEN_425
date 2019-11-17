@@ -513,7 +513,7 @@ int YKQPost(YKQ *queue, void *msg){
     queue->head = queue->head + 1;
   }
   else{
-    queue->tail = 0; // wrap around
+    queue->head = 0; // wrap around LOOK HERE
   }
 
   while(queueWait != NULL){
