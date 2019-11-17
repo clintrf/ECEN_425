@@ -21,7 +21,7 @@ extern unsigned int YKTickNum;
 typedef struct YKQ
 {				        
     int size;           // max number of entries in the queue
-    int length;     // number of entries currently in the queue
+    int cur_length;     // number of entries currently in the queue
     void** base_addr;   // base address of queue
     int head;    // next location to remove from
     int tail;    // Next location to insert at
