@@ -332,6 +332,9 @@ void YKSemPost(YKSEM *semaphore){
   }
 
   if(unSuspTask == NULL){ // if it never assigns unSuspTask in while loop then kill and return
+    if(YKISRDepth == 0){
+      YKScheduler(1);
+    }
     YKExitMutex();
     return;
   }
