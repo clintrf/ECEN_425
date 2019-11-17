@@ -33,7 +33,7 @@ void YKInitialize(void){    // Initializes all required kernel data structures
   TKCurrentlyRunning = 0;   // Set to 0
   YKISRDepth = 0;
   //YKSemCount = 0;
-  YKTickNum = 0;
+  //YKTickNum = 0;
 
   YKEnterMutex();
 
@@ -407,7 +407,7 @@ YKQ *YKQCreate(void **start, unsigned size){
   for (i = 0; YKQueueArray[i].base_addr; i++){}; // find next queue
 
   YKQueueArray[i].base_addr = start;
-  YKQueueArray[i].length = 0;
+  YKQueueArray[i].cur_length = 0;
   YKQueueArray[i].size = size;
   YKQueueArray[i].tail = 0;
   YKQueueArray[i].head = 0;
@@ -453,7 +453,7 @@ void *YKQPend(YKQ *queue){
   TCBptr readyTask;
   void* msg;
   YKEnterMutex();
-  if(queue->length == 0){
+  if(queue->cur_length == 0){
     readyTask = YKRdyList;
     YKRdyList = readyTask->next;
     readyTask->next->prev = NULL;
@@ -469,9 +469,9 @@ void *YKQPend(YKQ *queue){
     YKScheduler(1);
   }
   msg = *(queue->base_addr + queue->tail);
-  queue->size = queue->size - 1;
+  queue->cur_length = queue->cur_length - 1;
 
-  if((queue->tail + 1) < queue->length){
+  if((queue->tail + 1) < queue->size){
     queue->tail = queue->tail + 1;
   }
   else{
@@ -498,7 +498,7 @@ int YKQPost(YKQ *queue, void *msg){
   TCBptr queueWait, unWaitTask, readyTask;
   YKEnterMutex();
 
-  if((queue->length - 1) == queue->size){
+  if((queue->size - 1) == queue->cur_length){
     return 0; // is full
   }
   unWaitTask = NULL;
@@ -506,8 +506,8 @@ int YKQPost(YKQ *queue, void *msg){
 
   // insert
   *(queue->base_addr + queue->head) = msg;
-  queue->size = queue->size + 1;
-  if((queue->head + 1) < queue->length){
+  queue->cur_length = queue->cur_length + 1;
+  if((queue->head + 1) < queue->size){
     queue->head = queue->head + 1;
   }
   else{
