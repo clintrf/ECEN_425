@@ -35,13 +35,6 @@ void ATask(void)                /* processes data in messages */
     {
         tmp = (struct msg *) YKQPend(MsgQPtr); /* get next msg */
 
-        printString("tick ");
-        printInt(tmp->tick);
-        printNewLine();
-        printString("cout ");
-        printInt(count+1);
-        printNewLine();
-
         /* check sequence count in msg; were msgs dropped? */
         if (tmp->tick != count+1)
         {
