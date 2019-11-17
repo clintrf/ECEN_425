@@ -33,7 +33,7 @@ void YKInitialize(void){    // Initializes all required kernel data structures
   TKCurrentlyRunning = 0;   // Set to 0
   YKISRDepth = 0;
   //YKSemCount = 0;
-  //YKTickNum = 0;
+  YKTickNum = 0;
 
   YKEnterMutex();
 
