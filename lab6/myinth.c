@@ -20,7 +20,6 @@ void c_reset_handler(){
 void c_tick_handler(){
     static int next = 0;
     static int data = 0;
-
     YKTickHandler(); //lab4c
 
     /* create a message with tick (sequence #) and pseudo-random data */
@@ -66,7 +65,6 @@ void delay(){
 	int i=0;
 	for(i = 0; i < DELAY; i++){}
 }
-
 void print_debug(){
 	printString("\r\nDEBUGGER\r\n");
 }
