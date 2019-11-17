@@ -9,8 +9,9 @@
 //extern void YKTickHandler(void);
 //#define DELAY 5000
 
-extern struct msg MsgArray[];
+
 extern YKQ *MsgQPtr;
+extern struct msg MsgArray[];
 extern int GlobalFlag;
 
 void c_reset_handler(){
