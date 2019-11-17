@@ -52,7 +52,7 @@ void YKInitialize(void){    // Initializes all required kernel data structures
 
   for (i = 0; i < QUE_COUNT; i++){
     YKQueueArray[i].size = 0;
-    YKQueueArray[i].length = 0;
+    YKQueueArray[i].cur_length = 0;
     YKQueueArray[i].base_addr = 0;
     YKQueueArray[i].head = 0;
     YKQueueArray[i].tail = 0;
