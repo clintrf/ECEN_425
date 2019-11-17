@@ -129,7 +129,7 @@ void YKNewTask( void (*task)(void), void *taskStack, unsigned char priority){   
   }
 
   YKScheduler(1);          // Save current block of mem
-  YKExitMutex();              		// starts interrupts
+  //YKExitMutex();              		// starts interrupts
 }
 
 void YKRun(void){                 // Starts actual execution of user code
@@ -144,7 +144,7 @@ void YKScheduler(int save_flag){     // Determines the highest priority ready ta
   TCBptr highest_priority_task;
   TCBptr currentlyRunning;
 
-  YKEnterMutex();
+  //YKEnterMutex();
   //printString("Entering Scheduler\n\r");
   highest_priority_task = YKRdyList;
   currentlyRunning = TKCurrentlyRunning;
@@ -165,7 +165,7 @@ void YKScheduler(int save_flag){     // Determines the highest priority ready ta
     YKDispatcherSave(&(currentlyRunning->stackptr), highest_priority_task->stackptr);
     //printString("EXIT SAVE DISPATCHER\n\r");
   }
-  YKExitMutex();
+  //YKExitMutex();
 }
 
 void YKDelayTask(unsigned count){
@@ -204,17 +204,17 @@ void YKExitISR(void){
   YKISRDepth = YKISRDepth - 1;
 
   if(YKISRDepth == 0) {
-    YKScheduler(1);
+    YKScheduler(0);
   }
 }
 
 void YKTickHandler(void){
   TCBptr tempDelay, tempReady, tempNext;
-
+  tempDelay = YKDelayList;
   YKEnterMutex();
 
   YKTickNum = YKTickNum + 1;
-  tempDelay = YKDelayList;
+  
 	//While the delay is not finished, counter--;
   while(tempDelay != NULL){
     tempNext = tempDelay->next;
