@@ -413,7 +413,7 @@ YKQ *YKQCreate(void **start, unsigned size){
   YKQueueArray[i].size = size;
   YKQueueArray[i].tail = 0;
   YKQueueArray[i].head = 0;
-
+  YKExitMutex(); // colin add
   return &(YKQueueArray[i]);
 
 }
