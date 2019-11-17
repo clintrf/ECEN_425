@@ -24,6 +24,7 @@ TCBptr YKQWaitList;
 
 TCBptr TKCurrentlyRunning;
 
+int tickcount = 0;
 char run_flag = 0;
 
 void YKInitialize(void){    // Initializes all required kernel data structures
@@ -60,7 +61,6 @@ void YKInitialize(void){    // Initializes all required kernel data structures
   }
 
   YKNewTask(YKIdleTask, (void*)&idleStack[256], 100);
-  YKExitMutex();
 }
 
 void YKIdleTask(void){      // Kernel's idle task
