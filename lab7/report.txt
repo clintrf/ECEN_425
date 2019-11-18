@@ -1,0 +1,14 @@
+//Problems encountered:
+//-We felt like we understood the basics of what was suposto be going on but then we got hung up on actually understanding what
+//--actually was happening with the nested interrupts. The way we implemented our dispature was ok, but ment we had to check
+//--for nested interrupts in our myisr.s file. We spent hours bangging our heads against the wall trying to change things in
+//--in the dispature when we really should have been looking in the isr. 
+
+//--With regard to the previous comment, we weren't saving the SP of the delayed stack when the isr depth was zero and was 
+//--getting interupted. Once the depth got to zero then we needed to save that SP so we knew which stack to go back to.
+
+//--We should have just rewriten our dispature from scratch and simplified it instead of doing nested interupt control in the
+//--ISR
+
+//Hours spent on lab:
+//Total Time spent == 20+ hours

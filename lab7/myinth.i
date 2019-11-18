@@ -44,7 +44,7 @@ extern unsigned int YKTickNum;
 typedef struct YKQ
 {
     int size;
-    int length;
+    int cur_length;
     void** base_addr;
     int head;
     int tail;
@@ -104,16 +104,13 @@ YKSEM* YKSemCreate(int initialValue);
 void YKSemPend(YKSEM *semaphore);
 void YKSemPost(YKSEM *semaphore);
 # 3 "myinth.c" 2
-# 1 "lab6defs.h" 1
-# 11 "lab6defs.h"
-struct msg
-{
-    int tick;
-    int data;
-};
+# 1 "lab7defs.h" 1
+# 15 "lab7defs.h"
+extern YKEVENT *charEvent;
+extern YKEVENT *numEvent;
 # 4 "myinth.c" 2
 # 12 "myinth.c"
-extern struct msg MsgArray[20];
+extern struct msg MsgArray[MSGARRAYSIZE];
 extern YKQ *MsgQPtr;
 extern int GlobalFlag;
 
@@ -124,7 +121,6 @@ void c_reset_handler(){
 void c_tick_handler(){
     static int next = 0;
     static int data = 0;
-
     YKTickHandler();
 
 
@@ -135,7 +131,7 @@ void c_tick_handler(){
     if (YKQPost(MsgQPtr, (void *) &(MsgArray[next])) == 0){
         printString("  TickISR: queue overflow! \n");
     }
-    else if (++next >= 20){
+    else if (++next >= MSGARRAYSIZE){
         next = 0;
     }
 
@@ -148,5 +144,5 @@ void c_tick_handler(){
 
 void c_key_handler(){
  GlobalFlag = 1;
-# 62 "myinth.c"
+# 61 "myinth.c"
 }
