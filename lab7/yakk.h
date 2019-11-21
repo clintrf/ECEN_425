@@ -52,7 +52,7 @@ typedef struct taskblock
     YKSEM *semWait;      /* semaphore the task is waiting for. NULL if not waiting, lets make it a pointer*/
     YKQ *queueWait;
   
-    YKEVENT *eventWait;
+    YKEVENT *event;
     unsigned eventMask;
     int waitMode;
 }  TCB;
@@ -77,7 +77,7 @@ void YKExitISR(void);              // Exits the ISR and decrements the counter f
 void YKTickHandler(void);       // handles the ticks
 
 YKEVENT *YKEventCreate(unsigned initialValue);
-unsigned YKEventPend(YKEVENT *eventWait, unsigned eventMask, int waitMode);
+unsigned YKEventPend(YKEVENT *event, unsigned eventMask, int waitMode);
 void YKEventSet(YKEVENT *event, unsigned eventMask);
 YKEventReset. Prototype: void YKEventReset(YKEVENT *event, unsigned eventMask);
 
