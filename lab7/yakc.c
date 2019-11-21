@@ -9,18 +9,18 @@ unsigned int YKCtxSwCount;            // must be incremented each time a context
 unsigned int YKIdleCount;             // Must be incremented by the idle task in its while(1) loop.
 unsigned int YKTickNum;
 unsigned int YKISRDepth;
-//unsigned int YKSemCount;
 
 TCBptr YKRdyList;
 TCBptr YKDelayList;
-//TCBptr YKSuspList;
 TCBptr YKAvailTCBList;		/* a list of available TCBs */
 TCB    YKTCBArray[MAXTASKS+1];	/* array to allocate all needed TCBs*/
-
 YKSEM YKSemArray[SEM_COUNT]; // Not sure how large this array should be, change it if needed
 YKQ YKQueueArray[QUE_COUNT]; // List of queues
+YKEVENT YKEVENTArray[EVENT_COUNT];
+
 TCBptr YKSemWaitList;        // List of the semaphores currently waiting
 TCBptr YKQWaitList;
+TCBptr YKEventList;
 
 TCBptr TKCurrentlyRunning;
 
@@ -32,9 +32,9 @@ void YKInitialize(void){    // Initializes all required kernel data structures
   YKCtxSwCount = 0;         // Set to 0
   YKIdleCount = 0;          // Set to 0
   TKCurrentlyRunning = 0;   // Set to 0
-  YKISRDepth = 0;
-  //YKSemCount = 0;
-  YKTickNum = 0;
+  YKISRDepth = 0;           // Set to 0
+  YKTickNum = 0;            // Set to 0
+	
   YKEnterMutex();
 
   /* code to construct singly linked available TCB list from initial array */
@@ -56,7 +56,11 @@ void YKInitialize(void){    // Initializes all required kernel data structures
     YKQueueArray[i].base_addr = 0;
     YKQueueArray[i].head = 0;
     YKQueueArray[i].tail = 0;
-
+  }
+	
+  for (i = 0; i < EVENT_COUNT; i++){
+    YKEVENTArray[i].active = 0;
+		YKEVENTArray[i].flag = 0;
   }
 
   YKNewTask(YKIdleTask, (void*)&idleStack[256], 100);
