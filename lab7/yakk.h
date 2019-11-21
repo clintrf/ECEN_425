@@ -3,9 +3,10 @@
 #define YAKK_H
 
 #define NULL 0
-#define MAXTASKS 9
-#define SEM_COUNT 19
+#define MAXTASKS 10
+#define SEM_COUNT 10
 #define QUE_COUNT 2
+#define EVENT_COUNT 2
 
 
 /******************** Global Variables ********************/
@@ -15,9 +16,12 @@ extern unsigned int YKIdleCount;             // Must be incremented by the idle 
 extern unsigned int YKTickNum;
 
 /******************** Global Structs ********************/
-// for each queue you will need enough information to maintain the queue as a circular buffer 
-// (such as a head pointer, a tail pointer, and a size). Your kernel also needs a way to indicate that 
-// a task is suspended while waiting for a particular semaphore or a message from a particular queue. 
+typedef struct YKEVENT
+{				 
+  int active;
+  int flag;
+} YKEVENT;
+
 typedef struct YKQ
 {				        
     int size;           // max number of entries in the queue
@@ -47,6 +51,10 @@ typedef struct taskblock
     TCBptr prev;		/* backward ptr for dbl linked list */
     YKSEM *semWait;      /* semaphore the task is waiting for. NULL if not waiting, lets make it a pointer*/
     YKQ *queueWait;
+  
+    YKEVENT *eventWait;
+    unsigned eventMask;
+    int waitMode;
 }  TCB;
 
 
@@ -68,18 +76,25 @@ void YKEnterISR(void);             // Enters the ISR and increments the counter 
 void YKExitISR(void);              // Exits the ISR and decrements the counter for how deap it is
 void YKTickHandler(void);       // handles the ticks
 
+YKEVENT *YKEventCreate(unsigned initialValue);
+unsigned YKEventPend(YKEVENT *eventWait, unsigned eventMask, int waitMode);
+void YKEventSet(YKEVENT *event, unsigned eventMask);
+YKEventReset. Prototype: void YKEventReset(YKEVENT *event, unsigned eventMask);
+
 YKQ *YKQCreate(void **start, unsigned size);
 void *YKQPend(YKQ *queue);
 int YKQPost(YKQ *queue, void *msg);
+
+YKSEM* YKSemCreate(int initialValue);
+void YKSemPend(YKSEM *semaphore);
+void YKSemPost(YKSEM *semaphore);
 
 /******************** Functions in yaks.s ********************/
 void YKEnterMutex(void);              // Disables interrupts
 void YKExitMutex(void);               // Enables interrupts
 void YKDispatcherNSave(int *restore_sp);
 void YKDispatcherSave(int ** save_sp, int *restore_sp);
-YKSEM* YKSemCreate(int initialValue);
-void YKSemPend(YKSEM *semaphore);
-void YKSemPost(YKSEM *semaphore);
+
 
 
 /******************** Functions not in this lab ********************/
