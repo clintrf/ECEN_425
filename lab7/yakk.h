@@ -19,7 +19,7 @@ extern unsigned int YKTickNum;
 typedef struct YKEVENT
 {				 
   int active;
-  int flag;
+  unsigned flag;
 } YKEVENT;
 
 typedef struct YKQ
