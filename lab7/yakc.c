@@ -571,6 +571,15 @@ int YKQPost(YKQ *queue, void *msg){
   return 1;
 }
 
+/*********************lab 7***************************/
+YKEVENT *YKEventCreate(unsigned initialValue){}
+
+unsigned YKEventPend(YKEVENT *event, unsigned eventMask, int waitMode){}
+
+void YKEventSet(YKEVENT *event, unsigned eventMask){}
+
+void YKEventReset(YKEVENT *event, unsigned eventMask){}
+
 /******************** Functions in yaks.s ********************/
 // Functions are made inside of yaks.s because they are coded in assembly
 //void YKDispatcher(void);    // Begins or resumes execution of the next task
@@ -579,7 +588,4 @@ int YKQPost(YKQ *queue, void *msg){
 
 
 /******************** Functions not in this lab ********************/
-//YKEVENT *YKEventCreate(unsigned initialValue)
-//unsigned YKEventPend(YKEVENT *event, unsigned eventMask, int waitMode)
-//void YKEventSet(YKEVENT *event, unsigned eventMask)
-//void YKEventReset(YKEVENT *event, unsigned eventMask)
+
