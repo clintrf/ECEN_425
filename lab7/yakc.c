@@ -501,11 +501,10 @@ unsigned YKEventPend(YKEVENT *event, unsigned eventMask, int waitMode){
   TCBptr readyTask;
   YKEnterMutex();
   
-  if(waitMode == EVENT_WAIT_ANY){
-    if(((event->flag & eventMask) > 0)  || ((event->flag & eventMask) == eventMask)){
-      YKExitMutex();
-      return (event->flag);
-    }
+  if(((waitMode == 0) && ((event->flag & eventMask) > 0)) || //any
+    ((waitMode == 1) && ((event->flag & eventMask) == eventMask))){ // all
+    YKExitMutex();
+    return (event->flag);
   }
   
   readyTask = YKRdyList; // code from sem pend
