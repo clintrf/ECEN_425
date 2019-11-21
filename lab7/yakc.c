@@ -533,10 +533,13 @@ void YKEventSet(YKEVENT *event, unsigned eventMask){
   YKEnterMutex();
   event->flag |= eventMask;
   eventTask = YKEventList;
+  
   while(eventTask != NULL){
     // If flag group matches
-    if(eventTask->waitMode == EVENT_WAIT_ALL){
-      if(eventTask->eventMask == event->flag){ // If they're all the same
+    if( ((eventTask->waitMode == EVENT_WAIT_ALL) && (eventTask->eventMask == event->flag)) ||
+        ((eventTask->waitMode == EVENT_WAIT_ANY) && (eventTask->eventMask & event->flag > 0)) ){
+        // Make that task ready
+        readyTask = YKRdyList;
         while (readyTask->priority < eventTask->priority){
           readyTask = readyTask->next;
         }
@@ -551,12 +554,6 @@ void YKEventSet(YKEVENT *event, unsigned eventMask){
         readyTask->prev = eventTask;
 
         eventTask->queueWait = NULL;
-      }
-    }
-    else{
-      if(eventTask->eventMask == (event->flag | eventTask->eventMask)){ // Not sure what this should be
-        
-      }
     }
     eventTask = eventTask->next;
   }
