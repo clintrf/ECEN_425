@@ -492,7 +492,7 @@ YKEVENT *YKEventCreate(unsigned initialValue){
   for (i = 0; YKEVENTArray[i].active; i++){}; // find next open event index
 
   YKEVENTArray[i].active = 1;
-  YKEVENTArray[i].flag = 0;
+  YKEVENTArray[i].flag = initialValue;
   YKExitMutex(); 
   return &(YKEVENTArray[i]);
 }
@@ -501,7 +501,7 @@ unsigned YKEventPend(YKEVENT *event, unsigned eventMask, int waitMode){
   TCBptr readyTask;
   YKEnterMutex();
   
-  if(waitMode == 0){
+  if(waitMode == EVENT_WAIT_ANY){
     if(((event->flag & eventMask) > 0)  || ((event->flag & eventMask) == eventMask)){
       YKExitMutex();
       return (event->flag);
@@ -511,8 +511,8 @@ unsigned YKEventPend(YKEVENT *event, unsigned eventMask, int waitMode){
   readyTask = YKRdyList; // code from sem pend
   YKRdyList = readyTask->next;
   readyTask->next->prev = NULL;
-  readyTask->next = YKSemWaitList; 
-  YKSemWaitList = readyTask;
+  readyTask->next = YKEventList; 
+  YKEventList = readyTask;
   readyTask->prev = NULL;
 
   if(readyTask->next != NULL){
@@ -529,9 +529,47 @@ unsigned YKEventPend(YKEVENT *event, unsigned eventMask, int waitMode){
   return (event->flag);
 }
 
-void YKEventSet(YKEVENT *event, unsigned eventMask){}
+void YKEventSet(YKEVENT *event, unsigned eventMask){
+  TCBptr eventTask, readyTask;
+  YKEnterMutex();
+  event->flag |= eventMask;
+  eventTask = YKEventList;
+  while(eventTask != NULL){
+    // If flag group matches
+    if(eventTask->waitMode == EVENT_WAIT_ALL){
+      if(eventTask->eventMask == event->flag){ // If they're all the same
+        while (readyTask->priority < eventTask->priority){
+          readyTask = readyTask->next;
+        }
+        if(readyTask->prev == NULL){ // AKA its at the front
+          YKRdyList = eventTask;
+        }
+        else{                        // insert it
+          readyTask->prev->next = eventTask;
+        }
+        eventTask->prev = readyTask->prev;
+        eventTask->next = readyTask;
+        readyTask->prev = eventTask;
 
-void YKEventReset(YKEVENT *event, unsigned eventMask){}
+        eventTask->queueWait = NULL;
+      }
+    }
+    else{
+      if(eventTask->eventMask == (event->flag | eventTask->eventMask)){ // Not sure what this should be
+        
+      }
+    }
+    eventTask = eventTask->next;
+  }
+
+  YKExitMutex();
+}
+
+void YKEventReset(YKEVENT *event, unsigned eventMask){
+  YKEnterMutex();
+  event->flag &= ~eventMask; // Set flags to zero corresponding to values set in eventMask
+  YKExitMutex();
+}
 
 
 /******************** Functions in yaks.s ********************/

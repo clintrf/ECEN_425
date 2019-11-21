@@ -7,6 +7,8 @@
 #define SEM_COUNT 10
 #define QUE_COUNT 2
 #define EVENT_COUNT 2
+#define EVENT_WAIT_ANY 0
+#define EVENT_WAIT_ALL 1
 
 
 /******************** Global Variables ********************/
@@ -79,7 +81,7 @@ void YKTickHandler(void);       // handles the ticks
 YKEVENT *YKEventCreate(unsigned initialValue);
 unsigned YKEventPend(YKEVENT *event, unsigned eventMask, int waitMode);
 void YKEventSet(YKEVENT *event, unsigned eventMask);
-YKEventReset. Prototype: void YKEventReset(YKEVENT *event, unsigned eventMask);
+void YKEventReset(YKEVENT *event, unsigned eventMask);
 
 YKQ *YKQCreate(void **start, unsigned size);
 void *YKQPend(YKQ *queue);
