@@ -58,7 +58,6 @@ void c_key_handler(){
         print(") IGNORED\n", 10);
     }
 }
-}
 
 /*
 void delay(){
