@@ -493,7 +493,7 @@ YKEVENT *YKEventCreate(unsigned initialValue){
   //YKExitMutex(); 
   return &(YKEVENTArray[i]);
 }
-/*
+
 unsigned YKEventPend(YKEVENT *event, unsigned eventMask, int waitMode){
   TCBptr readyTask;
   printString("in pend-----------");
@@ -525,57 +525,6 @@ unsigned YKEventPend(YKEVENT *event, unsigned eventMask, int waitMode){
   
   return event->flag;
 }
-*/
-
-unsigned YKEventPend(YKEVENT *event, unsigned eventMask, int waitMode)
-{
-    TCBptr tmp;
-    unsigned tmp1;
-
-   /***************  suspend the calling task until conditions are met. Call scheduler.  **********/
-   //unless exact conditions are met, then just return immediatley
-
-    YKEnterMutex();
-    if(waitMode == EVENT_WAIT_ANY)  //waitMode suggests EVENT_WAIT_ANY
-    {
-		if((event->flag & eventMask) > 0) //if any event bit is set in event flags group
-		{
-			tmp1 = event->flag;
-			YKExitMutex();
-			return tmp1;
-		}
-    }
-    else //waitMode indicates EVENT_WAIT_ALL
-    {
-      if(event->flag & eventMask == eventMask) //if all bits set in eventMask are also set in event flags group
-      {
-	tmp1 = event->flag;
-	YKExitMutex();
-	return tmp1;
-      }
-    }
-
-
-    tmp = YKRdyList;		/* get ptr to TCB to change */
-    YKRdyList = tmp->next;	/* remove from ready list */
-    tmp->next->prev = NULL;	/* ready list is never empty */
-    tmp->next = YKEventWaitList;	/* put at head of YKSemaphoreWaitingList list */
-    YKEventWaitList = tmp;
-    tmp->prev = NULL;
-    if (tmp->next != NULL)	/* YKEVENTBlockingList list may be empty */
-       tmp->next->prev = tmp;
-    tmp->event = event; 
-	tmp->eventMask = eventMask;
-	tmp->waitMode = waitMode;
-
-    YKScheduler(1);  // we DO need to save context
-    tmp1 = event->flag;
-    YKExitMutex();
-    return tmp1;
-}
-
-
-//----------------------------------------------
 
 void YKEventSet(YKEVENT *event, unsigned eventMask){
   TCBptr eventTask, unWaitTask, readyTask, taskNext;
