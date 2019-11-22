@@ -57,11 +57,13 @@ void YKInitialize(void){    // Initializes all required kernel data structures
     YKQueueArray[i].head = 0;
     YKQueueArray[i].tail = 0;
   }
-	
+
+  /*
   for (i = 0; i < EVENT_COUNT; i++){
     YKEVENTArray[i].active = 0;
     YKEVENTArray[i].flag = 0;
   }
+  */
 
   YKNewTask(YKIdleTask, (void*)&idleStack[256], 100);
 }
