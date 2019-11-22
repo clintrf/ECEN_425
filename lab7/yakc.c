@@ -20,7 +20,7 @@ YKEVENT YKEVENTArray[EVENT_COUNT];
 
 TCBptr YKSemWaitList;        // List of the semaphores currently waiting
 TCBptr YKQWaitList;
-TCBptr YKEventList;
+TCBptr YKEventWaitList;
 
 TCBptr TKCurrentlyRunning;
 
@@ -501,8 +501,8 @@ unsigned YKEventPend(YKEVENT *event, unsigned eventMask, int waitMode){
   TCBptr readyTask;
   YKEnterMutex();
   
-  if(((waitMode == 0) && ((event->flag & eventMask) > 0)) || //any
-    ((waitMode == 1) && ((event->flag & eventMask) == eventMask))){ // all
+  if(((waitMode == 0) && ((eventMask & event->flag ) > 0         )) || //any
+     ((waitMode == 1) && ((eventMask & event->flag ) == eventMask)) ){ // all
     YKExitMutex();
     return (event->flag);
   }
@@ -511,7 +511,7 @@ unsigned YKEventPend(YKEVENT *event, unsigned eventMask, int waitMode){
   YKRdyList = readyTask->next;
   readyTask->next->prev = NULL;
   readyTask->next = YKEventList; 
-  YKEventList = readyTask;
+  YKEventWaitList = readyTask;
   readyTask->prev = NULL;
 
   if(readyTask->next != NULL){
@@ -529,12 +529,57 @@ unsigned YKEventPend(YKEVENT *event, unsigned eventMask, int waitMode){
 }
 
 void YKEventSet(YKEVENT *event, unsigned eventMask){
-  TCBptr eventTask, readyTask;
+  TCBptr eventTask, unWaitTask, readyTask, nextEventTask;
   YKEnterMutex();
   event->flag |= eventMask;
 	
-  eventTask = YKEventList;
-  while(eventTask != NULL){
+  //eventTask = YKEventList;
+  //while(eventTask != NULL){
+  for(eventTask = YKEventList; eventTask != NULL; eventTask=eventTask->next){
+	  if(eventTask->event != event){
+      continue;
+    }
+    else{
+      if( ((eventTask->waitMode == 0) && ((eventTask->eventMask & event->flag ) > 0                    ))  ||
+        ((eventTask->waitMode == 1) && ((eventTask->eventMask == event->flag) == eventTask->eventMask)) ){
+        unWaitTask = eventTask;
+
+        if(unWaitTask->prev == NULL){ // from sem start--------------- list managment of event and ready List
+          YKEventWaitList = unWaitTask->next;
+        }
+        else{
+          unWaitTask->prev->next = unWaitTask->next;
+        }
+        if (unWaitTask->next != NULL){ 
+          unWaitTask->next->prev = unWaitTask->prev; 
+        }
+        readyTask = YKRdyList;
+        while (readyTask->priority < unWaitTask->priority){
+          readyTask = readyTask->next;
+        }
+        if(readyTask->prev == NULL){ // AKA its at the front
+          YKRdyList = unWaitTask;
+        }
+        else{                        // insert it
+          readyTask->prev->next = unWaitTask;
+        }
+        unWaitTask->prev = readyTask->prev;
+        unWaitTask->next = readyTask;
+        readyTask->prev = unWaitTask;
+
+        unWaitTask->event = NULL;  // from sem end ---------------
+      }
+      else{
+        unWaitTask = NULL;
+      }
+    }
+  }
+  if(YKISRDepth == 0){
+    YKScheduler(1);
+  }
+  YKExitMutex();
+}
+
     // If flag group matches
     if(eventTask->waitMode == EVENT_WAIT_ALL){
       if(eventTask->eventMask == event->flag){ // If they're all the same
