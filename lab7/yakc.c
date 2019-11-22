@@ -489,13 +489,13 @@ YKEVENT *YKEventCreate(unsigned initialValue){
 
   YKEVENTArray[i].active = 1;
   YKEVENTArray[i].flag = initialValue;
-  YKExitMutex(); 
+  //YKExitMutex(); 
   return &(YKEVENTArray[i]);
 }
 
 unsigned YKEventPend(YKEVENT *event, unsigned eventMask, int waitMode){
   TCBptr readyTask;
-
+  printString("in pend-----------");
   YKEnterMutex();
   
   if(((waitMode == 0) && ((eventMask & event->flag ) > 0         )) || //any
