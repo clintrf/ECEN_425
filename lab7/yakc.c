@@ -133,7 +133,7 @@ void YKNewTask( void (*task)(void), void *taskStack, unsigned char priority){   
   }
 
   YKScheduler(1);          // Save current block of mem
-  YKExitMutex();              		// starts interrupts
+  //YKExitMutex();              		// starts interrupts
 }
 
 void YKRun(void){                 // Starts actual execution of user code
@@ -163,7 +163,7 @@ void YKScheduler(int save_flag){     // Determines the highest priority ready ta
   else{
     YKDispatcherSave(&(currentlyRunning->stackptr), highest_priority_task->stackptr);
   }
-  YKExitMutex();
+  //YKExitMutex();
 }
 
 void YKDelayTask(unsigned count){
