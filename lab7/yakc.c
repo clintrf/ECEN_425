@@ -535,7 +535,7 @@ void YKEventSet(YKEVENT *event, unsigned eventMask){
 	
   for(eventTask = YKEventWaitList; eventTask != NULL; eventTask=eventTask->next){
     if(eventTask->event != event){
-      eventTask = eventTask->next
+      eventTask = eventTask->next;
       continue;
     }
     else{
