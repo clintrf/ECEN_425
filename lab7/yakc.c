@@ -136,7 +136,7 @@ void YKNewTask( void (*task)(void), void *taskStack, unsigned char priority){   
 }
 
 void YKRun(void){                 // Starts actual execution of user code
-  //printString("Start Run and call scheduler\n");
+  printString("Start Run and call scheduler\n");
   run_flag = 1;                // Start the Scheduler for the very first time
   YKScheduler(0);             // run the top proccess
 }
@@ -533,46 +533,52 @@ void YKEventSet(YKEVENT *event, unsigned eventMask){
   TCBptr eventTask, unWaitTask, readyTask, taskNext;
   YKEnterMutex();
   event->flag |= eventMask;
+
+  eventTask = YKEventWaitList;
+  
+  if(eventTask == NULL){
+    YKExitMutex();
+    return;
+  }
 	
-  for(eventTask = YKEventWaitList; eventTask != NULL; ){
+  while(eventTask != NULL){
     taskNext=eventTask->next;
     if(eventTask->event != event){
       eventTask = taskNext;
       continue;
     }
+    if( ((eventTask->waitMode == 0) && ((eventTask->eventMask & event->flag ) > 0                   ))  ||
+      ((eventTask->waitMode == 1) && ((eventTask->eventMask & event->flag) == eventTask->eventMask)) ){
+      unWaitTask = eventTask;
+    }
     else{
-      if( ((eventTask->waitMode == 0) && ((eventTask->eventMask & event->flag ) > 0                   ))  ||
-          ((eventTask->waitMode == 1) && ((eventTask->eventMask & event->flag) == eventTask->eventMask)) ){
-        unWaitTask = eventTask;
-
-        if(unWaitTask->prev == NULL){ // from sem start--------------- list managment of event and ready List
-          YKEventWaitList = unWaitTask->next;
-        }
-        else{
-          unWaitTask->prev->next = unWaitTask->next;
-        }
-        if (unWaitTask->next != NULL){ 
-          unWaitTask->next->prev = unWaitTask->prev; 
-        }
-        readyTask = YKRdyList;
-        while (readyTask->priority < unWaitTask->priority){
-          readyTask = readyTask->next;
-        }
-        if(readyTask->prev == NULL){ // AKA its at the front
-          YKRdyList = unWaitTask;
-        }
-        else{                        // insert it
-          readyTask->prev->next = unWaitTask;
-        }
-        unWaitTask->prev = readyTask->prev;
-        unWaitTask->next = readyTask;
-        readyTask->prev = unWaitTask;
-
-        unWaitTask->event = NULL;  // from sem end ---------------
+      unWaitTask = NULL;
+    }
+    if(unWaitTask != NULL){
+      if(unWaitTask->prev == NULL){ // from sem start--------------- list managment of event and ready List
+        YKEventWaitList = unWaitTask->next;
       }
       else{
-        unWaitTask = NULL;
+        unWaitTask->prev->next = unWaitTask->next;
       }
+      if (unWaitTask->next != NULL){ 
+        unWaitTask->next->prev = unWaitTask->prev; 
+      }
+      readyTask = YKRdyList;
+      while (readyTask->priority < unWaitTask->priority){
+        readyTask = readyTask->next;
+      }
+      if(readyTask->prev == NULL){ // AKA its at the front
+        YKRdyList = unWaitTask;
+      }
+      else{                        // insert it
+        readyTask->prev->next = unWaitTask;
+      }
+      unWaitTask->prev = readyTask->prev;
+      unWaitTask->next = readyTask;
+      readyTask->prev = unWaitTask;
+
+      unWaitTask->event = NULL;  // from sem end ---------------
     }
     eventTask = taskNext;
   }
