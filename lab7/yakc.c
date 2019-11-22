@@ -24,7 +24,6 @@ TCBptr YKEventWaitList;
 
 TCBptr TKCurrentlyRunning;
 
-int tickcount = 0;
 char run_flag = 0;
 
 void YKInitialize(void){    // Initializes all required kernel data structures
@@ -44,6 +43,7 @@ void YKInitialize(void){    // Initializes all required kernel data structures
   }
   YKTCBArray[MAXTASKS].next = NULL;
 
+	/*
   for (i = 0; i < SEM_COUNT; i++){
     YKSemArray[i].val = -10;           // init the value of the semaphore
     YKSemArray[i].active = 0;        // init if the semaphore has been activated (has not)
@@ -62,6 +62,7 @@ void YKInitialize(void){    // Initializes all required kernel data structures
     YKEVENTArray[i].active = 0;
     YKEVENTArray[i].flag = 0;
   }
+	*/
   
   YKNewTask(YKIdleTask, (void*)&idleStack[256], 100);
 }
@@ -242,6 +243,7 @@ void YKTickHandler(void){
   YKExitMutex();
 }
 
+/*
 YKSEM* YKSemCreate(int initialValue){
   int i;
   YKEnterMutex();
@@ -379,12 +381,6 @@ YKQ *YKQCreate(void **start, unsigned size){ //Initializes the message queue, re
 
 }
 
-/*
-This function removes the oldest message from the indicated message queue if it is non-empty.
-If the message queue is empty, the calling task is suspended by the kernel until a message becomes available.
-The function returns the oldest message in the queue (cast to C's generic "void pointer" type).
-This function is called only by tasks and never by interrupt handlers or ISRs.
-*/
 void *YKQPend(YKQ *queue){
   TCBptr readyTask;
   void* msg;
@@ -484,7 +480,7 @@ int YKQPost(YKQ *queue, void *msg){
   YKExitMutex();
   return 1;
 }
-
+*/
 /*********************lab 7***************************/
 YKEVENT *YKEventCreate(unsigned initialValue){
   int i;
