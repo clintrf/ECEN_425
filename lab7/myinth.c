@@ -4,8 +4,6 @@
 
 
 extern int KeyBuffer;
-extern YKEVENT * charEvent;
-extern YKEVENT * numEvent;
 
 void c_reset_handler(){
 	exit(0);
