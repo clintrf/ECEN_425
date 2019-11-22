@@ -58,13 +58,11 @@ void YKInitialize(void){    // Initializes all required kernel data structures
     YKQueueArray[i].tail = 0;
   }
 
-  /*
   for (i = 0; i < EVENT_COUNT; i++){
     YKEVENTArray[i].active = 0;
     YKEVENTArray[i].flag = 0;
   }
-  */
-
+  
   YKNewTask(YKIdleTask, (void*)&idleStack[256], 100);
 }
 
@@ -535,9 +533,9 @@ void YKEventSet(YKEVENT *event, unsigned eventMask){
   YKEnterMutex();
   event->flag |= eventMask;
 	
-
   for(eventTask = YKEventWaitList; eventTask != NULL; eventTask=eventTask->next){
     if(eventTask->event != event){
+      eventTask = eventTask->next
       continue;
     }
     else{
@@ -583,7 +581,7 @@ void YKEventSet(YKEVENT *event, unsigned eventMask){
 
 void YKEventReset(YKEVENT *event, unsigned eventMask){
   YKEnterMutex();
-  event->flag = ~eventMask & event->flag; // Set flags to zero corresponding to values set in eventMask
+  event->flag &= ~eventMask; // Set flags to zero corresponding to values set in eventMask
   YKExitMutex();
 }
 
