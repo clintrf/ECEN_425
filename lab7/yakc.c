@@ -532,6 +532,7 @@ void YKEventSet(YKEVENT *event, unsigned eventMask){
   TCBptr eventTask, readyTask;
   YKEnterMutex();
   event->flag |= eventMask;
+	
   eventTask = YKEventList;
   while(eventTask != NULL){
     // If flag group matches
