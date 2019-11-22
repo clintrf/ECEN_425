@@ -538,7 +538,7 @@ unsigned YKEventPend(YKEVENT *event, unsigned eventMask, int waitMode)
     YKEnterMutex();
     if(waitMode == EVENT_WAIT_ANY)  //waitMode suggests EVENT_WAIT_ANY
     {
-		if((event->flags & eventMask) > 0) //if any event bit is set in event flags group
+		if((event->flag & eventMask) > 0) //if any event bit is set in event flags group
 		{
 			tmp1 = event->flags;
 			YKExitMutex();
@@ -547,9 +547,9 @@ unsigned YKEventPend(YKEVENT *event, unsigned eventMask, int waitMode)
     }
     else //waitMode indicates EVENT_WAIT_ALL
     {
-      if(event->flags & eventMask == eventMask) //if all bits set in eventMask are also set in event flags group
+      if(event->flag & eventMask == eventMask) //if all bits set in eventMask are also set in event flags group
       {
-	tmp1 = event->flags;
+	tmp1 = event->flag;
 	YKExitMutex();
 	return tmp1;
       }
@@ -559,8 +559,8 @@ unsigned YKEventPend(YKEVENT *event, unsigned eventMask, int waitMode)
     tmp = YKRdyList;		/* get ptr to TCB to change */
     YKRdyList = tmp->next;	/* remove from ready list */
     tmp->next->prev = NULL;	/* ready list is never empty */
-    tmp->next = YKEventBlockingList;	/* put at head of YKSemaphoreWaitingList list */
-    YKEventBlockingList = tmp;
+    tmp->next = YKEventWaitList;	/* put at head of YKSemaphoreWaitingList list */
+    YKEventWaitList = tmp;
     tmp->prev = NULL;
     if (tmp->next != NULL)	/* YKEVENTBlockingList list may be empty */
        tmp->next->prev = tmp;
@@ -569,7 +569,7 @@ unsigned YKEventPend(YKEVENT *event, unsigned eventMask, int waitMode)
 	tmp->waitMode = waitMode;
 
     YKScheduler(1);  // we DO need to save context
-    tmp1 = event->flags;
+    tmp1 = event->flag;
     YKExitMutex();
     return tmp1;
 }
