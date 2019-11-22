@@ -3,9 +3,9 @@
 #define YAKK_H
 
 #define NULL 0
-#define MAXTASKS 10
-#define SEM_COUNT 10
-#define QUE_COUNT 2
+#define MAXTASKS 9
+//#define SEM_COUNT 10
+//#define QUE_COUNT 2
 #define EVENT_COUNT 2
 #define EVENT_WAIT_ANY 0
 #define EVENT_WAIT_ALL 1
@@ -24,6 +24,7 @@ typedef struct YKEVENT
   unsigned flag;
 } YKEVENT;
 
+/*
 typedef struct YKQ
 {				        
     int size;           // max number of entries in the queue
@@ -39,6 +40,7 @@ typedef struct YKSEM
     int active;    // indicates if semaphore has been initialezed
     int id;
 }  YKSEM;
+*/
 
 // TCB Struct
 typedef struct taskblock *TCBptr;
@@ -51,8 +53,8 @@ typedef struct taskblock
     int delay;			/* #ticks yet to wait */
     TCBptr next;		/* forward ptr for dbl linked list */
     TCBptr prev;		/* backward ptr for dbl linked list */
-    YKSEM *semWait;      /* semaphore the task is waiting for. NULL if not waiting, lets make it a pointer*/
-    YKQ *queueWait;
+    //YKSEM *semWait;      /* semaphore the task is waiting for. NULL if not waiting, lets make it a pointer*/
+    //YKQ *queueWait;
   
     YKEVENT *event;
     unsigned eventMask;
@@ -82,7 +84,7 @@ YKEVENT *YKEventCreate(unsigned initialValue);
 unsigned YKEventPend(YKEVENT *event, unsigned eventMask, int waitMode);
 void YKEventSet(YKEVENT *event, unsigned eventMask);
 void YKEventReset(YKEVENT *event, unsigned eventMask);
-
+/*
 YKQ *YKQCreate(void **start, unsigned size);
 void *YKQPend(YKQ *queue);
 int YKQPost(YKQ *queue, void *msg);
@@ -90,6 +92,7 @@ int YKQPost(YKQ *queue, void *msg);
 YKSEM* YKSemCreate(int initialValue);
 void YKSemPend(YKSEM *semaphore);
 void YKSemPost(YKSEM *semaphore);
+*/
 
 /******************** Functions in yaks.s ********************/
 void YKEnterMutex(void);              // Disables interrupts
