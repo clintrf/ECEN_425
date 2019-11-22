@@ -510,7 +510,7 @@ unsigned YKEventPend(YKEVENT *event, unsigned eventMask, int waitMode){
   readyTask = YKRdyList; // code from sem pend
   YKRdyList = readyTask->next;
   readyTask->next->prev = NULL;
-  readyTask->next = YKEventList; 
+  readyTask->next = YKEventWaitList; 
   YKEventWaitList = readyTask;
   readyTask->prev = NULL;
 
@@ -535,7 +535,7 @@ void YKEventSet(YKEVENT *event, unsigned eventMask){
 	
   //eventTask = YKEventList;
   //while(eventTask != NULL){
-  for(eventTask = YKEventList; eventTask != NULL; eventTask=eventTask->next){
+  for(eventTask = YKEventWaitList; eventTask != NULL; eventTask=eventTask->next){
 	  if(eventTask->event != event){
       continue;
     }
@@ -577,36 +577,6 @@ void YKEventSet(YKEVENT *event, unsigned eventMask){
   if(YKISRDepth == 0){
     YKScheduler(1);
   }
-  YKExitMutex();
-}
-
-    // If flag group matches
-    if(eventTask->waitMode == EVENT_WAIT_ALL){
-      if(eventTask->eventMask == event->flag){ // If they're all the same
-        while (readyTask->priority < eventTask->priority){
-          readyTask = readyTask->next;
-        }
-        if(readyTask->prev == NULL){ // AKA its at the front
-          YKRdyList = eventTask;
-        }
-        else{                        // insert it
-          readyTask->prev->next = eventTask;
-        }
-        eventTask->prev = readyTask->prev;
-        eventTask->next = readyTask;
-        readyTask->prev = eventTask;
-
-        eventTask->queueWait = NULL;
-      }
-    }
-    else{
-      if(eventTask->eventMask == (event->flag | eventTask->eventMask)){ // Not sure what this should be
-        
-      }
-    }
-    eventTask = eventTask->next;
-  }
-
   YKExitMutex();
 }
 
