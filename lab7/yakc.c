@@ -133,7 +133,6 @@ void YKNewTask( void (*task)(void), void *taskStack, unsigned char priority){   
   }
 
   YKScheduler(1);          // Save current block of mem
-  //YKExitMutex();              		// starts interrupts
 }
 
 void YKRun(void){                 // Starts actual execution of user code
@@ -163,7 +162,6 @@ void YKScheduler(int save_flag){     // Determines the highest priority ready ta
   else{
     YKDispatcherSave(&(currentlyRunning->stackptr), highest_priority_task->stackptr);
   }
-  //YKExitMutex();
 }
 
 void YKDelayTask(unsigned count){
@@ -496,7 +494,7 @@ YKEVENT *YKEventCreate(unsigned initialValue){
 
 unsigned YKEventPend(YKEVENT *event, unsigned eventMask, int waitMode){
   TCBptr readyTask;
-  printString("in pend-----------");
+	
   YKEnterMutex();
   
   if(((waitMode == 0) && ((eventMask & event->flag ) > 0         )) || //any
