@@ -520,7 +520,7 @@ unsigned YKEventPend(YKEVENT *event, unsigned eventMask, int waitMode){
 
   readyTask->event = event;
   readyTask->eventMask = eventMask;
-	readyTask->waitMode = waitMode;
+  readyTask->waitMode = waitMode;
 
   YKScheduler(1);
   YKExitMutex();
@@ -529,13 +529,14 @@ unsigned YKEventPend(YKEVENT *event, unsigned eventMask, int waitMode){
 }
 
 void YKEventSet(YKEVENT *event, unsigned eventMask){
-  TCBptr eventTask, unWaitTask, readyTask;
+  TCBptr eventTask, unWaitTask, readyTask, taskNext;
   YKEnterMutex();
   event->flag |= eventMask;
 	
-  for(eventTask = YKEventWaitList; eventTask != NULL; eventTask=eventTask->next){
+  for(eventTask = YKEventWaitList; eventTask != NULL; ){
+    taskNext=eventTask->next;
     if(eventTask->event != event){
-      eventTask = eventTask->next;
+      eventTask = taskNext;
       continue;
     }
     else{
@@ -572,6 +573,7 @@ void YKEventSet(YKEVENT *event, unsigned eventMask){
         unWaitTask = NULL;
       }
     }
+    eventTask = taskNext;
   }
   if(YKISRDepth == 0){
     YKScheduler(1);
