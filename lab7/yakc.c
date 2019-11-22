@@ -540,7 +540,7 @@ unsigned YKEventPend(YKEVENT *event, unsigned eventMask, int waitMode)
     {
 		if((event->flag & eventMask) > 0) //if any event bit is set in event flags group
 		{
-			tmp1 = event->flags;
+			tmp1 = event->flag;
 			YKExitMutex();
 			return tmp1;
 		}
