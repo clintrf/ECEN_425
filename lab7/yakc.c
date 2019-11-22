@@ -482,6 +482,7 @@ int YKQPost(YKQ *queue, void *msg){
 }
 */
 /*********************lab 7***************************/
+
 YKEVENT *YKEventCreate(unsigned initialValue){
   int i;
   YKEnterMutex();
