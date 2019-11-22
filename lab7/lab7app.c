@@ -143,8 +143,9 @@ void STask(void)           /* tracks statistics */
 
 void main(void)
 {
+    printString("before init ");
     YKInitialize();
-
+    printString("after init ");
     charEvent = YKEventCreate(0);
     numEvent = YKEventCreate(0);
     YKNewTask(STask, (void *) &STaskStk[TASK_STACK_SIZE], 0);
