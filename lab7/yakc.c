@@ -583,7 +583,7 @@ void YKEventSet(YKEVENT *event, unsigned eventMask){
 
 void YKEventReset(YKEVENT *event, unsigned eventMask){
   YKEnterMutex();
-  event->flag &= ~eventMask; // Set flags to zero corresponding to values set in eventMask
+  event->flag = ~eventMask & event->flag; // Set flags to zero corresponding to values set in eventMask
   YKExitMutex();
 }
 
