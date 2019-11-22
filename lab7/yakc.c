@@ -14,8 +14,8 @@ TCBptr YKRdyList;
 TCBptr YKDelayList;
 TCBptr YKAvailTCBList;		/* a list of available TCBs */
 TCB    YKTCBArray[MAXTASKS+1];	/* array to allocate all needed TCBs*/
-YKSEM YKSemArray[SEM_COUNT]; // Not sure how large this array should be, change it if needed
-YKQ YKQueueArray[QUE_COUNT]; // List of queues
+//YKSEM YKSemArray[SEM_COUNT]; // Not sure how large this array should be, change it if needed
+//YKQ YKQueueArray[QUE_COUNT]; // List of queues
 YKEVENT YKEVENTArray[EVENT_COUNT];
 
 TCBptr YKSemWaitList;        // List of the semaphores currently waiting
