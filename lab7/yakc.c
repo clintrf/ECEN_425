@@ -136,7 +136,7 @@ void YKNewTask( void (*task)(void), void *taskStack, unsigned char priority){   
 }
 
 void YKRun(void){                 // Starts actual execution of user code
-  printString("Start Run and call scheduler\n");
+  //printString("Start Run and call scheduler\n");
   run_flag = 1;                // Start the Scheduler for the very first time
   YKScheduler(0);             // run the top proccess
 }
@@ -499,14 +499,13 @@ YKEVENT *YKEventCreate(unsigned initialValue){
 
 unsigned YKEventPend(YKEVENT *event, unsigned eventMask, int waitMode){
   TCBptr readyTask;
-  unsigned tmp;
+
   YKEnterMutex();
   
   if(((waitMode == 0) && ((eventMask & event->flag ) > 0         )) || //any
      ((waitMode == 1) && ((eventMask & event->flag ) == eventMask)) ){ // all
-    tmp = event->flag;
     YKExitMutex();
-    return tmp;
+    return event->flag;
   }
   
   readyTask = YKRdyList; // code from sem pend
@@ -525,10 +524,9 @@ unsigned YKEventPend(YKEVENT *event, unsigned eventMask, int waitMode){
   readyTask->waitMode = waitMode;
 
   YKScheduler(1);
-  tmp = event->flag;
   YKExitMutex();
   
-  return tmp;
+  return event->flag;
 }
 
 void YKEventSet(YKEVENT *event, unsigned eventMask){
