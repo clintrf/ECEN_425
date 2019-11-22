@@ -60,7 +60,7 @@ void YKInitialize(void){    // Initializes all required kernel data structures
 	
   for (i = 0; i < EVENT_COUNT; i++){
     YKEVENTArray[i].active = 0;
-		YKEVENTArray[i].flag = 0;
+    YKEVENTArray[i].flag = 0;
   }
 
   YKNewTask(YKIdleTask, (void*)&idleStack[256], 100);
@@ -529,19 +529,18 @@ unsigned YKEventPend(YKEVENT *event, unsigned eventMask, int waitMode){
 }
 
 void YKEventSet(YKEVENT *event, unsigned eventMask){
-  TCBptr eventTask, unWaitTask, readyTask, nextEventTask;
+  TCBptr eventTask, unWaitTask, readyTask;
   YKEnterMutex();
   event->flag |= eventMask;
 	
-  //eventTask = YKEventList;
-  //while(eventTask != NULL){
+
   for(eventTask = YKEventWaitList; eventTask != NULL; eventTask=eventTask->next){
-	  if(eventTask->event != event){
+    if(eventTask->event != event){
       continue;
     }
     else{
-      if( ((eventTask->waitMode == 0) && ((eventTask->eventMask & event->flag ) > 0                    ))  ||
-        ((eventTask->waitMode == 1) && ((eventTask->eventMask == event->flag) == eventTask->eventMask)) ){
+      if( ((eventTask->waitMode == 0) && ((eventTask->eventMask & event->flag ) > 0                   ))  ||
+          ((eventTask->waitMode == 1) && ((eventTask->eventMask & event->flag) == eventTask->eventMask)) ){
         unWaitTask = eventTask;
 
         if(unWaitTask->prev == NULL){ // from sem start--------------- list managment of event and ready List
