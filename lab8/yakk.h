@@ -24,7 +24,7 @@ typedef struct YKEVENT
   unsigned flag;
 } YKEVENT;
 
-/*
+
 typedef struct YKQ
 {				        
     int size;           // max number of entries in the queue
@@ -40,21 +40,20 @@ typedef struct YKSEM
     int active;    // indicates if semaphore has been initialezed
     int id;
 }  YKSEM;
-*/
+
 
 // TCB Struct
 typedef struct taskblock *TCBptr;
 typedef struct taskblock
 {				        /* the TCB struct definition */
-    //void *stackptr;		/* pointer to current top of stack */
     int *stackptr;
     int state;			/* current state */
     int priority;		/* current priority */
     int delay;			/* #ticks yet to wait */
     TCBptr next;		/* forward ptr for dbl linked list */
     TCBptr prev;		/* backward ptr for dbl linked list */
-    //YKSEM *semWait;      /* semaphore the task is waiting for. NULL if not waiting, lets make it a pointer*/
-    //YKQ *queueWait;
+    YKSEM *semWait;      /* semaphore the task is waiting for. NULL if not waiting, lets make it a pointer*/
+    YKQ *queueWait;
   
     YKEVENT *event;
     unsigned eventMask;
@@ -89,7 +88,7 @@ YKQ *YKQCreate(void **start, unsigned size);
 void *YKQPend(YKQ *queue);
 int YKQPost(YKQ *queue, void *msg);
 
-YKSEM* YKSemCreate(int initialValue);
+YKSEM *YKSemCreate(int initialValue);
 void YKSemPend(YKSEM *semaphore);
 void YKSemPost(YKSEM *semaphore);
 

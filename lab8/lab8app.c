@@ -3,12 +3,9 @@
 #include "lab8defs.h"
 #include "simptris.h"
 
-#define TASK_STACK_SIZE 512			
-#define PIECE_QUEUE_SIZE 40		
-#define MOVE_QUEUE_SIZE 40
-
-
-
+int newPieceTaskStk[TASK_STACK_SIZE];
+int movePieceTaskStk[TASK_STACK_SIZE];
+int STaskStk[TASK_STACK_SIZE];
 
 void clearLine(){
 
@@ -39,7 +36,7 @@ void STack(void){
     max = YKIdleCount / 25;
     YKIdleCount = 0;
 
-    SeedSimptris(10);
+    SeedSimptris(836);
     
     YKNewTask(newPieceTask);
     YKNewTask(movePieceTask);
@@ -70,6 +67,14 @@ void STack(void){
 
 void main(void){
 
-	YKInitialize();
+    YKInitialize();
+    newPieceQueue = YKQCreate(newPieceQue, PIECE_QUEUE_SIZE);
+    movePieceQueue = YKQCreate(movePieceQue, MOVE_QUEUE_SIZE);
+    movePieceSem = YKSemCreate(READY);
+    
+    printString(" ");
+
+    YKNewTask(STask, (void *) &STaskStk[STACK_SIZE], 0);
+    YKRun();
 
 }		
