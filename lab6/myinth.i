@@ -31,19 +31,33 @@ void exit(unsigned char code);
 void signalEOI(void);
 # 2 "myinth.c" 2
 # 1 "yakk.h" 1
-# 15 "yakk.h"
+# 12 "yakk.h"
 extern unsigned int YKCtxSwCount;
 
 extern unsigned int YKIdleCount;
 extern unsigned int YKTickNum;
 
 
-typedef struct YKEVENT
+
+
+
+typedef struct YKQ
 {
-  int active;
-  unsigned flag;
-} YKEVENT;
-# 46 "yakk.h"
+    int size;
+    int cur_length;
+    void** base_addr;
+    int head;
+    int tail;
+} YKQ;
+
+typedef struct YKSEM
+{
+    int val;
+    int active;
+    int id;
+} YKSEM;
+
+
 typedef struct taskblock *TCBptr;
 typedef struct taskblock
 {
@@ -54,12 +68,8 @@ typedef struct taskblock
     int delay;
     TCBptr next;
     TCBptr prev;
-
-
-
-    YKEVENT *event;
-    unsigned eventMask;
-    int waitMode;
+    YKSEM *semWait;
+    YKQ *queueWait;
 } TCB;
 
 
@@ -81,47 +91,61 @@ void YKEnterISR(void);
 void YKExitISR(void);
 void YKTickHandler(void);
 
-YKEVENT *YKEventCreate(unsigned initialValue);
-unsigned YKEventPend(YKEVENT *event, unsigned eventMask, int waitMode);
-void YKEventSet(YKEVENT *event, unsigned eventMask);
-void YKEventReset(YKEVENT *event, unsigned eventMask);
-# 98 "yakk.h"
+YKQ *YKQCreate(void **start, unsigned size);
+void *YKQPend(YKQ *queue);
+int YKQPost(YKQ *queue, void *msg);
+
+
 void YKEnterMutex(void);
 void YKExitMutex(void);
 void YKDispatcherNSave(int *restore_sp);
 void YKDispatcherSave(int ** save_sp, int *restore_sp);
+YKSEM* YKSemCreate(int initialValue);
+void YKSemPend(YKSEM *semaphore);
+void YKSemPost(YKSEM *semaphore);
 # 3 "myinth.c" 2
-# 1 "lab7defs.h" 1
-# 15 "lab7defs.h"
-extern YKEVENT *charEvent;
-extern YKEVENT *numEvent;
+# 1 "lab6defs.h" 1
+# 11 "lab6defs.h"
+struct msg
+{
+    int tick;
+    int data;
+};
 # 4 "myinth.c" 2
-
-
-extern int KeyBuffer;
+# 12 "myinth.c"
+extern struct msg MsgArray[20];
+extern YKQ *MsgQPtr;
+extern int GlobalFlag;
 
 void c_reset_handler(){
  exit(0);
 }
 
 void c_tick_handler(){
+    static int next = 0;
+    static int data = 0;
     YKTickHandler();
+
+
+    MsgArray[next].tick = YKTickNum;
+    data = (data + 89) % 100;
+    MsgArray[next].data = data;
+
+    if (YKQPost(MsgQPtr, (void *) &(MsgArray[next])) == 0){
+        printString("  TickISR: queue overflow! \n");
+    }
+    else if (++next >= 20){
+        next = 0;
+    }
+
+
+
+
+
+
 }
 
 void c_key_handler(){
-    char c;
-    c = KeyBuffer;
-
-    if(c == 'a') YKEventSet(charEvent, 0x1);
-    else if(c == 'b') YKEventSet(charEvent, 0x2);
-    else if(c == 'c') YKEventSet(charEvent, 0x4);
-    else if(c == 'd') YKEventSet(charEvent, 0x1 | 0x2 | 0x4);
-    else if(c == '1') YKEventSet(numEvent, 0x1);
-    else if(c == '2') YKEventSet(numEvent, 0x2);
-    else if(c == '3') YKEventSet(numEvent, 0x4);
-    else {
-        print("\nKEYPRESS (", 11);
-        printChar(c);
-        print(") IGNORED\n", 10);
-    }
+ GlobalFlag = 1;
+# 61 "myinth.c"
 }
