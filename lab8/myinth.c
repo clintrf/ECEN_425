@@ -9,8 +9,8 @@ unsigned NewPieceType;
 unsigned NewPieceOrient;
 unsigned NewPieceCol;
 
-extern YKQ *newPieceQueue;
-extern struct newPiece newPieceList[];
+YKQ *newPieceQueue;
+struct newPiece newPieceList[];
 
 void c_reset_handler(){
     exit(0);
