@@ -69,6 +69,7 @@ int newPieceTask(void){
            }
         }
         else{
+            printString("straight \r\n");
             colPiece = message->col;
             while(colPiece > 1){
                  i = getIndex();
