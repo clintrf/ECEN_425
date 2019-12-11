@@ -9,6 +9,8 @@ int STaskStk[TASK_STACK_SIZE];
 
 int moveQueueIndex;
 
+struct movePiece movePieceList[MOVE_QUEUE_SIZE]
+
 int getIndex(void){
 	if(moveQueueIndex == MOVE_QUEUE_SIZE ){
 		moveQueueIndex = 0;
@@ -30,7 +32,7 @@ int newPieceTask(void){
             if(colPiece == 5){
                 i = getIndex();
                 movePieceList[i].id = message->id;
-                movePieceList[i].movement = LEFT;
+                movePieceList[i].movement = MOVE_LEFT;
                 movePieceList[i].function = SlidePiece;
                 YKQPost(movePieceQueue, &movePieceList[i]);
             }
@@ -38,7 +40,7 @@ int newPieceTask(void){
                 while(colPiece <4){
                  i = getIndex();
                 movePieceList[i].id = message->id;
-                movePieceList[i].movement = RIGHT;
+                movePieceList[i].movement = MOVE_RIGHT;
                 movePieceList[i].function = SlidePiece;
                 YKQPost(movePieceQueue, &movePieceList[i]);               
                 }
@@ -56,7 +58,7 @@ int newPieceTask(void){
             if(colPiece == 5){
                 i = getIndex();
                 movePieceList[i].id = message->id;
-                movePieceList[i].movement = LEFT;
+                movePieceList[i].movement = MOVE_LEFT;
                 movePieceList[i].function = SlidePiece;
                 colPiece--;
                 YKQPost(movePieceQueue, &movePieceList[i]);
@@ -64,7 +66,7 @@ int newPieceTask(void){
             else if(colPiece == 0){
                 i = getIndex();
                 movePieceList[i].id = message->id;
-                movePieceList[i].movement = RIGHT;
+                movePieceList[i].movement = MOVE_RIGHT;
                 movePieceList[i].function = SlidePiece;
                 colPiece++;
                 YKQPost(movePieceQueue, &movePieceList[i]);              
