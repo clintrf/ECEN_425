@@ -241,7 +241,7 @@ void YKTickHandler(void){
   YKExitMutex();
 }
 
-/*
+
 YKSEM* YKSemCreate(int initialValue){
   int i;
   YKEnterMutex();
@@ -478,7 +478,7 @@ int YKQPost(YKQ *queue, void *msg){
   YKExitMutex();
   return 1;
 }
-*/
+
 /*********************lab 7***************************/
 
 YKEVENT *YKEventCreate(unsigned initialValue){
