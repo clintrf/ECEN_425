@@ -143,7 +143,7 @@ int newPieceTask(void){
                     movePieceList[i].function = RotatePiece;
                     colPiece--;
                     YKQPost(movePieceQueue, &movePieceList[i]);
-                }}
+                }
                 while(colPiece < 2){
                     i = getIndex();
                     movePieceList[i].id = message->id;
