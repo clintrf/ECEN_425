@@ -6,8 +6,8 @@ Description: Required definitions for EE 425 lab 8
 
 #include "yakk.h"
 
-extern YKQ *movePieceQueue;
-extern YKQ *newPieceQueue;
+extern YKQ *movePieceQue;
+extern YKQ *newPieceQue;
 
 extern YKSEM *movePieceSem;
 
