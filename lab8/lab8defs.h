@@ -10,6 +10,7 @@ extern YKQ *movePieceQueue;
 extern YKQ *newPieceQueue;
 
 extern YKSEM *movePieceSem;
+extern YKEVENT *movePieceEvent;
 
 #define TASK_STACK_SIZE 512			
 #define PIECE_QUEUE_SIZE 50		
