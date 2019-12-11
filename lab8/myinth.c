@@ -12,7 +12,6 @@ extern unsigned NewPieceCol;
 extern YKQ *newPieceQueue;
 extern struct newPiece newPieceList[];
 
-
 void c_reset_handler(){
     exit(0);
 }
@@ -50,8 +49,7 @@ void new_piece_handler(void){
 }
 
 void received_handler(void){
-    // use semaphore
-    // YKSemPost();
+    YKSemPost(movePieceSem);
 }
 
 
