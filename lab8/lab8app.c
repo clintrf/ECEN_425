@@ -36,7 +36,9 @@ int newPieceTask(void){
     int colPiece;
     struct newPiece *message;
     
+	
     while(1){
+        printString("newPieceTask moving!\n");
         message = (struct newPiece *) YKQPend(newPieceQueue);
         if(message->type == STRAIGHT){
             printString("straight \r\n");
