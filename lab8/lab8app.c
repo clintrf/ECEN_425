@@ -11,6 +11,9 @@ int moveQueueIndex;
 
 struct movePiece movePieceList[MOVE_QUEUE_SIZE];
 
+void * newPieceQue[PIECE_QUEUE_SIZE];
+void * movePieceQue[MOVE_QUEUE_SIZE];
+
 int getIndex(void){
 	if(moveQueueIndex == MOVE_QUEUE_SIZE ){
 		moveQueueIndex = 0;
@@ -133,7 +136,7 @@ int newPieceTask(void){
                         YKQPost(movePieceQueue, &movePieceList[i]);
                         break;
                 }
-                while(pieceCol > 2){
+                while(colPiece > 2){
                     i = getIndex();
                     movePieceList[i].id = message->id;
                     movePieceList[i].movement = TURN_LEFT;
@@ -141,12 +144,12 @@ int newPieceTask(void){
                     pieceCol--;
                     YKQPost(movePieceQueue, &movePieceList[i]);
                 }}
-                while(pieceCol < 2){
+                while(colPiece < 2){
                     i = getIndex();
                     movePieceList[i].id = message->id;
                     movePieceList[i].movement = TURN_LEFT;
                     movePieceList[i].function = RotatePiece;
-                    pieceCol++;
+                    colPiece++;
                     YKQPost(movePieceQueue, &movePieceList[i]);
                 }
             }
