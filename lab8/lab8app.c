@@ -14,6 +14,12 @@ struct movePiece movePieceList[MOVE_QUEUE_SIZE];
 void * newPieceQue[PIECE_QUEUE_SIZE];
 void * movePieceQue[MOVE_QUEUE_SIZE];
 
+YKQ *movePieceQueue;
+YKQ *newPieceQueue;
+
+YKSEM *movePieceSem;
+
+
 int getIndex(void){
 	if(moveQueueIndex == MOVE_QUEUE_SIZE ){
 		moveQueueIndex = 0;
