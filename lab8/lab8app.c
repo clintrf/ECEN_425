@@ -181,7 +181,7 @@ void STask(void){
 
     SeedSimptris(5);
     
-    YKNewTask(newPieceTask, (void *) &newPieceTask[TASK_STACK_SIZE], 3;
+    YKNewTask(newPieceTask, (void *) &newPieceTask[TASK_STACK_SIZE], 3);
     YKNewTask(movePieceTask, (void *) &movePieceTask[TASK_STACK_SIZE], 5);
     
     StartSimptris();
