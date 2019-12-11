@@ -7,17 +7,28 @@ int newPieceTaskStk[TASK_STACK_SIZE];
 int movePieceTaskStk[TASK_STACK_SIZE];
 int STaskStk[TASK_STACK_SIZE];
 
+int moveQueueIndex;
+
+int getIndex(void){
+	if(moveQueueIndex == MOVE_QUEUE_SIZE ){
+		moveQueueIndex = 0;
+	}
+
+	return moveQueueIndex ++;
+}
+
 
 int newPieceTask(void){
     int i = 0;
+    int colPiece;
     struct newPiece *message;
     while(1){
         message = (struct newPiece *) YKQPend(newPieceQueue);
 
-        if(message->type == PIECE_TYPE_STRAIGHT){
+        if(message->type == STRAIGHT){
              colPiece = message->col;
             if(colPiece == 5){
-                i = getMovePieceQueueListIndex();
+                i = getIndex();
                 movePieceList[i].id = message->id;
                 movePieceList[i].movement = LEFT;
                 movePieceList[i].function = SlidePiece;
@@ -25,7 +36,7 @@ int newPieceTask(void){
             }
             else{
                 while(colPiece <4){
-                 i = getMovePieceQueueListIndex();
+                 i = getIndex();
                 movePieceList[i].id = message->id;
                 movePieceList[i].movement = RIGHT;
                 movePieceList[i].function = SlidePiece;
@@ -33,7 +44,7 @@ int newPieceTask(void){
                 }
             }
             if (message->orient){
-                i = getMovePieceQueueListIndex();
+                i = getIndex();
                 movePieceList[i].id = message->id;
                 movePieceList[i].movement = TURN_RIGHT;
                 movePieceList[i].function = RotatePiece;
@@ -43,7 +54,7 @@ int newPieceTask(void){
         else{
             colPiece = message->col;
             if(colPiece == 5){
-                i = getMovePieceQueueListIndex();
+                i = getIndex();
                 movePieceList[i].id = message->id;
                 movePieceList[i].movement = LEFT;
                 movePieceList[i].function = SlidePiece;
@@ -51,7 +62,7 @@ int newPieceTask(void){
                 YKQPost(movePieceQueue, &movePieceList[i]);
             }
             else if(colPiece == 0){
-                i = getMovePieceQueueListIndex();
+                i = getIndex();
                 movePieceList[i].id = message->id;
                 movePieceList[i].movement = RIGHT;
                 movePieceList[i].function = SlidePiece;
@@ -62,21 +73,21 @@ int newPieceTask(void){
                  corner_orient = 1;
                 switch(message->orient){
                     case 1:
-                        i = getMovePieceQueueListIndex();
+                        i = getIndex();
                         movePieceList[i].id = message->id;
                         movePieceList[i].movement = TURN_RIGHT;
                         movePieceList[i].function = RotatePiece;
                         YKQPost(movePieceQueue, &movePieceList[i]);
                         break;
                     case 2:
-                        i = getMovePieceQueueListIndex();
+                        i = getIndex();
                         movePieceList[i].id = message->id;
                         movePieceList[i].movement = TURN_LEFT;
                         movePieceList[i].function = RotatePiece;
                         YKQPost(movePieceQueue, &movePieceList[i]);
                         break;
                     case 3:
-                        i = getMovePieceQueueListIndex();
+                        i = getIndex();
                         movePieceList[i].id = message->id;
                         movePieceList[i].movement = TURN_LEFT;
                         movePieceList[i].function = RotatePiece;
@@ -84,7 +95,7 @@ int newPieceTask(void){
                         break;
                 }
                 while(colPiece > 0){
-                    i = getMovePieceQueueListIndex();
+                    i = getIndex();
                     movePieceList[i].id = message->id;
                     movePieceList[i].movement = TURN_LEFT;
                     movePieceList[i].function = RotatePiece;
@@ -96,21 +107,21 @@ int newPieceTask(void){
                 corner_orient = 0;
                 switch(message->orient){
                     case 1:
-                        i = getMovePieceQueueListIndex();
+                        i = getIndex();
                         movePieceList[i].id = message->id;
                         movePieceList[i].movement = TURN_LEFT;
                         movePieceList[i].function = RotatePiece;
                         YKQPost(movePieceQueue, &movePieceList[i]);
                         break;
                     case 2:
-                        i = getMovePieceQueueListIndex();
+                        i = getIndex();
                         movePieceList[i].id = message->id;
                         movePieceList[i].movement = TURN_LEFT;
                         movePieceList[i].function = RotatePiece;
                         YKQPost(movePieceQueue, &movePieceList[i]);
                         break;
                     case 3:
-                        i = getMovePieceQueueListIndex();
+                        i = getIndex();
                         movePieceList[i].id = message->id;
                         movePieceList[i].movement = TURN_RIGHT;
                         movePieceList[i].function = RotatePiece;
@@ -118,7 +129,7 @@ int newPieceTask(void){
                         break;
                 }
                 while(pieceCol > 2){
-                    i = getMovePieceQueueListIndex();
+                    i = getIndex();
                     movePieceList[i].id = message->id;
                     movePieceList[i].movement = TURN_LEFT;
                     movePieceList[i].function = RotatePiece;
@@ -126,7 +137,7 @@ int newPieceTask(void){
                     YKQPost(movePieceQueue, &movePieceList[i]);
                 }}
                 while(pieceCol < 2){
-                    i = getMovePieceQueueListIndex();
+                    i = getIndex();
                     movePieceList[i].id = message->id;
                     movePieceList[i].movement = TURN_LEFT;
                     movePieceList[i].function = RotatePiece;
