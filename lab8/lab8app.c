@@ -31,41 +31,42 @@ int getIndex(void){
 
 
 int newPieceTask(void){
-    static int corner_orient = 0;
-    int i = 0;
-    int colPiece;
-    struct newPiece *message;
-    
-	
-    while(1){
-        message = (struct newPiece *) YKQPend(newPieceQueue);
-        if(message->type == STRAIGHT){
-            colPiece = message->col;
-            if(colPiece == 5){
-                i = getIndex();
-                movePieceList[i].id = message->id;
-                movePieceList[i].movement = MOVE_LEFT;
-                movePieceList[i].function = SlidePiece;
-                YKQPost(movePieceQueue, &movePieceList[i]);
-            }
-            else{
-                while(colPiece <4){
-                 i = getIndex();
-                movePieceList[i].id = message->id;
-                movePieceList[i].movement = MOVE_RIGHT;
-                movePieceList[i].function = SlidePiece;
-                colPiece++;
-                YKQPost(movePieceQueue, &movePieceList[i]);               
-                }
-            }
-            if (message->orient){
-                i = getIndex();
-                movePieceList[i].id = message->id;
-                movePieceList[i].movement = TURN_RIGHT;
-                movePieceList[i].function = RotatePiece;
-                YKQPost(movePieceQueue, &movePieceList[i]);
-           }
+static int corner_orient = 0;
+int i = 0;
+int colPiece;
+struct newPiece *message;
+
+
+while(1){
+    message = (struct newPiece *) YKQPend(newPieceQueue);
+
+    if(message->type == STRAIGHT){
+         colPiece = message->col;
+        if(colPiece == 5){
+            i = getIndex();
+            movePieceList[i].id = message->id;
+            movePieceList[i].movement = MOVE_LEFT;
+            movePieceList[i].function = SlidePiece;
+            YKQPost(movePieceQueue, &movePieceList[i]);
         }
+        else{
+            while(colPiece <4){
+             i = getIndex();
+            movePieceList[i].id = message->id;
+            movePieceList[i].movement = MOVE_RIGHT;
+            movePieceList[i].function = SlidePiece;
+            colPiece++;
+            YKQPost(movePieceQueue, &movePieceList[i]);               
+            }
+        }
+        if (message->orient){
+            i = getIndex();
+            movePieceList[i].id = message->id;
+            movePieceList[i].movement = TURN_RIGHT;
+            movePieceList[i].function = RotatePiece;
+            YKQPost(movePieceQueue, &movePieceList[i]);
+       }
+    }
     else{
         colPiece = message->col;
         if(colPiece == 5){
