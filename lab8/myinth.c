@@ -36,7 +36,6 @@ void c_game_over_handler(void){
 
 void c_new_piece_handler(void){
     static int i = 0;
-    printString("\nNEW PIECE\n");
     newPieceList[i].id = NewPieceID;
     newPieceList[i].type = NewPieceType;
     newPieceList[i].orient = NewPieceOrientation;
@@ -50,8 +49,8 @@ void c_new_piece_handler(void){
 }
 
 void c_received_handler(void){
-    //YKSemPost(movePieceSem);
-    YKEventSet(movePieceEvent, 1);
+    YKSemPost(movePieceSem);
+    //YKEventSet(movePieceEvent, 1);
 }
 
 
