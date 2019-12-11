@@ -19,7 +19,6 @@ YKQ *movePieceQueue;
 YKQ *newPieceQueue;
 
 YKSEM *movePieceSem;
-YKEVENT *movePieceEvent;
 
 
 int getIndex(void){
@@ -39,10 +38,8 @@ int newPieceTask(void){
     
 	
     while(1){
-        printString("newPieceTask moving!\n");
         message = (struct newPiece *) YKQPend(newPieceQueue);
         if(message->type == STRAIGHT){
-            printString("straight \r\n");
             colPiece = message->col;
             if(colPiece == 5){
                 i = getIndex();
@@ -69,27 +66,107 @@ int newPieceTask(void){
                 YKQPost(movePieceQueue, &movePieceList[i]);
            }
         }
-        else{
-            printString("straight \r\n");
-            colPiece = message->col;
-            while(colPiece > 1){
-                 i = getIndex();
+    else{
+        colPiece = message->col;
+        if(colPiece == 5){
+            i = getIndex();
+            movePieceList[i].id = message->id;
+            movePieceList[i].movement = MOVE_LEFT;
+            movePieceList[i].function = SlidePiece;
+            colPiece--;
+            YKQPost(movePieceQueue, &movePieceList[i]);
+        }
+        else if(colPiece == 0){
+            i = getIndex();
+            movePieceList[i].id = message->id;
+            movePieceList[i].movement = MOVE_RIGHT;
+            movePieceList[i].function = SlidePiece;
+            colPiece++;
+            YKQPost(movePieceQueue, &movePieceList[i]);              
+        }
+        if (!corner_orient){
+             corner_orient = 1;
+            switch(message->orient){
+                case 1:
+                    i = getIndex();
+                    movePieceList[i].id = message->id;
+                    movePieceList[i].movement = TURN_RIGHT;
+                    movePieceList[i].function = RotatePiece;
+                    YKQPost(movePieceQueue, &movePieceList[i]);
+                    break;
+                case 2:
+                    i = getIndex();
+                    movePieceList[i].id = message->id;
+                    movePieceList[i].movement = TURN_LEFT;
+                    movePieceList[i].function = RotatePiece;
+                    YKQPost(movePieceQueue, &movePieceList[i]);
+                    break;
+                case 3:
+                    i = getIndex();
+                    movePieceList[i].id = message->id;
+                    movePieceList[i].movement = TURN_LEFT;
+                    movePieceList[i].function = RotatePiece;
+                    YKQPost(movePieceQueue, &movePieceList[i]);
+                    break;
+            }
+            while(colPiece > 0){
+                i = getIndex();
                 movePieceList[i].id = message->id;
                 movePieceList[i].movement = MOVE_LEFT;
                 movePieceList[i].function = SlidePiece;
                 colPiece--;
-                YKQPost(movePieceQueue, &movePieceList[i]);               
+                YKQPost(movePieceQueue, &movePieceList[i]);
+           }
+        }
+        else{
+            corner_orient = 0;
+            switch(message->orient){
+                case 0:
+                    i = getIndex();
+                    movePieceList[i].id = message->id;
+                    movePieceList[i].movement = TURN_LEFT;
+                    movePieceList[i].function = RotatePiece;
+                    YKQPost(movePieceQueue, &movePieceList[i]);
+                    break;
+                case 1:
+                    i = getIndex();
+                    movePieceList[i].id = message->id;
+                    movePieceList[i].movement = TURN_LEFT;
+                    movePieceList[i].function = RotatePiece;
+                    YKQPost(movePieceQueue, &movePieceList[i]);
+                    break;
+                case 3:
+                    i = getIndex();
+                    movePieceList[i].id = message->id;
+                    movePieceList[i].movement = TURN_RIGHT;
+                    movePieceList[i].function = RotatePiece;
+                    YKQPost(movePieceQueue, &movePieceList[i]);
+                    break;
+            }
+            while(colPiece > 2){
+                i = getIndex();
+                movePieceList[i].id = message->id;
+                movePieceList[i].movement = TURN_LEFT;
+                movePieceList[i].function = RotatePiece;
+                colPiece--;
+                YKQPost(movePieceQueue, &movePieceList[i]);
+            }
+            while(colPiece < 2){
+                i = getIndex();
+                movePieceList[i].id = message->id;
+                movePieceList[i].movement = TURN_LEFT;
+                movePieceList[i].function = RotatePiece;
+                colPiece++;
+                YKQPost(movePieceQueue, &movePieceList[i]);
             }
         }
-    }              
+    }
 }
 
 int movePieceTask(void){
     struct movePiece *message;
     while(1){
         YKSemPend(movePieceSem);
-        //YKEventPend(movePieceEvent, READY , EVENT_WAIT_ALL);
-        //YKEventReset(movePieceEvent, READY);
 	    
         message = (struct movePiece *) YKQPend(movePieceQueue);
         message->function(message->id, message->movement);
