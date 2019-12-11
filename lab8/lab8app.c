@@ -188,7 +188,7 @@ void STask(void){
     max = YKIdleCount / 25;
     YKIdleCount = 0;
 
-    SeedSimptris(5);
+    SeedSimptris(87245);
     
     YKNewTask(newPieceTask, (void *) &newPieceTaskStk[TASK_STACK_SIZE], 3);
     YKNewTask(movePieceTask, (void *) &movePieceTaskStk[TASK_STACK_SIZE], 5);
