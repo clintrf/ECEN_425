@@ -141,7 +141,7 @@ int newPieceTask(void){
                     movePieceList[i].id = message->id;
                     movePieceList[i].movement = TURN_LEFT;
                     movePieceList[i].function = RotatePiece;
-                    pieceCol--;
+                    colPiece--;
                     YKQPost(movePieceQueue, &movePieceList[i]);
                 }}
                 while(colPiece < 2){
@@ -166,7 +166,7 @@ int movePieceTask(void){
     }
 }
 
-void STack(void){
+void STask(void){
     unsigned max, switchCount, idleCount;
     int tmp;
 
@@ -217,7 +217,7 @@ void main(void){
     
     printString(" ");
 
-    YKNewTask(STask, (void *) &STaskStk[STACK_SIZE], 0);
+    YKNewTask(STask, (void *) &STaskStk[TASK_STACK_SIZE], 0);
     YKRun();
 
 }		
