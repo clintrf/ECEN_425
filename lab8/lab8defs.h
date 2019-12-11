@@ -9,7 +9,7 @@ Description: Required definitions for EE 425 lab 8
 extern YKQ *movePieceQueue;
 extern YKQ *newPieceQueue;
 
-extern YKSem *movePieceSem;
+extern YKSEM *movePieceSem;
 
 #define TASK_STACK_SIZE 512			
 #define PIECE_QUEUE_SIZE 50		
