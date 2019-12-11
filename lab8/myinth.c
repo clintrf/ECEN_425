@@ -10,7 +10,7 @@ extern unsigned NewPieceOrientation;
 extern unsigned NewPieceColumn;
 
 extern YKQ *newPieceQueue;
-struct newPiece newPieceList[];
+extern struct newPiece newPieceList[];
 
 void c_reset_handler(){
     exit(0);
@@ -35,6 +35,7 @@ void c_game_over_handler(void){
 }
 
 void c_new_piece_handler(void){
+    printString("\nNEW PIECE\n");
     static int i = 0;
     newPieceList[i].id = NewPieceID;
     newPieceList[i].type = NewPieceType;
