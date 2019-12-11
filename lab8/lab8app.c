@@ -87,9 +87,9 @@ int newPieceTask(void){
 int movePieceTask(void){
     struct movePiece *message;
     while(1){
-        //YKSemPend(movePieceSem);
-        YKEventPend(movePieceEvent, READY , EVENT_WAIT_ALL);
-        YKEventReset(movePieceEvent, READY);
+        YKSemPend(movePieceSem);
+        //YKEventPend(movePieceEvent, READY , EVENT_WAIT_ALL);
+        //YKEventReset(movePieceEvent, READY);
 	    
         message = (struct movePiece *) YKQPend(movePieceQueue);
         message->function(message->id, message->movement);
@@ -145,8 +145,8 @@ void main(void){
     YKInitialize();
     newPieceQueue = YKQCreate(newPieceQue, PIECE_QUEUE_SIZE);
     movePieceQueue = YKQCreate(movePieceQue, MOVE_QUEUE_SIZE);
-    //movePieceSem = YKSemCreate(READY);
-    movePieceEvent = YKEventCreate(READY);
+    movePieceSem = YKSemCreate(READY);
+    //movePieceEvent = YKEventCreate(READY);
     
     printString(" ");
 
