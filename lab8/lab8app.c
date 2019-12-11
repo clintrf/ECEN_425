@@ -38,6 +38,7 @@ int newPieceTask(void){
     while(1){
         message = (struct newPiece *) YKQPend(newPieceQueue);
         if(message->type == STRAIGHT){
+            printString("straight \r\n");
             colPiece = message->col;
             if(colPiece == 5){
                 i = getIndex();
@@ -71,7 +72,7 @@ int newPieceTask(void){
                 movePieceList[i].id = message->id;
                 movePieceList[i].movement = MOVE_LEFT;
                 movePieceList[i].function = SlidePiece;
-                colPiece++;
+                colPiece--;
                 YKQPost(movePieceQueue, &movePieceList[i]);               
             }
         }
@@ -108,7 +109,6 @@ void STask(void){
     
 	
     StartSimptris();
-    printString("after Start\r\n");
 
     while(1){
         YKDelayTask(20);
