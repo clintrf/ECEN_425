@@ -4,10 +4,10 @@
 
 
 extern int KeyBuffer;
-extern unsigned NewPieceID;
-extern unsigned NewPieceType;
-extern unsigned NewPieceOrient;
-extern unsigned NewPieceCol;
+unsigned NewPieceID;
+unsigned NewPieceType;
+unsigned NewPieceOrient;
+unsigned NewPieceCol;
 
 extern YKQ *newPieceQueue;
 extern struct newPiece newPieceList[];
