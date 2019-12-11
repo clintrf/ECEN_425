@@ -32,7 +32,7 @@ int getIndex(void){
 
 int newPieceTask(void){
     static int corner_orient = 0;
-    int i = 0;
+    int i;
     int colPiece;
     struct newPiece *message;
 
@@ -69,6 +69,7 @@ int newPieceTask(void){
         }
         else{
             colPiece = message->col;
+        switch(message->orientation){
             if(colPiece == 5){
                 i = getIndex();
                 movePieceList[i].id = message->id;
@@ -84,82 +85,6 @@ int newPieceTask(void){
                 movePieceList[i].function = SlidePiece;
                 colPiece++;
                 YKQPost(movePieceQueue, &movePieceList[i]);              
-            }
-            if (!corner_orient){
-                 corner_orient = 1;
-                switch(message->orient){
-                    case 1:
-                        i = getIndex();
-                        movePieceList[i].id = message->id;
-                        movePieceList[i].movement = TURN_RIGHT;
-                        movePieceList[i].function = RotatePiece;
-                        YKQPost(movePieceQueue, &movePieceList[i]);
-                        break;
-                    case 2:
-                        i = getIndex();
-                        movePieceList[i].id = message->id;
-                        movePieceList[i].movement = TURN_LEFT;
-                        movePieceList[i].function = RotatePiece;
-                        YKQPost(movePieceQueue, &movePieceList[i]);
-                        break;
-                    case 3:
-                        i = getIndex();
-                        movePieceList[i].id = message->id;
-                        movePieceList[i].movement = TURN_LEFT;
-                        movePieceList[i].function = RotatePiece;
-                        YKQPost(movePieceQueue, &movePieceList[i]);
-                        break;
-                }
-                while(colPiece > 0){
-                    i = getIndex();
-                    movePieceList[i].id = message->id;
-                    movePieceList[i].movement = MOVE_LEFT;
-                    movePieceList[i].function = SlidePiece;
-                    colPiece--;
-                    YKQPost(movePieceQueue, &movePieceList[i]);
-               }
-            }
-            else{
-                corner_orient = 0;
-                switch(message->orient){
-                    case 0:
-                        i = getIndex();
-                        movePieceList[i].id = message->id;
-                        movePieceList[i].movement = TURN_LEFT;
-                        movePieceList[i].function = RotatePiece;
-                        YKQPost(movePieceQueue, &movePieceList[i]);
-                        break;
-                    case 1:
-                        i = getIndex();
-                        movePieceList[i].id = message->id;
-                        movePieceList[i].movement = TURN_LEFT;
-                        movePieceList[i].function = RotatePiece;
-                        YKQPost(movePieceQueue, &movePieceList[i]);
-                        break;
-                    case 3:
-                        i = getIndex();
-                        movePieceList[i].id = message->id;
-                        movePieceList[i].movement = TURN_RIGHT;
-                        movePieceList[i].function = RotatePiece;
-                        YKQPost(movePieceQueue, &movePieceList[i]);
-                        break;
-                }
-                while(colPiece > 2){
-                    i = getIndex();
-                    movePieceList[i].id = message->id;
-                    movePieceList[i].movement = TURN_LEFT;
-                    movePieceList[i].function = RotatePiece;
-                    colPiece--;
-                    YKQPost(movePieceQueue, &movePieceList[i]);
-                }
-                while(colPiece < 2){
-                    i = getIndex();
-                    movePieceList[i].id = message->id;
-                    movePieceList[i].movement = TURN_LEFT;
-                    movePieceList[i].function = RotatePiece;
-                    colPiece++;
-                    YKQPost(movePieceQueue, &movePieceList[i]);
-                }
             }
         }
     }
