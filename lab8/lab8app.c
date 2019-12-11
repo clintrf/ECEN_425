@@ -54,6 +54,7 @@ int newPieceTask(void){
                 movePieceList[i].id = message->id;
                 movePieceList[i].movement = MOVE_RIGHT;
                 movePieceList[i].function = SlidePiece;
+                colPiece++;
                 YKQPost(movePieceQueue, &movePieceList[i]);               
                 }
             }
@@ -111,8 +112,8 @@ int newPieceTask(void){
                 while(colPiece > 0){
                     i = getIndex();
                     movePieceList[i].id = message->id;
-                    movePieceList[i].movement = TURN_LEFT;
-                    movePieceList[i].function = RotatePiece;
+                    movePieceList[i].movement = MOVE_LEFT;
+                    movePieceList[i].function = SlidePiece;
                     colPiece--;
                     YKQPost(movePieceQueue, &movePieceList[i]);
                }
@@ -120,14 +121,14 @@ int newPieceTask(void){
             else{
                 corner_orient = 0;
                 switch(message->orient){
-                    case 1:
+                    case 0:
                         i = getIndex();
                         movePieceList[i].id = message->id;
                         movePieceList[i].movement = TURN_LEFT;
                         movePieceList[i].function = RotatePiece;
                         YKQPost(movePieceQueue, &movePieceList[i]);
                         break;
-                    case 2:
+                    case 1:
                         i = getIndex();
                         movePieceList[i].id = message->id;
                         movePieceList[i].movement = TURN_LEFT;
