@@ -49,7 +49,8 @@ void c_new_piece_handler(void){
 }
 
 void c_received_handler(void){
-    YKSemPost(movePieceSem);
+    //YKSemPost(movePieceSem);
+    YKEventSet(movePieceEvent, 1);
 }
 
 
