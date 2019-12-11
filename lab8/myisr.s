@@ -55,7 +55,7 @@ KEY:
 	push ds
 	push es
 
-  mov ax, [YKISRDepth]          ;save the depth counter
+        mov ax, [YKISRDepth]          ;save the depth counter
 	cmp ax, 0                     ; check if the depth is zero, if it is save the SP of the task we are interupting
 	jnz key_not_lowest_interrupt  ; skip saving the stack because we are not interupting that task
 
@@ -132,5 +132,156 @@ not_lowest_interrupt:
 	pop cx
 	pop bx
 	pop ax
+
+	iret
+	
+	
+	
+	
+	
+	
+GAME_OVER:
+	; save context
+	push ax
+	push bx
+	push cx
+	push dx
+	push bp
+	push si
+	push di
+	push ds
+	push es
+
+	mov ax, [YKISRDepth]
+	cmp ax, 0
+	jnz game_over_not_lowest_interrupt
+
+	mov bx, [YKRdyList]
+	mov [bx], sp
+
+game_over_not_lowest_interrupt:
+	call YKEnterISR
+
+	sti 
+	call c_game_over_handler 
+	cli 
+
+	mov	al, 0x20 
+	out	0x20, al
+
+	call YKExitISR
+
+	pop es	
+	pop ds
+	pop di
+	pop si
+	pop bp
+	pop dx
+	pop cx
+	pop bx
+	pop ax
+
+	iret 
+
+
+NEW_PIECE:
+	push ax 
+	push bx
+	push cx
+	push dx
+	push bp
+	push si
+	push di
+	push ds
+	push es
+
+
+	mov ax, [YKISRDepth]
+	cmp ax, 0
+	jnz new_piece_not_lowest_interrupt
+
+	mov bx, [YKRdyList]
+	mov [bx], sp
+
+new_piece_not_lowest_interrupt:
+	call YKEnterISR
+
+	sti 
+	call c_new_piece_handler 
+	cli 
+
+	mov	al, 0x20 
+	out	0x20, al
+	
+	call YKExitISR
+
+	pop es	
+	pop ds
+	pop di
+	pop si
+	pop bp
+	pop dx
+	pop cx
+	pop bx
+	pop ax
+
+	iret 
+
+RECEIVED:
+	push ax 
+	push bx
+	push cx
+	push dx
+	push bp
+	push si
+	push di
+	push ds
+	push es
+
+	mov ax, [YKISRDepth]
+	cmp ax, 0
+	jnz received_not_lowest_interrupt
+
+	mov bx, [YKRdyList]
+	mov [bx], sp
+
+received_not_lowest_interrupt:
+
+	call YKEnterISR
+
+	sti ;
+	call c_received_handler ; 
+	cli ; 
+	
+	mov	al, 0x20
+	out	0x20, al	
+
+	call YKExitISR
+
+	pop es
+	pop ds
+	pop di
+	pop si
+	pop bp
+	pop dx
+	pop cx
+	pop bx
+	pop ax
+
+	iret
+
+
+TOUCHDOWN:
+
+	mov	al, 0x20
+	out	0x20, al	
+
+	iret
+
+
+CLEAR:
+
+	mov	al, 0x20
+	out	0x20, al	
 
 	iret
