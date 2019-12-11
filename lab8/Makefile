@@ -10,11 +10,11 @@ myinth.s:	myinth.c
 		cpp myinth.c myinth.i
 		c86 -g myinth.i myinth.s
 
-lab8_app.s:	lab8app.c yakk.h
+lab8_app.s:	lab8app.c yakk.h clib.h
 		cpp lab8app.c lab8_app.i
 		c86 -g lab8_app.i lab8_app.s
 
-yakc.s:		yakc.c yakk.h
+yakc.s:		yakc.c yakk.h 
 		cpp yakc.c yakc.i
 		c86 -g yakc.i yakc.s
 
