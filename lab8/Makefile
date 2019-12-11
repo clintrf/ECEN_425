@@ -22,4 +22,4 @@ clean:
 		rm lab8.bin lab8.lst lab8final.s \
 		myinth.s myinth.i \
 		yakc.s yakc.i \
-		lab8_app.s lab8_app.i
+		lab8app.s lab8app.i
