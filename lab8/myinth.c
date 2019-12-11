@@ -4,8 +4,8 @@
 
 
 extern int KeyBuffer;
-unsigned NewPieceID;
-unsigned NewPieceType;
+extern unsigned NewPieceID;
+extern unsigned NewPieceType;
 unsigned NewPieceOrient;
 unsigned NewPieceCol;
 
