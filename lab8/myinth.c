@@ -35,8 +35,8 @@ void c_game_over_handler(void){
 }
 
 void c_new_piece_handler(void){
-    printString("\nNEW PIECE\n");
     static int i = 0;
+    printString("\nNEW PIECE\n");
     newPieceList[i].id = NewPieceID;
     newPieceList[i].type = NewPieceType;
     newPieceList[i].orient = NewPieceOrientation;
