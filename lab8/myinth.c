@@ -6,8 +6,8 @@
 extern int KeyBuffer;
 extern unsigned NewPieceID;
 extern unsigned NewPieceType;
-unsigned NewPieceOrient;
-unsigned NewPieceCol;
+extern unsigned NewPieceOrientation;
+extern unsigned NewPieceColumn;
 
 extern YKQ *newPieceQueue;
 struct newPiece newPieceList[];
@@ -38,8 +38,8 @@ void c_new_piece_handler(void){
     static int i = 0;
     newPieceList[i].id = NewPieceID;
     newPieceList[i].type = NewPieceType;
-    newPieceList[i].orient = NewPieceOrient;
-    newPieceList[i].col = NewPieceCol;
+    newPieceList[i].orient = NewPieceOrientation;
+    newPieceList[i].col = NewPieceColumn;
     
     YKQPost(newPieceQueue, (void *) &(newPieceList[i]));
     i++;
