@@ -9,7 +9,7 @@ int STaskStk[TASK_STACK_SIZE];
 
 int moveQueueIndex;
 
-struct movePiece movePieceList[MOVE_QUEUE_SIZE]
+struct movePiece movePieceList[MOVE_QUEUE_SIZE];
 
 int getIndex(void){
 	if(moveQueueIndex == MOVE_QUEUE_SIZE ){
@@ -21,9 +21,12 @@ int getIndex(void){
 
 
 int newPieceTask(void){
+    static int corner_orient = 0;
     int i = 0;
     int colPiece;
     struct newPiece *message;
+    
+	
     while(1){
         message = (struct newPiece *) YKQPend(newPieceQueue);
 
