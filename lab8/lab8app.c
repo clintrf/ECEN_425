@@ -10,6 +10,7 @@ int STaskStk[TASK_STACK_SIZE];
 int moveQueueIndex;
 
 struct movePiece movePieceList[MOVE_QUEUE_SIZE];
+struct newPiece newPieceList[PIECE_QUEUE_SIZE];
 
 void * newPieceQue[PIECE_QUEUE_SIZE];
 void * movePieceQue[MOVE_QUEUE_SIZE];
