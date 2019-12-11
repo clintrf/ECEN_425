@@ -6,11 +6,11 @@
 extern int KeyBuffer;
 extern unsigned NewPieceID;
 extern unsigned NewPieceType;
-unsigned NewPieceOrient;
-unsigned NewPieceCol;
+extern unsigned NewPieceOrient;
+extern unsigned NewPieceCol;
 
-YKQ *newPieceQueue;
-struct newPiece newPieceList[];
+extern YKQ *newPieceQueue;
+extern struct newPiece newPieceList[];
 
 void c_reset_handler(){
     exit(0);
