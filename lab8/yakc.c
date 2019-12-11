@@ -14,8 +14,8 @@ TCBptr YKRdyList;
 TCBptr YKDelayList;
 TCBptr YKAvailTCBList;		/* a list of available TCBs */
 TCB    YKTCBArray[MAXTASKS+1];	/* array to allocate all needed TCBs*/
-//YKSEM YKSemArray[SEM_COUNT]; // Not sure how large this array should be, change it if needed
-//YKQ YKQueueArray[QUE_COUNT]; // List of queues
+YKSEM YKSemArray[SEM_COUNT]; // Not sure how large this array should be, change it if needed
+YKQ YKQueueArray[QUE_COUNT]; // List of queues
 YKEVENT YKEVENTArray[EVENT_COUNT];
 
 TCBptr YKSemWaitList;        // List of the semaphores currently waiting
@@ -43,7 +43,7 @@ void YKInitialize(void){    // Initializes all required kernel data structures
   }
   YKTCBArray[MAXTASKS].next = NULL;
 
-	/*
+	
   for (i = 0; i < SEM_COUNT; i++){
     YKSemArray[i].val = -10;           // init the value of the semaphore
     YKSemArray[i].active = 0;        // init if the semaphore has been activated (has not)
@@ -62,7 +62,7 @@ void YKInitialize(void){    // Initializes all required kernel data structures
     YKEVENTArray[i].active = 0;
     YKEVENTArray[i].flag = 0;
   }
-	*/
+	
   
   YKNewTask(YKIdleTask, (void*)&idleStack[256], 100);
 }
