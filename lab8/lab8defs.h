@@ -15,17 +15,17 @@ extern YKSEM *movePieceSem;
 #define PIECE_QUEUE_SIZE 50		
 #define MOVE_QUEUE_SIZE 50
 
-#define READY 1;
-#define NOT_READY 0;
+#define READY 1
+#define NOT_READY 0
 
-#define STRAIGHT 1;
-#define CONER 0;
+#define STRAIGHT 1
+#define CONER 0
 
-#define MOVE_RIGHT 1;
-#define MOVE_LEFT 0;
+#define MOVE_RIGHT 1
+#define MOVE_LEFT 0
 
-#define TURN_RIGHT 1;
-#define TURN_LEFT 0;
+#define TURN_RIGHT 1
+#define TURN_LEFT 0
 
 struct newPiece{
 
