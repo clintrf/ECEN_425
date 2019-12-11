@@ -29,12 +29,12 @@ void c_key_handler(){
     print(") IGNORED\n", 10);
 }
 
-void game_over_handler(void){
+void c_game_over_handler(void){
     printString("\nGAME OVER\n");
     exit(0);
 }
 
-void new_piece_handler(void){
+void c_new_piece_handler(void){
     static int i = 0;
     newPieceList[i].id = NewPieceID;
     newPieceList[i].type = NewPieceType;
@@ -48,7 +48,7 @@ void new_piece_handler(void){
     }
 }
 
-void received_handler(void){
+void c_received_handler(void){
     YKSemPost(movePieceSem);
 }
 
