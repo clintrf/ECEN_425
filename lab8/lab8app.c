@@ -47,7 +47,6 @@ int newPieceTask(void){
               movePieceList[i].id = message->id;
               movePieceList[i].movement = MOVE_LEFT;
               movePieceList[i].function = SlidePiece;
-		  YKSemPend(movePieceSem);
               YKQPost(movePieceQueue, &movePieceList[i]);
           }
           else{
@@ -57,7 +56,6 @@ int newPieceTask(void){
               movePieceList[i].movement = MOVE_RIGHT;
               movePieceList[i].function = SlidePiece;
               colPiece++;
-		      YKSemPend(movePieceSem);
               YKQPost(movePieceQueue, &movePieceList[i]);              
               }
           }
@@ -66,7 +64,6 @@ int newPieceTask(void){
               movePieceList[i].id = message->id;
               movePieceList[i].movement = TURN_RIGHT;
               movePieceList[i].function = RotatePiece;
-		  YKSemPend(movePieceSem);
               YKQPost(movePieceQueue, &movePieceList[i]);
          }
       }
@@ -78,7 +75,6 @@ int newPieceTask(void){
               movePieceList[i].movement = MOVE_LEFT;
               movePieceList[i].function = SlidePiece;
               colPiece--;
-              YKSemPend(movePieceSem);
               YKQPost(movePieceQueue, &movePieceList[i]);              
               }
 	  /*
@@ -213,7 +209,7 @@ void STask(void){
     max = YKIdleCount / 25;
     YKIdleCount = 0;
 
-    SeedSimptris(87245);
+    SeedSimptris(836);
     
     YKNewTask(newPieceTask, (void *) &newPieceTaskStk[TASK_STACK_SIZE], 3);
     YKNewTask(movePieceTask, (void *) &movePieceTaskStk[TASK_STACK_SIZE], 5);
