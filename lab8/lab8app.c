@@ -128,18 +128,18 @@ int newPieceTask(void){
             if(message->orient == 1){
                 i = getIndex();
                 movePieceList[i].id = message->id;
-                movePieceList[i].movement = TURN_RIGHT;
+                movePieceList[i].movement = TURN_LEFT;
                 movePieceList[i].function = RotatePiece;
                 YKQPost(movePieceQueue, &movePieceList[i]);
             }
             if(message->orient == 3){
                 i = getIndex();
                 movePieceList[i].id = message->id;
-                movePieceList[i].movement = TURN_LEFT;
+                movePieceList[i].movement = TURN_RIGHT;
                 movePieceList[i].function = RotatePiece;
                 YKQPost(movePieceQueue, &movePieceList[i]);
             }
-            if(message->orient == 2){
+            if(message->orient == 0){
                 i = getIndex();
                 movePieceList[i].id = message->id;
                 movePieceList[i].movement = TURN_LEFT;
@@ -175,7 +175,7 @@ int newPieceTask(void){
 
         }
         printString(" Corner Ori: ");
-        printInt((int)corner_orient);
+        printInt((int)colPiece);
         printString(" \r\n");
 
 	  /*
