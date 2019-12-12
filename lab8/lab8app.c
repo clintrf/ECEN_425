@@ -174,6 +174,9 @@ int newPieceTask(void){
             }
 
         }
+        printString(" Corner Ori: ");
+        printInt((int)corner_orient);
+        printString(" \r\n");
 
 	  /*
 
