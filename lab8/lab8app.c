@@ -179,7 +179,6 @@ int newPieceTask(void){
           }
       }
     }
-    }
 }
 
 int movePieceTask(void){
