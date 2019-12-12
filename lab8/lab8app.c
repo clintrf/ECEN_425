@@ -69,14 +69,14 @@ int newPieceTask(void){
       }
       else{
           colPiece = message->col;
-	       while(colPiece >2){
+	  while(colPiece >1){
                i = getIndex();
               movePieceList[i].id = message->id;
               movePieceList[i].movement = MOVE_LEFT;
               movePieceList[i].function = SlidePiece;
               colPiece--;
               YKQPost(movePieceQueue, &movePieceList[i]);              
-              }
+          }
 	  /*
           if(colPiece == 5){
               YKSemPend(movePieceSem);
