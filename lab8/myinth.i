@@ -124,7 +124,7 @@ void YKDispatcherSave(int ** save_sp, int *restore_sp);
 extern YKQ *movePieceQueue;
 extern YKQ *newPieceQueue;
 
-extern YKEVENT *movePieceEvent;
+extern YKSEM *movePieceSem;
 # 30 "lab8defs.h"
 struct newPiece{
 
@@ -147,12 +147,11 @@ struct movePiece{
 extern int KeyBuffer;
 extern unsigned NewPieceID;
 extern unsigned NewPieceType;
-extern unsigned NewPieceOrient;
-extern unsigned NewPieceCol;
+extern unsigned NewPieceOrientation;
+extern unsigned NewPieceColumn;
 
 extern YKQ *newPieceQueue;
 extern struct newPiece newPieceList[];
-
 
 void c_reset_handler(){
     exit(0);
@@ -171,17 +170,17 @@ void c_key_handler(){
     print(") IGNORED\n", 10);
 }
 
-void game_over_handler(void){
+void c_game_over_handler(void){
     printString("\nGAME OVER\n");
     exit(0);
 }
 
-void new_piece_handler(void){
+void c_new_piece_handler(void){
     static int i = 0;
     newPieceList[i].id = NewPieceID;
     newPieceList[i].type = NewPieceType;
-    newPieceList[i].orient = NewPieceOrient;
-    newPieceList[i].col = NewPieceCol;
+    newPieceList[i].orient = NewPieceOrientation;
+    newPieceList[i].col = NewPieceColumn;
 
     YKQPost(newPieceQueue, (void *) &(newPieceList[i]));
     i++;
@@ -190,7 +189,6 @@ void new_piece_handler(void){
     }
 }
 
-void received_handler(void){
-
-
+void c_received_handler(void){
+    YKSemPost(movePieceSem);
 }

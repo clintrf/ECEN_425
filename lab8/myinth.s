@@ -4,11 +4,11 @@
 	jmp	main	; Jump to program start
 	ALIGN	2
 c_reset_handler:
-	; >>>>> Line:	16
+	; >>>>> Line:	15
 	; >>>>> void c_reset_handler(){ 
 	jmp	L_myinth_1
 L_myinth_2:
-	; >>>>> Line:	17
+	; >>>>> Line:	16
 	; >>>>> exit(0); 
 	xor	al, al
 	push	ax
@@ -23,11 +23,11 @@ L_myinth_1:
 	jmp	L_myinth_2
 	ALIGN	2
 c_tick_handler:
-	; >>>>> Line:	20
+	; >>>>> Line:	19
 	; >>>>> void c_tick_handler(){ 
 	jmp	L_myinth_4
 L_myinth_5:
-	; >>>>> Line:	21
+	; >>>>> Line:	20
 	; >>>>> YKTickHandler(); 
 	call	YKTickHandler
 	mov	sp, bp
@@ -43,15 +43,15 @@ L_myinth_7:
 	DB	0xA,"KEYPRESS (",0
 	ALIGN	2
 c_key_handler:
-	; >>>>> Line:	24
+	; >>>>> Line:	23
 	; >>>>> void c_key_handler(){ 
 	jmp	L_myinth_9
 L_myinth_10:
-	; >>>>> Line:	26
+	; >>>>> Line:	25
 	; >>>>> c = KeyBuffer; 
 	mov	al, byte [KeyBuffer]
 	mov	byte [bp-1], al
-	; >>>>> Line:	28
+	; >>>>> Line:	27
 	; >>>>> print("\nKEYPRESS (", 11); 
 	mov	ax, 11
 	push	ax
@@ -59,12 +59,12 @@ L_myinth_10:
 	push	ax
 	call	print
 	add	sp, 4
-	; >>>>> Line:	29
+	; >>>>> Line:	28
 	; >>>>> printChar(c); 
 	push	word [bp-1]
 	call	printChar
 	add	sp, 2
-	; >>>>> Line:	30
+	; >>>>> Line:	29
 	; >>>>> print(") IGNORED\n", 10); 
 	mov	ax, 10
 	push	ax
@@ -83,18 +83,18 @@ L_myinth_9:
 L_myinth_12:
 	DB	0xA,"GAME OVER",0xA,0
 	ALIGN	2
-game_over_handler:
-	; >>>>> Line:	33
-	; >>>>> void game_over_handler(void){ 
+c_game_over_handler:
+	; >>>>> Line:	32
+	; >>>>> void c_game_over_handler(void){ 
 	jmp	L_myinth_13
 L_myinth_14:
-	; >>>>> Line:	34
-	; >>>>> prin 
+	; >>>>> Line:	33
+	; >>>>>  
 	mov	ax, L_myinth_12
 	push	ax
 	call	printString
 	add	sp, 2
-	; >>>>> Line:	35
+	; >>>>> Line:	34
 	; >>>>> exit(0); 
 	xor	al, al
 	push	ax
@@ -111,12 +111,12 @@ L_myinth_13:
 L_myinth_16:
 	DW	0
 	ALIGN	2
-new_piece_handler:
-	; >>>>> Line:	38
-	; >>>>> void new_piece_handler(void){ 
+c_new_piece_handler:
+	; >>>>> Line:	37
+	; >>>>> void c_new_piece_handler(void){ 
 	jmp	L_myinth_17
 L_myinth_18:
-	; >>>>> Line:	40
+	; >>>>> Line:	39
 	; >>>>> newPieceList[i].id = NewPieceID; 
 	mov	ax, word [L_myinth_16]
 	mov	cx, 3
@@ -125,7 +125,7 @@ L_myinth_18:
 	add	si, newPieceList
 	mov	ax, word [NewPieceID]
 	mov	word [si], ax
-	; >>>>> Line:	41
+	; >>>>> Line:	40
 	; >>>>> newPieceList[i].type = NewPieceType; 
 	mov	ax, word [L_myinth_16]
 	mov	cx, 3
@@ -135,27 +135,27 @@ L_myinth_18:
 	add	si, 2
 	mov	ax, word [NewPieceType]
 	mov	word [si], ax
-	; >>>>> Line:	42
-	; >>>>> newPieceList[i].orient = NewPieceOrient; 
+	; >>>>> Line:	41
+	; >>>>> newPieceList[i].orient = NewPieceOrientation; 
 	mov	ax, word [L_myinth_16]
 	mov	cx, 3
 	shl	ax, cl
 	add	ax, newPieceList
 	mov	si, ax
 	add	si, 4
-	mov	ax, word [NewPieceOrient]
+	mov	ax, word [NewPieceOrientation]
 	mov	word [si], ax
-	; >>>>> Line:	43
-	; >>>>> newPieceList[i].col = NewPieceCol; 
+	; >>>>> Line:	42
+	; >>>>> newPieceList[i].col = NewPieceColumn; 
 	mov	ax, word [L_myinth_16]
 	mov	cx, 3
 	shl	ax, cl
 	add	ax, newPieceList
 	mov	si, ax
 	add	si, 6
-	mov	ax, word [NewPieceCol]
+	mov	ax, word [NewPieceColumn]
 	mov	word [si], ax
-	; >>>>> Line:	45
+	; >>>>> Line:	44
 	; >>>>> YKQPost(newPieceQueue, (void *) &(newPieceList[i])); 
 	mov	ax, word [L_myinth_16]
 	mov	cx, 3
@@ -165,14 +165,14 @@ L_myinth_18:
 	push	word [newPieceQueue]
 	call	YKQPost
 	add	sp, 4
-	; >>>>> Line:	46
+	; >>>>> Line:	45
 	; >>>>> i++; 
 	inc	word [L_myinth_16]
-	; >>>>> Line:	47
+	; >>>>> Line:	46
 	; >>>>> if(i == 50){ 
 	cmp	word [L_myinth_16], 50
 	jne	L_myinth_19
-	; >>>>> Line:	48
+	; >>>>> Line:	47
 	; >>>>> i = 0; 
 	mov	word [L_myinth_16], 0
 L_myinth_19:
@@ -184,13 +184,16 @@ L_myinth_17:
 	mov	bp, sp
 	jmp	L_myinth_18
 	ALIGN	2
-received_handler:
-	; >>>>> Line:	52
-	; >>>>> void received_handler(void){ 
+c_received_handler:
+	; >>>>> Line:	51
+	; >>>>> void c_received_handler(void){ 
 	jmp	L_myinth_21
 L_myinth_22:
-	; >>>>> Line:	55
-	; >>>>> } 
+	; >>>>> Line:	52
+	; >>>>> YKSemPost(movePieceSem); 
+	push	word [movePieceSem]
+	call	YKSemPost
+	add	sp, 2
 	mov	sp, bp
 	pop	bp
 	ret
