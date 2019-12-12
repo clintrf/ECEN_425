@@ -1,0 +1,4 @@
+// The main problem that I ran into during this lab was not understanding that the EMU86 simptris code did most of the codeing for you. I spent more than a couple hours trying to code my own generate function/ print screen function and clear function. Only after talking to a friend did I realize that we were only coding the placement algorithm. if I had read the lab more carfully I would have spent significanly less time on this lab.
+
+total hours spent: 10h 
+lines cleared 213
