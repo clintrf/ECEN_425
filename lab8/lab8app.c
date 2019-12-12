@@ -32,7 +32,6 @@ int getIndex(void){
 
 
 int newPieceTask(void){
-    int newPieceTask(void){
     static int corner_orient = 0;
     int i = 0;
     int colPiece;
