@@ -75,6 +75,7 @@ int newPieceTask(void){
               movePieceList[i].movement = MOVE_LEFT;
               movePieceList[i].function = SlidePiece;
               colPiece--;
+              YKSemPend(movePieceSem);
               YKQPost(movePieceQueue, &movePieceList[i]);              
               }
 	  /*
