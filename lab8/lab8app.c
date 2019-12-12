@@ -117,7 +117,7 @@ int newPieceTask(void){
             while(colPiece != 0){
                 i = getIndex();
                 movePieceList[i].id = message->id;
-                movePieceList[i].movement = MOVE_RIGHT;
+                movePieceList[i].movement = MOVE_LEFT;
                 movePieceList[i].function = SlidePiece;
                 colPiece--;
                 YKQPost(movePieceQueue, &movePieceList[i]);              
