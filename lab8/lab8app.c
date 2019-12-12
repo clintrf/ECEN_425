@@ -42,9 +42,9 @@ int newPieceTask(void){
       message = (struct newPiece *) YKQPend(newPieceQueue);
 
       if(message->type == STRAIGHT){
-           colPiece = message->col;
+          colPiece = message->col;
+	  YKSemPend(movePieceSem);
           if(colPiece == 5){
-              YKSemPend(movePieceSem);
               i = getIndex();
               movePieceList[i].id = message->id;
               movePieceList[i].movement = MOVE_LEFT;
@@ -53,7 +53,6 @@ int newPieceTask(void){
           }
           else{
               while(colPiece <4){
-                  YKSemPend(movePieceSem);
                i = getIndex();
               movePieceList[i].id = message->id;
               movePieceList[i].movement = MOVE_RIGHT;
@@ -62,8 +61,8 @@ int newPieceTask(void){
               YKQPost(movePieceQueue, &movePieceList[i]);              
               }
           }
+	  YKSemPend(movePieceSem);
           if (message->orient){
-              YKSemPend(movePieceSem);
               i = getIndex();
               movePieceList[i].id = message->id;
               movePieceList[i].movement = TURN_RIGHT;
