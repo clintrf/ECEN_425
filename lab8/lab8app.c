@@ -69,14 +69,27 @@ int newPieceTask(void){
       }
       else{
           colPiece = message->col;
-	  while(colPiece >1){
-               i = getIndex();
-              movePieceList[i].id = message->id;
-              movePieceList[i].movement = MOVE_LEFT;
-              movePieceList[i].function = SlidePiece;
-              colPiece--;
-              YKQPost(movePieceQueue, &movePieceList[i]);              
-          }
+
+	  if (message->orient == 1 || message->orient == 3){
+		  while(colPiece >1){
+		       i = getIndex();
+		      movePieceList[i].id = message->id;
+		      movePieceList[i].movement = MOVE_LEFT;
+		      movePieceList[i].function = SlidePiece;
+		      colPiece--;
+		      YKQPost(movePieceQueue, &movePieceList[i]);              
+          	} 
+	  }
+	  if (message->orient == 0 || message->orient == 2){
+		  while(colPiece >0){
+		       i = getIndex();
+		      movePieceList[i].id = message->id;
+		      movePieceList[i].movement = MOVE_LEFT;
+		      movePieceList[i].function = SlidePiece;
+		      colPiece--;
+		      YKQPost(movePieceQueue, &movePieceList[i]);              
+          	} 
+	  }
 	  /*
           if(colPiece == 5){
               YKSemPend(movePieceSem);
